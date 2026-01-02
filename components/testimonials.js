@@ -49,7 +49,7 @@ export default function Testimonials() {
                   <FaQuoteLeft size={30} />
                 </div>
                 <p className="fst-italic text-muted mb-4">
-                  "{testimonial.text}"
+                  „{testimonial.text}“
                 </p>
                 <div className="d-flex align-items-center justify-content-between">
                   <h6 className="fw-bold mb-0">{testimonial.name}</h6>
