@@ -1,0 +1,224 @@
+/* Home.css */
+
+/* Ensure the root primary color is accessible if defined elsewhere (e.g., in Navbar.css or global.css) */
+/* If you don't have a global CSS for variables, define it here: */
+:root {
+    --primary-color: #007bff; /* Example: Bootstrap's default blue */
+    --text-dark: #343a40; /* Dark text for cards */
+}
+
+
+/* 1. Services Section Overall Styling */
+.services-section {
+    padding-top: 4rem; 
+    padding-bottom: 4rem;
+    /* Ensure no opacity: 1 !important or similar here */
+}
+
+body {
+  /* Labai šviesiai pilkšvai melsva spalva */
+  background-color: #f4f7fa; 
+}
+
+
+/* 2. Service Card Styling */
+/* SERVICE CARD BASE */
+.service-card {
+  border: 2px solid rgba(102, 111, 124, 0.3);
+  border-radius: 18px; /* Slightly more rounded */
+  background-color: #fff; /* White background */
+  padding: 2.5rem !important; /* Spacious padding */
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  position: relative;
+  overflow: hidden; /* For decorative effects */
+}
+
+/* Hover effect */
+.service-card:hover {
+  transform: translateY(-12px) scale(1.02); /* Lift + slight zoom */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18); /* Stronger hover shadow */
+}
+
+/* Optional gradient top border effect */
+.service-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--primary-color), #ADD8E6);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.service-card:hover::before {
+  opacity: 1;
+}
+
+/* ICON STYLING */
+.service-icon {
+  width: 120px;              /* Slightly larger but still elegant */
+  height: 120px;
+  object-fit: contain;      /* Keeps proportions */
+  display: block;           /* Forces it to behave like a block element */
+  margin: 0 auto 1rem auto; /* Centers horizontally + spacing below */
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.15) rotate(-2deg);
+  color: #ADD8E6; /* Slightly stronger primary */
+}
+
+/* TITLES */
+.service-card-title {
+  font-size: 1.4rem; /* A bit more balanced for multiple cards */
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.3px;
+  transition: color 0.35s ease;
+}
+
+.service-card:hover .service-card-title {
+  color: var(--primary-color); /* Highlight title on hover */
+}
+
+/* PARAGRAPH TEXT */
+.service-card-text {
+  font-size: 1.05rem;
+  color: #6c757d;
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 90%;
+}
+
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: var(--primary-color);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 12px 15px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-to-top-btn:hover {
+  background-color: #0056b3; /* darker shade */
+  transform: translateY(-3px);
+}
+/* 3. Transition Divider Styling */
+.transition-divider {
+  height: 120px;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+}
+
+.wave-divider {
+  position: relative;
+  margin-top: -5px;
+}
+.wave-divider svg {
+  display: block;
+  width: 100%;
+  height: 120px;
+}
+
+.service-heading {
+  position: relative;
+   font-family: "Playfair Display", serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4a90e2;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.service-heading .line {
+  content: "";
+  display: block;
+  width: 30%;
+  height: 3px;
+  background-color: #ADD8E6;
+  border-radius: 2px;
+}
+
+.services-section {
+  border-radius: 16px;
+  padding: 100px 0 10px; /* ⬆️ more top padding */
+  margin-top: 50px; /* ⬆️ extra space after Hero */
+}
+
+.faq-item {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(93, 123, 179, 0.1);
+}
+
+.faq-item:hover {
+  border-color: #5d7bb3;
+  transform: scale(1.01);
+}
+
+.faq-item button:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Ikonų apskritimai */
+.icon-circle {
+  width: 45px;
+  height: 45px;
+  background-color: rgba(93, 123, 179, 0.1);
+  color: #5d7bb3;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Formos įvesties laukai */
+.registration-form-card .form-control:focus, 
+.registration-form-card .form-select:focus {
+  background-color: #fff !important;
+  box-shadow: 0 0 0 0.25rem rgba(93, 123, 179, 0.25);
+  border: 1px solid #5d7bb3 !important;
+}
+
+.registration-form-card {
+  border: 1px solid rgba(93, 123, 179, 0.1);
+}
+
+
+/* 5. Mobile Responsiveness for Services Section */
+@media (max-width: 768px) {
+    .service-heading {
+        font-size: 2rem; /* Smaller heading on mobile */
+        margin-bottom: 2rem !important;
+    }
+
+    .service-card {
+        padding: 1.5rem !important; /* Less padding on mobile */
+    }
+
+    .service-icon {
+        font-size: 2.8rem !important; /* Smaller icons on mobile */
+    }
+
+    .service-card-title {
+        font-size: 1.3rem; /* Smaller card titles on mobile */
+    }
+
+    .service-card-text {
+        font-size: 0.95rem; /* Smaller card text on mobile */
+    }
+}

@@ -1,0 +1,258 @@
+.hero-section {
+  position: relative;
+  width: 100vw; /* full viewport width */
+  height: 80vh;  /* 80% of viewport height */
+  overflow: hidden;
+  margin-top: 25px;
+}
+
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw; /* full viewport width */
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.hero-background.top-layer {
+  z-index: 0; 
+  opacity: 1; 
+  transition: opacity 1s ease-in-out; /* MUST be 1s */
+}
+
+.hero-background.top-layer.fading {
+    opacity: 0;
+}
+
+.hero-background.bottom-layer {
+    z-index: -1; 
+}
+.top-layer {
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+  z-index: 2; /* Make sure top layer is on top */
+}
+
+.top-layer.fading {
+  opacity: 0;
+}
+
+/* This is the new class that fixes the flash */
+.top-layer.resetting {
+  transition: none;
+}
+
+.hero-background.top-layer.resetting {
+    transition: none;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Gradientas iš kairės (tamsesnis, kur tekstas) į dešinę (šviesesnis) */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 100%);
+  z-index: 1;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  /* Shift content to the left side */
+  left: 10%; 
+  /* Adjust transform for left alignment */
+  transform: translateY(-50%); 
+  
+  /* Set a maximum width so the text doesn't stretch across the entire screen */
+  max-width: 600px; 
+  
+  color: white;
+  text-align: left; /* Alignment changed to left */
+  z-index: 2;
+  
+  /* Keep the transition for fading */
+  transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+  opacity: 1; 
+}
+
+.hero-content h1 {
+  font-size: 3.5rem; /* Larger heading size for impact */
+  margin-bottom: 0.5rem;
+  font-weight: 700; /* Bolder */
+}
+
+.hero-content p {
+  font-size: 1.5rem; /* Larger paragraph/subtitle */
+  font-weight: 300;
+  margin-bottom: 2rem;
+}
+
+/* This class is applied when the image is fading, making the text fade out too */
+.hero-content.content-fading {
+    opacity: 0;
+    /* Move slightly up during fade */
+    transform: translateY(-40%); 
+}
+
+.hero-content .btn-primary {
+    /* Base style: Išlaikome baltą foną su baltu rėmeliu */
+    background-color: transparent !important;
+    border: 2px solid white !important;
+    color: white !important;
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.hero-content .btn-primary:hover,
+.hero-content .btn-primary:focus {
+    /* HOVER EFEKTAS: Pastelinė spalva */
+    /* Pastelinė Žalia (pakeiskite šį kodą, jei norite kitos spalvos) */
+    --pastel-color: #A8DADC; 
+    
+    background-color: var(--pastel-color) !important; 
+    color: #333 !important; /* Pakeičiame teksto spalvą į tamsią, kad gerai matytųsi ant šviesaus fono */
+    border-color: var(--pastel-color) !important;
+    transform: scale(1.05); 
+}
+
+.hero-buttons {
+    display: flex; /* Makes buttons sit side-by-side */
+    align-items: center; /* Vertically aligns buttons */
+    justify-content: flex-start; /* Aligns them to the left */
+    flex-wrap: wrap; /* Allows buttons to wrap to next line on small screens */
+    margin-top: 2rem; /* Space below the paragraph */
+}
+
+/* * 2. Phone Button Specific Styling 
+ */
+.phone-button {
+    /* Base styles for the outline button */
+    border: 2px solid white !important; /* Ensure a white border */
+    color: white !important; /* White text */
+    background-color: transparent !important; /* Transparent background */
+    
+    padding: 0.75rem 1.5rem !important; /* Adjust padding to match primary button */
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-radius: 50rem; /* Pill shape */
+    transition: all 0.3s ease;
+}
+
+.phone-button:hover {
+    background-color: rgba(255, 255, 255, 0.2) !important; /* Subtle white background on hover */
+    border-color: rgba(255, 255, 255, 0.5) !important; /* Slightly more visible border */
+    transform: scale(1.03); /* Slight lift */
+}
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
+
+.hero-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.hero-nav-button.right {
+  right: 30px; /* Atstumas nuo dešinio krašto */
+}
+
+.hero-nav-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Jūsų esami stiliai */
+@media (max-width: 768px) {
+  .hero-section {
+  height: 40vh;  /* 80% of viewport height */
+}
+    /* 1. Adjust Hero Content positioning */
+    .hero-content {
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        max-width: 90%;
+        padding: 0 1rem;
+    }
+
+    /* 2. Reduce Heading Size */
+    .hero-content h1 {
+        font-size: 1.8rem; /* Reduced from 2.2rem, try 1.8rem or even 1.6rem */
+        line-height: 1.2; /* Tighter line spacing for compactness */
+        margin-bottom: 0.5rem;
+    }
+
+    /* 3. Reduce Paragraph Size */
+    .hero-content p {
+        font-size: 0.9rem; /* Reduced from 1rem, try 0.9rem or 0.85rem */
+        line-height: 1.4; /* Tighter line spacing */
+        margin-bottom: 1rem; /* Slightly reduced margin */
+    }
+
+    /* 4. Optimize Button Size and Padding */
+    .hero-content .btn-primary {
+        /* Use smaller padding */
+        padding: 0.6rem 1.2rem; 
+        font-size: 0.9rem;
+    }
+    
+    /* Ensure content fades up slightly less on mobile to save vertical space */
+    .hero-content.content-fading {
+        transform: translate(-50%, -45%); 
+    }
+
+    .hero-buttons {
+        flex-direction: column; /* Stack buttons vertically */
+        align-items: center; /* Center buttons horizontally when stacked */
+        width: 100%; /* Ensure container takes full width */
+    }
+
+    .hero-buttons .btn {
+        width: 90%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        margin-bottom: 0.8rem; /* Slightly reduced margin */
+        padding: 0.6rem 1rem !important;
+        font-size: 0.9rem;
+    }
+
+    /* Remove bottom margin from the last button in the stack */
+    .hero-buttons .btn:last-child {
+        margin-bottom: 0;
+    }
+    .hero-nav-button.right {
+    right: 10px;
+    width: 40px;
+    height: 40px;
+   }
+}

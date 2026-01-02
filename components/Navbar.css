@@ -1,0 +1,210 @@
+/* Navbar.css */
+
+/* Define a custom primary color variable for easy changes */
+:root {
+    --primary-color: #007bff; 
+    --hover-color: #0056b3;
+
+    --button-pastel-color: #A8DADC; /* Švelni pastelinė žalia */
+    --button-hover-color: #79C2C2;
+}
+
+/* Base Navbar Styling */
+.custom-navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+}
+
+/* Logo Sizing */
+.navbar-logo {
+    width: 200px;
+    height: auto;
+    max-height: 40px;
+}
+
+.navbar-toggler-custom {
+    /* Remove background, border, and box-shadow */
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.25rem 0.5rem; /* Reduced padding */
+    transition: all 0.2s ease;
+}
+
+/* Ensure the toggler icon itself is visible and centered */
+.navbar-toggler-custom .navbar-toggler-icon {
+    /* You can adjust the width/height if needed */
+    width: 1.5em; 
+    height: 1.5em;
+    /* By default, Bootstrap's icon is dark gray. 
+       You can change its color by adding a filter or overriding the background-image 
+       (the icon is an SVG loaded as a background image). */
+}
+
+/* Optional: Subtle hover effect */
+.navbar-toggler-custom:hover {
+    opacity: 0.8;
+}
+
+/* Ensure that when the button is focused (after tapping), 
+   the default blue outline is removed for a cleaner look */
+.navbar-toggler-custom:focus {
+    box-shadow: none !important;
+    outline: 0;
+}
+
+
+
+/* Navigation Links (Making them look cleaner and more interactive) */
+.nav-link-custom {
+    font-size: 1.05rem;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease, transform 0.2s ease;
+    
+    /* 👈 ADD/ENSURE THIS IS HERE FOR ALL SCREEN SIZES */
+    white-space: nowrap; 
+}
+
+/* Hover effect for the links */
+.nav-link-custom:hover {
+    color: var(--primary-color) !important;
+    transform: translateY(-1px); 
+}
+
+/* Optional: Underline/Accent line on hover */
+.nav-link-custom::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-link-custom:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+
+/* Call-to-Action Button (Fixing the wrap issue and styling) */
+.cta-button {
+/* NAUJA: Užpildome mygtuką pasteline spalva */
+background-color: var(--button-pastel-color) !important;
+border-color: var(--button-pastel-color) !important; /* Rėmelis atitinka foną */
+color: #333 !important; /* Tekstas tamsus, kad būtų geras kontrastas ant šviesaus fono */
+padding: 0.5rem 1.4rem !important; 
+font-size: 1rem;
+font-weight: 600 !important;
+letter-spacing: 0.5px;
+transition: all 0.3s ease;
+white-space: nowrap; 
+}
+
+.cta-button:hover {
+/* NAUJA: Kiek patamsiname mygtuką užvedus pelę */
+background-color: var(--button-hover-color) !important;
+border-color: var(--button-hover-color) !important;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Išskleidžiamo meniu konteineris */
+.service-dropdown .dropdown-menu {
+  border-radius: 15px;
+  min-width: 250px;
+  top: 120%; /* Meniu atsiranda šiek tiek žemiau navbaro */
+  transition: all 0.3s ease;
+}
+
+/* Kiekvienas punktas */
+.service-dropdown .dropdown-item {
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: 500;
+  color: #4a4a4a;
+  transition: all 0.2s ease;
+}
+
+/* Hover efektas punktams */
+.service-dropdown .dropdown-item:hover {
+  background-color: #f4f7fa;
+  color: #5d7bb3;
+  transform: translateX(5px); /* Subtilus postūmis į dešinę */
+}
+
+/* Nuimame standartinę rodyklę, jei nori modernesnio vaizdo */
+.dropdown-toggle::after {
+  vertical-align: middle;
+  border-top: 0.35em solid;
+  border-right: 0.35em solid transparent;
+  border-left: 0.35em solid transparent;
+  color: #5d7bb3;
+}
+
+@media (max-width: 991.98px) {
+    
+    /* 1. Adjust the collapsed menu list alignment */
+    /* When the navbar collapses, the list should align to the left */
+    .navbar-collapse .navbar-nav {
+        /* Override the 'mx-auto' that centers it on desktop */
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        /* Add some padding to the sides of the dropdown menu */
+        padding: 0 15px; 
+    }
+    
+    /* 2. Improve spacing for individual links */
+    .navbar-collapse .nav-item {
+        margin-bottom: 0.5rem; /* Add space between stacked links */
+    }
+
+    #navbarNav {
+        width: 100%;
+    }
+    
+    .nav-link-custom {
+        /* Ensure links take full width and are easy to tap */
+        padding: 0.75rem 0; 
+        font-size: 1.1rem;
+    }
+    
+    /* Remove the custom hover line effect, as it looks messy when stacked */
+    .nav-link-custom::after {
+        display: none;
+    }
+    
+    /* 3. Style the Call-to-Action (CTA) Button */
+    .cta-button {
+        /* Make the button take the full width of the menu dropdown */
+        display: block !important;
+        width: 100%;
+        /* Add more vertical margin for separation */
+        margin-left: 0 !important; 
+        margin-top: 1rem;
+        margin-bottom: 1.5rem; 
+        /* Ensure the text is centered within the button */
+        text-align: center;
+        /* Reset any text-nowrap issues that might exist */
+        white-space: normal; 
+    }
+
+    navbar-brand {
+        /* Override default margin to sit nicely next to the toggler */
+        margin-right: auto !important; 
+    }
+    
+    /* Make the toggler snap to the far right */
+    .navbar-toggler-custom {
+        /* No specific overrides needed here since we are using 'justify-content-between' 
+           on the parent container, which automatically pushes it to the right edge. */
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* ... (The rest of your mobile styles are fine) ... */
+    
+
+}
