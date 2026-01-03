@@ -2,11 +2,14 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import Link from "next/link"; // Pridėtas importas
+import Link from "next/link";
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
+  visible: { 
+    opacity: 1, 
+    transition: { staggerChildren: 0.15 } 
+  },
 };
 
 const cardVariants = {
@@ -28,25 +31,19 @@ export default function ServicesSection() {
     <motion.div
       className="container mb-5 services-section"
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
+      // PAKEITIMAS: Naudojame animate vietoj whileInView, kad išvengtume tuščio ekrano telefone
+      animate="visible"
       variants={containerVariants}
     >
-
-              <h2 className="text-center mb-5 service-heading">
-
+      <h2 className="text-center mb-5 service-heading">
         <span className="line"></span>
-
         Mūsų Paslaugos
-
         <span className="line"></span>
-
       </h2>
 
       <div className="row g-4 mb-5">
         {services.map((service, i) => (
           <motion.div key={i} className="col-md-4 text-center" variants={cardVariants}>
-            {/* Visa kortelė dabar yra nuoroda */}
             <Link href={`/paslaugos/${service.slug}`} className="text-decoration-none">
               <div className="card shadow-sm p-4 h-100 service-card border-0">
                 <img src={service.img} alt={service.title} className="service-icon mb-3" />
@@ -58,16 +55,15 @@ export default function ServicesSection() {
         ))}
       </div>
 
-      {/* MYGTUKAS Į VISAS PASLAUGAS */}
       <motion.div 
         className="text-center"
         initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
       >
         <Link 
           href="/paslaugos" 
-          className="btn btn-lg px-5 rounded-pill shadow-sm"
+          className="btn btn-lg px-5 rounded-pill shadow-sm all-services-btn"
           style={{ 
             backgroundColor: "#5d7bb3", 
             color: "white", 
@@ -75,8 +71,6 @@ export default function ServicesSection() {
             fontWeight: "600",
             transition: "all 0.3s ease"
           }}
-          onMouseOver={(e) => e.target.style.backgroundColor = "#4a6699"}
-          onMouseOut={(e) => e.target.style.backgroundColor = "#5d7bb3"}
         >
           Žiūrėti visas paslaugas
         </Link>

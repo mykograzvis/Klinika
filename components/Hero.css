@@ -194,65 +194,54 @@ html, body {
 /* Jūsų esami stiliai */
 @media (max-width: 768px) {
   .hero-section {
-  height: 40vh;  /* 80% of viewport height */
-}
-    /* 1. Adjust Hero Content positioning */
-    .hero-content {
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        max-width: 90%;
-        padding: 0 1rem;
-    }
+    /* Padidiname nuo 40vh iki 60vh, kad tilptų tekstas ir 2 mygtukai */
+    height: 60vh; 
+    margin-top: 10px; /* Mažesnis tarpas viršuje telefone */
+  }
 
-    /* 2. Reduce Heading Size */
-    .hero-content h1 {
-        font-size: 1.8rem; /* Reduced from 2.2rem, try 1.8rem or even 1.6rem */
-        line-height: 1.2; /* Tighter line spacing for compactness */
-        margin-bottom: 0.5rem;
-    }
+  .hero-content {
+    left: 50%;
+    /* Naudojame 50%, bet jei tekstas vis tiek lipa lauk, galime koreguoti */
+    top: 50%; 
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 95%; /* Naudojame daugiau ekrano pločio */
+    max-width: none;
+    padding: 0;
+  }
 
-    /* 3. Reduce Paragraph Size */
-    .hero-content p {
-        font-size: 0.9rem; /* Reduced from 1rem, try 0.9rem or 0.85rem */
-        line-height: 1.4; /* Tighter line spacing */
-        margin-bottom: 1rem; /* Slightly reduced margin */
-    }
+  .hero-content h1 {
+    font-size: 1.6rem; /* Dar šiek tiek mažesnis, kad tilptų į 1-2 eilutes */
+    line-height: 1.2;
+    margin-bottom: 0.4rem;
+  }
 
-    /* 4. Optimize Button Size and Padding */
-    .hero-content .btn-primary {
-        /* Use smaller padding */
-        padding: 0.6rem 1.2rem; 
-        font-size: 0.9rem;
-    }
-    
-    /* Ensure content fades up slightly less on mobile to save vertical space */
-    .hero-content.content-fading {
-        transform: translate(-50%, -45%); 
-    }
+  .hero-content p {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin-bottom: 1.2rem; /* Mažesnis tarpas iki mygtukų */
+  }
 
-    .hero-buttons {
-        flex-direction: column; /* Stack buttons vertically */
-        align-items: center; /* Center buttons horizontally when stacked */
-        width: 100%; /* Ensure container takes full width */
-    }
+  .hero-buttons {
+    margin-top: 1rem; /* Mažesnis tarpas virš mygtukų */
+    flex-direction: column;
+    gap: 8px; /* Naudojame gap vietoj margin-bottom geresniam valdymui */
+  }
 
-    .hero-buttons .btn {
-        width: 90%;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        margin-bottom: 0.8rem; /* Slightly reduced margin */
-        padding: 0.6rem 1rem !important;
-        font-size: 0.9rem;
-    }
+  .hero-buttons .btn {
+    width: 85%; /* Mygtukai šiek tiek siauresni, kad atrodytų geriau */
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 0 !important; /* Naudojame gap iš tėvinio elemento */
+    padding: 10px 15px !important; /* Patogus dydis paspausti */
+    font-size: 0.9rem;
+  }
 
-    /* Remove bottom margin from the last button in the stack */
-    .hero-buttons .btn:last-child {
-        margin-bottom: 0;
-    }
-    .hero-nav-button.right {
-    right: 10px;
-    width: 40px;
-    height: 40px;
-   }
+  /* Užtikriname, kad navigacijos rodyklė netrukdytų tekstui */
+  .hero-nav-button.right {
+    right: 5px;
+    width: 35px;
+    height: 35px;
+    opacity: 0.7;
+  }
 }

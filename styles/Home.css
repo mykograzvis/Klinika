@@ -201,10 +201,15 @@ body {
 
 /* 5. Mobile Responsiveness for Services Section */
 @media (max-width: 768px) {
-    .service-heading {
-        font-size: 2rem; /* Smaller heading on mobile */
-        margin-bottom: 2rem !important;
-    }
+    .services-section {
+    padding-top: 40px; /* Mažesnis tarpas telefone */
+    margin-bottom: 3rem !important;
+  }
+  
+  .service-heading {
+    font-size: 1.8rem;
+    margin-bottom: 30px !important;
+  }
 
     .service-card {
         padding: 1.5rem !important; /* Less padding on mobile */

@@ -11,8 +11,11 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Dental Clinic",
-  description: "Greita ir kokybiška odontologinė pagalba",
+  title: "Gelmidenta",
+  description: "Aukščiausios kokybės odontologijos paslaugos Panevėžyje. Dantų priežiūra, gydymas ir estetika vienoje vietoje.",
+  icons: {
+    icon: "/icon.png", // Jei failas public aplanke, naudok "/"
+  },
 };
 
 export default function RootLayout({ children }) {
