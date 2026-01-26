@@ -76,7 +76,7 @@ function Navbar() {
               <a href="tel:+37060000000" className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap me-2" style={{textDecoration: 'none'}}>
                 +37060000000
               </a>
-              <Link className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap" href="/">Registracija</Link>
+              <Link className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap" href="/login">Registracija</Link>
             </li>
           </ul>
         </div>
