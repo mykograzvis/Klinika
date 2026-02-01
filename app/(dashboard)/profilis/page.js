@@ -1,17 +1,29 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function ProfilisPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState({ text: "", type: "" }); // type: "success" arba "danger"
+  const [isEditing, setIsEditing] = useState(false);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
 
-  // Duomenų būsenos
   const [userData, setUserData] = useState({
-    vardas: "", pavarde: "", elPastas: "", telefonas: "", 
-    amzius: 0, kraujoGrupe: "", specializacija: "", 
-    darboPatirtisMetais: 0, role: ""
+    id: "",
+    userId: "",
+    vardas: "",
+    pavarde: "",
+    elPastas: "",
+    telefonas: "",
+    amzius: 0,
+    kraujoGrupe: "",
+    specializacija: "",
+    darboPatirtisMetais: 0,
+    role: "",
+    isTwoFactorEnabled: false
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -20,12 +32,18 @@ export default function ProfilisPage() {
     repeatSlaptazodis: ""
   });
 
+  const [newEmail, setNewEmail] = useState("");
+
   useEffect(() => {
     fetchProfilis();
   }, []);
 
   const fetchProfilis = async () => {
     const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+      return;
+    }
     try {
       const res = await fetch("https://localhost:7237/api/Vartotojai/profilis", {
         headers: { "Authorization": `Bearer ${token}` }
@@ -41,222 +59,290 @@ export default function ProfilisPage() {
     }
   };
 
-  // 1. Bendrų duomenų atnaujinimas
+  const showMsg = (text, type) => {
+    setMessage({ text, type });
+    setTimeout(() => setMessage({ text: "", type: "" }), 5000);
+  };
+
   const handleUpdateInfo = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const res = await fetch("https://localhost:7237/api/Vartotojai/atnaujinti", {
-      method: "PUT",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}` 
-      },
-      body: JSON.stringify(userData)
-    });
-
-    if (res.ok) {
-      showMsg("Profilio duomenys sėkmingai atnaujinti!", "success");
-    } else {
-      showMsg("Nepavyko atnaujinti duomenų.", "danger");
+    try {
+      const res = await fetch("https://localhost:7237/api/Vartotojai/atnaujinti", {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify(userData)
+      });
+      if (res.ok) {
+        showMsg("Profilio duomenys sėkmingai atnaujinti!", "success");
+        setIsEditing(false);
+      } else {
+        showMsg("Nepavyko atnaujinti duomenų.", "danger");
+      }
+    } catch (err) {
+      showMsg("Serverio klaida.", "danger");
     }
   };
 
-  // 2. Slaptažodžio keitimas
+  const handleUpdateEmail = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch("https://localhost:7237/api/Vartotojai/keisti-el-pasta", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify({ naujasEmail: newEmail })
+      });
+      if (res.ok) {
+        alert("El. paštas pakeistas. Prašome prisijungti iš naujo.");
+        localStorage.clear();
+        router.push("/login");
+      } else {
+        const txt = await res.text();
+        showMsg(txt || "Klaida keičiant el. paštą.", "danger");
+      }
+    } catch (err) {
+      showMsg("Serverio klaida.", "danger");
+    }
+  };
+
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
     if (passwordData.naujasSlaptazodis !== passwordData.repeatSlaptazodis) {
       showMsg("Nauji slaptažodžiai nesutampa!", "danger");
       return;
     }
-
     const token = localStorage.getItem("token");
-    const res = await fetch("https://localhost:7237/api/Vartotojai/keisti-slaptazodi", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}` 
-      },
-      body: JSON.stringify({
-        senasSlaptazodis: passwordData.senasSlaptazodis,
-        naujasSlaptazodis: passwordData.naujasSlaptazodis
-      })
-    });
-
-    if (res.ok) {
-      showMsg("Slaptažodis pakeistas!", "success");
-      setPasswordData({ senasSlaptazodis: "", naujasSlaptazodis: "", repeatSlaptazodis: "" });
-    } else {
-      const errTxt = await res.text();
-      showMsg(errTxt || "Klaida keičiant slaptažodį.", "danger");
+    try {
+      const res = await fetch("https://localhost:7237/api/Vartotojai/keisti-slaptazodi", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` 
+        },
+        body: JSON.stringify({
+          senasSlaptazodis: passwordData.senasSlaptazodis,
+          naujasSlaptazodis: passwordData.naujasSlaptazodis
+        })
+      });
+      if (res.ok) {
+        showMsg("Slaptažodis pakeistas!", "success");
+        setShowPasswordForm(false);
+        setPasswordData({ senasSlaptazodis: "", naujasSlaptazodis: "", repeatSlaptazodis: "" });
+      } else {
+        const errTxt = await res.text();
+        showMsg(errTxt || "Klaida keičiant slaptažodį.", "danger");
+      }
+    } catch (err) {
+      showMsg("Serverio klaida.", "danger");
     }
   };
 
-  const [newEmail, setNewEmail] = useState("");
-
-  const handleUpdateEmail = async (e) => {
-    e.preventDefault();
-    if (!newEmail) return;
-
+  const handleDisable2FA = async () => {
+    if (!window.confirm("Ar tikrai norite išjungti 2FA? Tai sumažins jūsų paskyros saugumą.")) return;
     const token = localStorage.getItem("token");
-    const res = await fetch("https://localhost:7237/api/Vartotojai/keisti-el-pasta", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}` 
-      },
-      body: JSON.stringify({ naujasEmail: newEmail })
-    });
-
-    if (res.ok) {
-      alert("El. paštas pakeistas. Prisijunkite iš naujo.");
-      localStorage.removeItem("token"); // Išvalome seną tokeną
-      router.push("/login"); // Nukreipiame į prisijungimą
-    } else {
-      const txt = await res.text();
-      showMsg(txt || "Klaida keičiant el. paštą", "danger");
+    try {
+      const res = await fetch("https://localhost:7237/api/Auth/disable-self-2fa", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        showMsg("2FA sėkmingai išjungtas.", "success");
+        setUserData({ ...userData, isTwoFactorEnabled: false });
+      } else {
+        showMsg("Nepavyko išjungti 2FA.", "danger");
+      }
+    } catch (err) {
+      showMsg("Serverio klaida.", "danger");
     }
   };
 
-  const showMsg = (text, type) => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage({ text: "", type: "" }), 5000);
+  const handleEnable2FA = () => {
+    // Paimame ID iš userData (id arba userId) arba iš localStorage, jei API jo negrąžino
+    const id = userData.userId || userData.id || localStorage.getItem("userId");
+    
+    if (!id) {
+      showMsg("Klaida: nepavyko nustatyti vartotojo ID.", "danger");
+      return;
+    }
+    
+    router.push(`/setup-2fa?userId=${id}`);
   };
 
-  if (loading) return <div className="p-5">Kraunama...</div>;
+  if (loading) return <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif' }}><h3>Kraunama...</h3></div>;
 
   return (
-    <div className="container py-4" style={{ maxWidth: "800px" }}>
-      <h1 className="mb-4 fw-bold">Paskyros nustatymai</h1>
+    <div style={{ maxWidth: "800px", margin: "40px auto", padding: "0 20px", fontFamily: 'sans-serif' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <h1 style={{ margin: 0 }}>Mano Profilis</h1>
+        <div style={{ padding: '5px 15px', backgroundColor: '#e2e8f0', borderRadius: '20px', fontSize: '14px', fontWeight: 'bold' }}>
+          {userData.role}
+        </div>
+      </div>
 
       {message.text && (
-        <div className={`alert alert-${message.type} mb-4`} role="alert">
+        <div style={{ 
+          padding: '15px', 
+          marginBottom: '20px', 
+          borderRadius: '8px', 
+          backgroundColor: message.type === 'success' ? '#dcfce7' : '#fef2f2',
+          color: message.type === 'success' ? '#166534' : '#991b1b',
+          border: `1px solid ${message.type === 'success' ? '#bbf7d0' : '#fecaca'}`
+        }}>
           {message.text}
         </div>
       )}
 
-      {/* SEKCIJA 1: Bendra informacija */}
-      <div className="card shadow-sm mb-4 border-0">
-        <div className="card-body p-4">
-          <h5 className="card-title mb-4 fw-bold">Bendra informacija</h5>
-          <form onSubmit={handleUpdateInfo}>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label small text-muted">Vardas</label>
-                <input type="text" className="form-control" value={userData.vardas} 
-                  onChange={e => setUserData({...userData, vardas: e.target.value})} />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label small text-muted">Pavardė</label>
-                <input type="text" className="form-control" value={userData.pavarde} 
-                  onChange={e => setUserData({...userData, pavarde: e.target.value})} />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label small text-muted">El. paštas (Nekeičiamas)</label>
-                <input type="email" className="form-control bg-light" value={userData.elPastas} readOnly />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label small text-muted">Telefonas</label>
-                <input type="text" className="form-control" value={userData.telefonas} 
-                  onChange={e => setUserData({...userData, telefonas: e.target.value})} />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label small text-muted">Amžius</label>
-                <input type="number" className="form-control" value={userData.amzius} 
-                  onChange={e => setUserData({...userData, amzius: parseInt(e.target.value)})} />
-              </div>
-              <div className="col-md-4">
-                <label className="form-label small text-muted">Kraujo grupė</label>
-                <input type="text" className="form-control" value={userData.kraujoGrupe || ""} 
-                  onChange={e => setUserData({...userData, kraujoGrupe: e.target.value})} />
-              </div>
-
-              {/* Jei vartotojas yra gydytojas, rodomi papildomi laukai */}
-              {userData.role === "Gydytojas" && (
-                <>
-                  <div className="col-md-12 mt-4 pt-3 border-top">
-                    <h6 className="fw-bold">Gydytojo licencijos informacija</h6>
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label small text-muted">Specializacija</label>
-                    <input type="text" className="form-control" value={userData.specializacija} 
-                      onChange={e => setUserData({...userData, specializacija: e.target.value})} />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="form-label small text-muted">Darbo patirtis (metais)</label>
-                    <input type="number" className="form-control" value={userData.darboPatirtisMetais} 
-                      onChange={e => setUserData({...userData, darboPatirtisMetais: parseInt(e.target.value)})} />
-                  </div>
-                </>
-              )}
-            </div>
-            <button type="submit" className="btn btn-primary mt-4 px-4 py-2 rounded-pill fw-bold">
-              Išsaugoti pakeitimus
-            </button>
-          </form>
+      {/* SEKCIJA: Bendra informacija */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <h3 style={{ margin: 0 }}>Asmeniniai duomenys</h3>
+          <button onClick={() => setIsEditing(!isEditing)} style={isEditing ? btnLightStyle : btnOutlineStyle}>
+            {isEditing ? "Atšaukti" : "Redaguoti"}
+          </button>
         </div>
+
+        <form onSubmit={handleUpdateInfo}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <DataField label="Vardas" value={userData.vardas} isEditing={isEditing} onChange={v => setUserData({...userData, vardas: v})} />
+            <DataField label="Pavardė" value={userData.pavarde} isEditing={isEditing} onChange={v => setUserData({...userData, pavarde: v})} />
+            
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <label style={labelStyle}>El. paštas</label>
+              <div style={readonlyFieldStyle}>{userData.elPastas}</div>
+            </div>
+
+            <DataField label="Telefonas" value={userData.telefonas} isEditing={isEditing} onChange={v => setUserData({...userData, telefonas: v})} />
+            <DataField label="Amžius" value={userData.amzius} isEditing={isEditing} type="number" onChange={v => setUserData({...userData, amzius: parseInt(v) || 0})} />
+            <DataField label="Kraujo grupė" value={userData.kraujoGrupe} isEditing={isEditing} onChange={v => setUserData({...userData, kraujoGrupe: v})} />
+
+            {userData.role === "Gydytojas" && (
+              <>
+                <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #eee', paddingTop: '10px', marginTop: '10px' }}>
+                  <h4 style={{ margin: '0 0 10px 0' }}>Profesinė informacija</h4>
+                </div>
+                <DataField label="Specializacija" value={userData.specializacija} isEditing={isEditing} onChange={v => setUserData({...userData, specializacija: v})} />
+                <DataField label="Patirtis (metais)" value={userData.darboPatirtisMetais} isEditing={isEditing} type="number" onChange={v => setUserData({...userData, darboPatirtisMetais: parseInt(v) || 0})} />
+              </>
+            )}
+          </div>
+          {isEditing && (
+            <button type="submit" style={{ ...btnPrimaryStyle, marginTop: '20px' }}>Išsaugoti pakeitimus</button>
+          )}
+        </form>
       </div>
 
-      {/* SEKCIJA: El. pašto keitimas */}
-      <div className="card shadow-sm mb-4 border-0">
-        <div className="card-body p-4">
-          <h5 className="card-title mb-4 fw-bold">El. pašto adresas</h5>
-          <form onSubmit={handleUpdateEmail}>
-            <div className="row g-3 align-items-end">
-              <div className="col-md-8">
-                <label className="form-label small text-muted">Naujas el. pašto adresas</label>
-                <input 
-                  type="email" 
-                  className="form-control" 
-                  placeholder="pavyzdys@mail.com"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  required 
-                />
+      {/* SEKCIJA: Saugumas */}
+      <div style={cardStyle}>
+        <h3 style={{ marginBottom: '20px' }}>Paskyros saugumas</h3>
+        
+        {/* El. pašto keitimas */}
+        <div style={{ paddingBottom: '20px', borderBottom: '1px solid #eee', marginBottom: '20px' }}>
+          {!showEmailForm ? (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontWeight: 'bold' }}>El. pašto adresas</div>
+                <div style={{ fontSize: '13px', color: '#64748b' }}>Keičiant el. paštą reikės prisijungti iš naujo</div>
               </div>
-              <div className="col-md-4">
-                <button type="submit" className="btn btn-dark w-100 rounded-pill fw-bold">
-                  Atnaujinti paštą
-                </button>
-              </div>
+              <button onClick={() => setShowEmailForm(true)} style={btnLightStyle}>Keisti</button>
             </div>
-            <p className="small text-danger mt-2">
-              * Pakeitus el. paštą, būsite atjungti nuo sistemos saugumo sumetimais.
-            </p>
-          </form>
+          ) : (
+            <form onSubmit={handleUpdateEmail} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <label style={labelStyle}>Naujas el. pašto adresas</label>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <input type="email" style={inputStyle} value={newEmail} onChange={e => setNewEmail(e.target.value)} required />
+                <button type="submit" style={btnDarkStyle}>Atnaujinti</button>
+                <button type="button" onClick={() => setShowEmailForm(false)} style={btnLightStyle}>Atšaukti</button>
+              </div>
+            </form>
+          )}
         </div>
-      </div>
 
-      {/* SEKCIJA 2: Saugumas */}
-      <div className="card shadow-sm border-0">
-        <div className="card-body p-4">
-          <h5 className="card-title mb-4 fw-bold">Saugumas</h5>
-          <form onSubmit={handleUpdatePassword}>
-            <div className="row g-3">
-              <div className="col-md-12">
-                <label className="form-label small text-muted">Dabartinis slaptažodis</label>
-                <input type="password" name="senas" className="form-control" 
-                  value={passwordData.senasSlaptazodis}
-                  onChange={e => setPasswordData({...passwordData, senasSlaptazodis: e.target.value})} required />
+        {/* Slaptažodžio keitimas */}
+        <div style={{ paddingBottom: '20px', borderBottom: userData.role === "Pacientas" ? '1px solid #eee' : 'none', marginBottom: userData.role === "Pacientas" ? '20px' : '0' }}>
+          {!showPasswordForm ? (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontWeight: 'bold' }}>Slaptažodis</div>
+                <div style={{ fontSize: '13px', color: '#64748b' }}>Paskyra geriau apsaugota naudojant unikalų slaptažodį</div>
               </div>
-              <div className="col-md-6">
-                <label className="form-label small text-muted">Naujas slaptažodis</label>
-                <input type="password" name="naujas" className="form-control" 
-                  value={passwordData.naujasSlaptazodis}
-                  onChange={e => setPasswordData({...passwordData, naujasSlaptazodis: e.target.value})} required />
-              </div>
-              <div className="col-md-6">
-                <label className="form-label small text-muted">Pakartokite naują slaptažodį</label>
-                <input type="password" name="kartoti" className="form-control" 
-                  value={passwordData.repeatSlaptazodis}
-                  onChange={e => setPasswordData({...passwordData, repeatSlaptazodis: e.target.value})} required />
-              </div>
+              <button onClick={() => setShowPasswordForm(true)} style={btnLightStyle}>Keisti</button>
             </div>
-            <button type="submit" className="btn btn-outline-dark mt-4 px-4 py-2 rounded-pill fw-bold">
-              Keisti slaptažodį
-            </button>
-          </form>
+          ) : (
+            <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <input type="password" placeholder="Dabartinis slaptažodis" style={inputStyle} value={passwordData.senasSlaptazodis} onChange={e => setPasswordData({...passwordData, senasSlaptazodis: e.target.value})} required />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <input type="password" placeholder="Naujas slaptažodis" style={inputStyle} value={passwordData.naujasSlaptazodis} onChange={e => setPasswordData({...passwordData, naujasSlaptazodis: e.target.value})} required />
+                <input type="password" placeholder="Pakartokite naują" style={inputStyle} value={passwordData.repeatSlaptazodis} onChange={e => setPasswordData({...passwordData, repeatSlaptazodis: e.target.value})} required />
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" style={btnDarkStyle}>Atnaujinti slaptažodį</button>
+                <button type="button" onClick={() => setShowPasswordForm(false)} style={btnLightStyle}>Atšaukti</button>
+              </div>
+            </form>
+          )}
         </div>
+
+        {/* 2FA Valdymas (Tik pacientams) */}
+        {userData.role === "Pacientas" && (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+            <div>
+              <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                Dviejų veiksnių autentifikavimas (2FA)
+                <span style={{ 
+                  fontSize: '10px', 
+                  padding: '2px 8px', 
+                  borderRadius: '10px', 
+                  backgroundColor: userData.isTwoFactorEnabled ? '#dcfce7' : '#f1f5f9',
+                  color: userData.isTwoFactorEnabled ? '#166534' : '#64748b'
+                }}>
+                  {userData.isTwoFactorEnabled ? "ĮJUNGTA" : "IŠJUNGTA"}
+                </span>
+              </div>
+              <div style={{ fontSize: '13px', color: '#64748b' }}>Papildoma apsauga naudojant programėlę telefone</div>
+            </div>
+            {userData.isTwoFactorEnabled ? (
+              <button onClick={handleDisable2FA} style={btnDangerStyle}>Išjungti 2FA</button>
+            ) : (
+              <button onClick={handleEnable2FA} style={btnPrimaryStyle}>Įjungti 2FA</button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+function DataField({ label, value, isEditing, onChange, type = "text" }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <label style={labelStyle}>{label}</label>
+      {isEditing ? (
+        <input 
+          type={type} 
+          style={{ ...inputStyle, borderColor: '#0070f3' }} 
+          value={value || ""} 
+          onChange={e => onChange(e.target.value)} 
+        />
+      ) : (
+        <div style={readonlyFieldStyle}>{value || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Nenurodyta</span>}</div>
+      )}
+    </div>
+  );
+}
+
+const cardStyle = { backgroundColor: '#fff', padding: '30px', borderRadius: '12px', border: '1px solid #eee', marginBottom: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' };
+const labelStyle = { fontSize: '12px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase', marginBottom: '5px' };
+const inputStyle = { padding: '8px 12px', borderRadius: '6px', border: '1px solid #ccc', outline: 'none', fontSize: '14px', width: '100%' };
+const readonlyFieldStyle = { padding: '8px 0', fontSize: '16px', color: '#1e293b', borderBottom: '1px solid #f1f5f9', minHeight: '37px' };
+const btnPrimaryStyle = { padding: '8px 20px', backgroundColor: '#0070f3', color: 'white', border: 'none', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' };
+const btnDarkStyle = { padding: '8px 20px', backgroundColor: '#1e293b', color: 'white', border: 'none', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' };
+const btnLightStyle = { padding: '8px 20px', backgroundColor: '#f1f5f9', color: '#1e293b', border: 'none', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' };
+const btnOutlineStyle = { padding: '8px 20px', backgroundColor: 'transparent', color: '#0070f3', border: '1px solid #0070f3', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' };
+const btnDangerStyle = { padding: '8px 20px', backgroundColor: 'transparent', color: '#ef4444', border: '1px solid #ef4444', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' };

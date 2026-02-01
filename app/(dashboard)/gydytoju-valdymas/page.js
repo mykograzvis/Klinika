@@ -1,19 +1,21 @@
 "use client";
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AdminGydytojai() {
-  // Pridėti visi trūkstami laukai, kurių reikalauja tavo DTO
+  const router = useRouter(); // Navigacijai
+  
   const [formData, setFormData] = useState({
     vardas: '',
     pavarde: '',
-    asmensKodas: '', // NAUJAS
+    asmensKodas: '',
     elPastas: '',
     slaptazodis: '',
     telefonas: '',
-    amzius: 0, // NAUJAS
-    kraujoGrupe: '', // NAUJAS
+    amzius: 0,
+    kraujoGrupe: '',
     specializacija: '',
-    darboPatirtisMetais: 0 // NAUJAS
+    darboPatirtisMetais: 0
   });
 
   const handleSubmit = async (e) => {
@@ -27,7 +29,6 @@ export default function AdminGydytojai() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}` 
         },
-        // Svarbu užtikrinti, kad skaičiai būtų siunčiami kaip skaičiai, o ne tekstas
         body: JSON.stringify({
           ...formData,
           amzius: parseInt(formData.amzius),
@@ -37,15 +38,9 @@ export default function AdminGydytojai() {
 
       if (res.ok) {
         alert("Gydytojas sėkmingai pridėtas!");
-        // Reset forma
-        setFormData({
-          vardas: '', pavarde: '', asmensKodas: '', elPastas: '',
-          slaptazodis: '', telefonas: '', amzius: 0,
-          kraujoGrupe: '', specializacija: '', darboPatirtisMetais: 0
-        });
+        router.push("/vartotojai"); // Po sėkmingo kūrimo grįžtame į sąrašą
       } else {
         const errorData = await res.json();
-        console.error("Serverio klaida:", errorData);
         alert("Klaida: " + (errorData.message || "Patikrinkite duomenis"));
       }
     } catch (err) {
@@ -54,33 +49,48 @@ export default function AdminGydytojai() {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h2 style={{ marginBottom: '20px' }}>Pridėti naują gydytoją</h2>
+    <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
+      
+      {/* Navigacijos viršus */}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', gap: '15px' }}>
+        <button 
+          onClick={() => router.back()} 
+          style={backBtnStyle}
+          title="Grįžti atgal"
+        >
+          ←
+        </button>
+        <h2 style={{ margin: 0 }}>Pridėti naują gydytoją</h2>
+      </div>
       
       <form onSubmit={handleSubmit} style={formStyle}>
+        <h4 style={{ marginBottom: '20px', color: '#1e293b borderBottom: 1px solid #eee', paddingBottom: '10px' }}>
+          Sistemos paskyros duomenys
+        </h4>
+
         <div style={inputGrid}>
           <div style={inputGroup}>
-            <label>Vardas</label>
+            <label style={labelStyle}>Vardas</label>
             <input type="text" value={formData.vardas} onChange={e => setFormData({...formData, vardas: e.target.value})} required style={inputStyle} />
           </div>
 
           <div style={inputGroup}>
-            <label>Pavardė</label>
+            <label style={labelStyle}>Pavardė</label>
             <input type="text" value={formData.pavarde} onChange={e => setFormData({...formData, pavarde: e.target.value})} required style={inputStyle} />
           </div>
 
           <div style={inputGroup}>
-            <label>Asmens kodas</label>
+            <label style={labelStyle}>Asmens kodas</label>
             <input type="text" value={formData.asmensKodas} onChange={e => setFormData({...formData, asmensKodas: e.target.value})} required style={inputStyle} />
           </div>
 
           <div style={inputGroup}>
-            <label>Amžius</label>
+            <label style={labelStyle}>Amžius</label>
             <input type="number" value={formData.amzius} onChange={e => setFormData({...formData, amzius: e.target.value})} required style={inputStyle} />
           </div>
 
           <div style={inputGroup}>
-            <label>Specializacija</label>
+            <label style={labelStyle}>Specializacija</label>
             <select value={formData.specializacija} onChange={e => setFormData({...formData, specializacija: e.target.value})} required style={inputStyle}>
               <option value="">Pasirinkite...</option>
               <option value="Gydytojas odontologas">Gydytojas odontologas</option>
@@ -91,30 +101,48 @@ export default function AdminGydytojai() {
           </div>
 
           <div style={inputGroup}>
-            <label>Patirtis (metais)</label>
+            <label style={labelStyle}>Patirtis (metais)</label>
             <input type="number" value={formData.darboPatirtisMetais} onChange={e => setFormData({...formData, darboPatirtisMetais: e.target.value})} required style={inputStyle} />
           </div>
 
           <div style={inputGroup}>
-            <label>El. paštas</label>
+            <label style={labelStyle}>El. paštas</label>
             <input type="email" value={formData.elPastas} onChange={e => setFormData({...formData, elPastas: e.target.value})} required style={inputStyle} />
           </div>
 
           <div style={inputGroup}>
-            <label>Laikinas slaptažodis</label>
+            <label style={labelStyle}>Laikinas slaptažodis</label>
             <input type="password" value={formData.slaptazodis} onChange={e => setFormData({...formData, slaptazodis: e.target.value})} required style={inputStyle} />
           </div>
         </div>
 
-        <button type="submit" style={btnStyle}>Sukurti gydytojo paskyrą</button>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+          <button type="submit" style={btnStyle}>Sukurti gydytojo paskyrą</button>
+          <button 
+            type="button" 
+            onClick={() => router.push('/vartotojai')} 
+            style={cancelBtnStyle}
+          >
+            Atšaukti
+          </button>
+        </div>
       </form>
     </div>
   );
 }
 
-// Stiliai (papildyti šiek tiek geresniam išdėstymui)
-const formStyle = { background: 'white', padding: '30px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' };
-const inputGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' };
+// Patobulinti stiliai
+const formStyle = { background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9' };
+const inputGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' };
 const inputGroup = { display: 'flex', flexDirection: 'column' };
-const inputStyle = { padding: '8px', borderRadius: '4px', border: '1px solid #ddd', marginTop: '5px' };
-const btnStyle = { padding: '12px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', width: '100%' };
+const labelStyle = { fontSize: '13px', fontWeight: 'bold', color: '#64748b', marginBottom: '5px' };
+const inputStyle = { padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', fontSize: '14px' };
+
+const backBtnStyle = { 
+  width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #e2e8f0', 
+  background: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', 
+  justifyContent: 'center', fontSize: '20px', color: '#64748b', transition: 'all 0.2s'
+};
+
+const btnStyle = { flex: 2, padding: '12px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' };
+const cancelBtnStyle = { flex: 1, padding: '12px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' };

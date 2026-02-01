@@ -9,19 +9,22 @@ export default function RegisterPage() {
     slaptazodis: '', telefonas: '', amzius: 0
   });
   
-  // 1. Sukuriame isLoading būseną
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/rezervacija");
-    } else {
-      // Tik jei žetono nėra, išjungiam krovimą
-      setIsLoading(false);
-    }
+    if (token) router.push("/rezervacija");
+    else setIsLoading(false);
   }, [router]);
+
+  const handleInvalid = (e, message) => {
+    e.target.setCustomValidity(message);
+  };
+
+  const handleInput = (e) => {
+    e.target.setCustomValidity(""); 
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,44 +35,115 @@ export default function RegisterPage() {
     });
 
     if (res.ok) {
-      alert("Registracija sėkminga! Dabar galite prisijungti.");
+      alert("Registracija sėkminga!");
       router.push('/login');
     } else {
-      alert("Klaida registruojantis.");
+      alert("Klaida registruojantis. Patikrinkite duomenis.");
     }
   };
 
-  // 2. Patikrinimą iškeliame į viršų, prieš pagrindinį return
-  if (isLoading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <h3>Kraunama...</h3>
-      </div>
-    );
-  }
+  if (isLoading) return <div style={{ textAlign: 'center', marginTop: '50px' }}><h3>Kraunama...</h3></div>;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-10">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80 bg-white p-6 rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center">Registracija</h2>
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px', fontFamily: 'sans-serif' }}>
+      <div style={{ width: '300px', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
         
-        <input placeholder="Vardas" onChange={e => setFormData({...formData, vardas: e.target.value})} className="border p-2 rounded" required />
-        <input placeholder="Pavardė" onChange={e => setFormData({...formData, pavarde: e.target.value})} className="border p-2 rounded" required />
-        <input placeholder="Asmens Kodas" onChange={e => setFormData({...formData, asmensKodas: e.target.value})} className="border p-2 rounded" required />
-        <input type="email" placeholder="El. paštas" onChange={e => setFormData({...formData, elPastas: e.target.value})} className="border p-2 rounded" required />
-        <input type="password" placeholder="Slaptažodis" onChange={e => setFormData({...formData, slaptazodis: e.target.value})} className="border p-2 rounded" required />
-        <input placeholder="Telefonas" onChange={e => setFormData({...formData, telefonas: e.target.value})} className="border p-2 rounded" />
-        <input type="number" placeholder="Amžius" onChange={e => setFormData({...formData, amzius: parseInt(e.target.value)})} className="border p-2 rounded" />
-        
-        <button type="submit" className="bg-green-500 hover:bg-green-600 text-white p-2 rounded font-bold transition">
-          Registruotis
-        </button>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <h2 style={{ margin: '0 0 10px 0' }}>Registracija</h2>
+          
+          <input 
+            placeholder="Vardas" 
+            onChange={e => setFormData({...formData, vardas: e.target.value})} 
+            onInvalid={(e) => handleInvalid(e, "Įveskite vardą")}
+            onInput={handleInput}
+            required 
+            style={inputStyle} 
+          />
+          
+          <input 
+            placeholder="Pavardė" 
+            onChange={e => setFormData({...formData, pavarde: e.target.value})} 
+            onInvalid={(e) => handleInvalid(e, "Įveskite pavardę")}
+            onInput={handleInput}
+            required 
+            style={inputStyle} 
+          />
+          
+          <input 
+            placeholder="Asmens kodas" 
+            onChange={e => setFormData({...formData, asmensKodas: e.target.value})} 
+            onInvalid={(e) => handleInvalid(e, "Įveskite asmens kodą")}
+            onInput={handleInput}
+            required 
+            style={inputStyle} 
+          />
+          
+          <input 
+            type="email" 
+            placeholder="El. paštas" 
+            onChange={e => setFormData({...formData, elPastas: e.target.value})} 
+            onInvalid={(e) => handleInvalid(e, "Įveskite el. paštą")}
+            onInput={handleInput}
+            required 
+            style={inputStyle} 
+          />
+          
+          <input 
+            type="password" 
+            placeholder="Slaptažodis" 
+            onChange={e => setFormData({...formData, slaptazodis: e.target.value})} 
+            onInvalid={(e) => handleInvalid(e, "Įveskite slaptažodį")}
+            onInput={handleInput}
+            required 
+            style={inputStyle} 
+          />
+          
+          <input 
+            placeholder="Telefonas" 
+            onChange={e => setFormData({...formData, telefonas: e.target.value})} 
+            onInvalid={(e) => handleInvalid(e, "Įveskite telefono numerį")}
+            onInput={handleInput}
+            required 
+            style={inputStyle} 
+          />
+          
+          <input 
+            type="number" 
+            placeholder="Amžius" 
+            onChange={e => setFormData({...formData, amzius: parseInt(e.target.value) || 0})} 
+            onInvalid={(e) => handleInvalid(e, "Nurodykite amžių")}
+            onInput={handleInput}
+            required 
+            style={inputStyle} 
+          />
 
-        <div className="text-center mt-4 text-sm">
-          <span>Jau turite paskyrą? </span>
-          <Link href="/login" className="text-blue-600 font-bold hover:underline">Prisijungti</Link>
+          <button type="submit" style={btnStyle}>Registruotis</button>
+        </form>
+
+        <div style={{ marginTop: '20px', textAlign: 'center', fontSize: '14px' }}>
+          <span style={{ color: '#64748b' }}>Jau turite paskyrą? </span>
+          <Link href="/login" style={{ color: '#0070f3', fontWeight: 'bold', textDecoration: 'none' }}>Prisijunkite</Link>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
+
+// Stiliaus objektai, kad kodas būtų tvarkingas
+const inputStyle = { 
+  padding: '8px', 
+  border: '1px solid #ccc', 
+  borderRadius: '4px', 
+  outline: 'none' 
+};
+
+const btnStyle = { 
+  padding: '10px', 
+  backgroundColor: '#0070f3', 
+  color: 'white', 
+  border: 'none', 
+  cursor: 'pointer', 
+  borderRadius: '4px',
+  fontWeight: 'bold',
+  marginTop: '5px'
+};
