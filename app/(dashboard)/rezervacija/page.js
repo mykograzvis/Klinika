@@ -1,234 +1,206 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Rezervacija() {
   const router = useRouter();
-  
-  // --- KONFIGŪRACIJA (Galima vėliau perkelti į DB) ---
+  const scrollRef = useRef(null);
+  const dateInputRef = useRef(null);
+
+  // --- DUOMENYS ---
   const paslaugos = [
-    { id: 1, pavadinimas: "Burnos higiena", kaina: 50, specializacija: "Burnos higienistas" },
-    { id: 2, pavadinimas: "Danties plombavimas", kaina: 80, specializacija: "Gydytojas odontologas" },
-    { id: 3, pavadinimas: "Danties šalinimas", kaina: 120, specializacija: "Burnos chirurgas" },
-    { id: 4, pavadinimas: "Konsultacija", kaina: 30, specializacija: "Gydytojas odontologas" }
+    { id: 1, pavadinimas: "Burnos higiena", kaina: 50, specializacija: "Burnos higienistas", trukmeMin: 60 },
+    { id: 2, pavadinimas: "Danties plombavimas", kaina: 80, specializacija: "Gydytojas odontologas", trukmeMin: 60 },
+    { id: 3, pavadinimas: "Danties šalinimas", kaina: 120, specializacija: "Burnos chirurgas", trukmeMin: 90 },
+    { id: 4, pavadinimas: "Konsultacija", kaina: 30, specializacija: "Gydytojas odontologas", trukmeMin: 30 },
+    { id: 5, pavadinimas: "Danties implantacija", kaina: 800, specializacija: "Burnos chirurgas", trukmeMin: 120 }
   ];
 
-  const visiGalimiLaikai = [
-    "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", 
-    "11:00", "11:30", "13:00", "13:30", "14:00", "14:30", 
-    "15:00", "15:30", "16:00"
-  ];
+  const visiGalimiLaikai = ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00"];
 
-  // --- BŪSENOS ---
+  const artimiausiosDarboDienos = useMemo(() => {
+    const dienos = [];
+    let count = 0;
+    let offset = 0;
+    while (count < 20) {
+      const d = new Date();
+      d.setDate(d.getDate() + offset);
+      if (d.getDay() !== 0 && d.getDay() !== 6) {
+        dienos.push({
+          pilna: d.toISOString().split("T")[0],
+          diena: d.getDate(),
+          savaitėsDiena: d.toLocaleDateString('lt-LT', { weekday: 'short' }),
+          menuo: d.toLocaleDateString('lt-LT', { month: 'short' })
+        });
+        count++;
+      }
+      offset++;
+    }
+    return dienos;
+  }, []);
+
   const [visiGydytojai, setVisiGydytojai] = useState([]);
   const [filtruotiGydytojai, setFiltruotiGydytojai] = useState([]);
   const [uzimtiLaikai, setUzimtiLaikai] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
-
   const [formData, setFormData] = useState({
-    paslaugaIndex: "", // Masyvo indeksas
+    paslaugaIndex: "",
     gydytojasId: "",
-    data: "",
-    laikas: "08:00",
-    pastabos: ""
+    data: artimiausiosDarboDienos[0].pilna,
+    laikas: ""
   });
 
-  // 1. Užkrauname visus gydytojus iš API
-  useEffect(() => {
-    fetchGydytojai();
+  const handleDateChange = (e) => {
+    const d = new Date(e.target.value);
+    if (d.getDay() === 0 || d.getDay() === 6) {
+      alert("Savaitgaliais nedirbame.");
+      return;
+    }
+    setFormData({ ...formData, data: e.target.value, laikas: "" });
+  };
+
+  useEffect(() => { 
+    // Čia įdėk savo fetch logiką
+    // fetch("...")...
   }, []);
 
-  // 2. Filtruojame gydytojus, kai pasikeičia pasirinkta paslauga
+  // Fiktyvus filtravimas pavyzdžiui (pakeisk į savo useEffect)
   useEffect(() => {
     if (formData.paslaugaIndex !== "") {
-      const pasirinkta = paslaugos[formData.paslaugaIndex];
-      const filtrai = visiGydytojai.filter(g => 
-        pasirinkta.specializacija === "Visi" || g.specializacija === pasirinkta.specializacija
-      );
-      setFiltruotiGydytojai(filtrai);
-      setFormData(prev => ({ ...prev, gydytojasId: "" })); // Išvalom gydytoją, jei pasikeitė paslauga
-    } else {
-      setFiltruotiGydytojai([]);
+      // čia tavo filtravimo logika
     }
-  }, [formData.paslaugaIndex, visiGydytojai]);
+  }, [formData.paslaugaIndex]);
 
-  // 3. Krauname užimtus laikus, kai pasirinktas gydytojas IR data
-  useEffect(() => {
-    if (formData.gydytojasId && formData.data) {
-      fetchUzimtiLaikai();
-    }
-  }, [formData.gydytojasId, formData.data]);
 
-  const fetchGydytojai = async () => {
-    try {
-      const res = await fetch("https://localhost:7237/api/Gydytojai", {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-      });
-      if (res.ok) setVisiGydytojai(await res.json());
-    } catch (err) {
-      console.error("Nepavyko gauti gydytojų:", err);
-    } finally {
-      setIsInitialLoading(false);
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const amount = direction === 'left' ? -150 : 150;
+      scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
     }
   };
-
-  const fetchUzimtiLaikai = async () => {
-    try {
-      const res = await fetch(
-        `https://localhost:7237/api/Vizitai/uzimti-laikai?gydytojasId=${formData.gydytojasId}&data=${formData.data}`,
-        { headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` } }
-      );
-      if (res.ok) setUzimtiLaikai(await res.json());
-    } catch (err) {
-      console.error("Klaida kraunant užimtus laikus", err);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-    const pasirinktaPaslauga = paslaugos[formData.paslaugaIndex];
-
-    const body = {
-      pacientasId: parseInt(userId),
-      gydytojasId: parseInt(formData.gydytojasId),
-      pradziosLaikas: `${formData.data}T${formData.laikas}:00`,
-      pastabos: formData.pastabos,
-      procedurosPavadinimas: pasirinktaPaslauga.pavadinimas,
-      procedurosKaina: pasirinktaPaslauga.kaina
-    };
-
-    try {
-      const res = await fetch("https://localhost:7237/api/Vizitai/registruotis", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (res.ok) {
-        alert("✅ Rezervacija sėkminga!");
-        router.push("/istorija");
-      } else {
-        const klaida = await res.text();
-        alert("❌ Klaida: " + klaida);
-      }
-    } catch (err) {
-      alert("❌ Serverio klaida.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (isInitialLoading) return <div className="p-5 text-center">Kraunama sistema...</div>;
 
   return (
-    <div className="container py-4" style={{ maxWidth: "650px" }}>
-      <h2 className="fw-bold mb-4 text-center">🦷 Nauja Registracija</h2>
+    // PAGRINDINIS KONTEINERIS - Cia naudojame 'd-flex flex-column' vietoje 'row'
+    <div className="w-100 min-vh-100 bg-light py-3 d-flex flex-column align-items-center">
       
-      <div className="card border-0 shadow-lg p-4 bg-white">
-        <form onSubmit={handleSubmit}>
-          
-          {/* 1 ŽINGSNIS: PASLAUGA */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">1. Pasirinkite paslaugą</label>
-            <select 
-              className="form-select form-select-lg shadow-sm" 
-              required
-              value={formData.paslaugaIndex}
-              onChange={e => setFormData({...formData, paslaugaIndex: e.target.value})}
-            >
-              <option value="">-- Paslaugų sąrašas --</option>
-              {paslaugos.map((p, index) => (
-                <option key={p.id} value={index}>{p.pavadinimas} ({p.kaina} €)</option>
-              ))}
-            </select>
-          </div>
+      {/* 1. ANTRAŠTĖ */}
+      <div className="w-100 px-3 mb-3" style={{ maxWidth: '800px' }}>
+        <h4 className="fw-bold text-center m-0">Registracija</h4>
+      </div>
 
-          {/* 2 ŽINGSNIS: GYDYTOJAS */}
-          <div className="mb-3">
-            <label className="form-label fw-bold">2. Pasirinkite gydytoją</label>
-            <select 
-              className="form-select shadow-sm" 
-              required
-              disabled={!formData.paslaugaIndex}
-              value={formData.gydytojasId}
-              onChange={e => setFormData({...formData, gydytojasId: e.target.value})}
-            >
-              <option value="">-- Gydytojai pagal specializaciją --</option>
-              {filtruotiGydytojai.map(g => (
-                <option key={g.id} value={g.id}>{g.vardas} {g.pavarde} ({g.specializacija})</option>
-              ))}
-            </select>
-            {formData.paslaugaIndex && filtruotiGydytojai.length === 0 && (
-              <small className="text-danger">Atsiprašome, šiuo metu nėra laisvų šios srities specialistų.</small>
-            )}
-          </div>
-
-          {/* 3 ŽINGSNIS: DATA IR LAIKAS */}
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">3. Pasirinkite datą</label>
-              <input 
-                type="date" 
-                className="form-control shadow-sm" 
-                required
-                disabled={!formData.gydytojasId}
-                min={new Date().toISOString().split("T")[0]}
-                value={formData.data}
-                onChange={e => setFormData({...formData, data: e.target.value})}
-              />
-            </div>
-
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">4. Galimas laikas</label>
-              <select 
-                className="form-select shadow-sm"
-                required
-                disabled={!formData.data || !formData.gydytojasId}
-                value={formData.laikas}
-                onChange={e => setFormData({...formData, laikas: e.target.value})}
+      {/* 2. TURINYS (be jokių row/col) */}
+      <div className="w-100 px-3 d-flex flex-column gap-3" style={{ maxWidth: '800px' }}>
+        
+        {/* KORTELĖ 1: PASLAUGOS */}
+        <div className="bg-white p-3 rounded-4 shadow-sm w-100">
+          <label className="text-uppercase fw-bold text-muted small mb-2">1. Paslauga</label>
+          <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            {paslaugos.map((p, idx) => (
+              <div 
+                key={p.id} 
+                className={`d-flex justify-content-between align-items-center p-3 mb-2 border rounded-3 ${formData.paslaugaIndex === idx.toString() ? 'border-primary bg-primary bg-opacity-10' : ''}`}
+                onClick={() => setFormData({...formData, paslaugaIndex: idx.toString()})}
+                style={{ cursor: 'pointer' }}
               >
-                {visiGalimiLaikai.map(t => {
-                  const isOccupied = uzimtiLaikai.includes(t);
-                  return (
-                    <option key={t} value={t} disabled={isOccupied}>
-                      {t} {isOccupied ? "(Užimta)" : ""}
-                    </option>
-                  );
-                })}
+                <span className="fw-bold small">{p.pavadinimas}</span>
+                <span className="text-primary fw-bold">{p.kaina} €</span>
+              </div>
+            ))}
+          </div>
+
+          {formData.paslaugaIndex !== "" && (
+            <div className="mt-3 animate-fade-in">
+              <label className="text-uppercase fw-bold text-muted small mb-2">2. Specialistas</label>
+              <select className="form-select py-2" onChange={e => setFormData({...formData, gydytojasId: e.target.value})}>
+                <option value="">Pasirinkite...</option>
+                <option value="1">Gyd. Jonas Jonaitis</option>
               </select>
             </div>
-          </div>
+          )}
+        </div>
 
-          <div className="mb-4">
-            <label className="form-label fw-bold">Papildoma informacija</label>
-            <textarea 
-              className="form-control shadow-sm" 
-              rows="2" 
-              placeholder="Skausmas, jautrumas ar kiti pastebėjimai..."
-              value={formData.pastabos}
-              onChange={e => setFormData({...formData, pastabos: e.target.value})}
-            ></textarea>
-          </div>
+        {/* KORTELĖ 2: DATA IR LAIKAS */}
+        {formData.gydytojasId && (
+          <div className="bg-white p-3 rounded-4 shadow-sm w-100 animate-fade-in">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <label className="text-uppercase fw-bold text-muted small m-0">3. Data</label>
+              <button className="btn btn-sm text-primary fw-bold" onClick={() => dateInputRef.current.showPicker()}>
+                📅 Kalendorius
+              </button>
+              <input type="date" ref={dateInputRef} className="d-none" onChange={handleDateChange} />
+            </div>
 
-          <button 
-            type="submit" 
-            className="btn btn-primary w-100 py-3 fw-bold shadow"
-            disabled={loading || !formData.gydytojasId || !formData.data}
-          >
-            {loading ? (
-              <><span className="spinner-border spinner-border-sm me-2"></span> Registruojama...</>
-            ) : "PATVIRTINTI VIZITĄ"}
-          </button>
-        </form>
+            {/* DATŲ JUOSTA */}
+            <div className="d-flex align-items-center gap-1 mb-4 w-100">
+              <button className="btn btn-light rounded-circle flex-shrink-0" style={{width: '32px', height: '32px', padding: 0}} onClick={() => scroll('left')}>‹</button>
+              
+              <div ref={scrollRef} className="d-flex gap-2 overflow-auto w-100" style={{ scrollbarWidth: 'none', whiteSpace: 'nowrap' }}>
+                {artimiausiosDarboDienos.map((d) => (
+                  <div
+                    key={d.pilna}
+                    onClick={() => setFormData({...formData, data: d.pilna, laikas: ""})}
+                    className={`d-flex flex-column align-items-center justify-content-center border rounded-4 p-2 flex-shrink-0 ${formData.data === d.pilna ? 'bg-primary text-white border-primary' : 'bg-white'}`}
+                    style={{ width: '60px', height: '75px', cursor: 'pointer' }}
+                  >
+                    <span style={{ fontSize: '0.6rem', textTransform: 'uppercase' }}>{d.savaitėsDiena}</span>
+                    <span className="fw-bold fs-5">{d.diena}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button className="btn btn-light rounded-circle flex-shrink-0" style={{width: '32px', height: '32px', padding: 0}} onClick={() => scroll('right')}>›</button>
+            </div>
+
+            {/* LAIKO TINKLELIS */}
+            <label className="text-uppercase fw-bold text-muted small mb-2">4. Laikas</label>
+            <div className="time-grid w-100">
+              {visiGalimiLaikai.map(t => (
+                <button
+                  key={t}
+                  className={`btn w-100 py-2 fw-bold ${formData.laikas === t ? 'btn-primary' : 'btn-outline-primary'}`}
+                  style={{ fontSize: '0.8rem' }}
+                  onClick={() => setFormData({...formData, laikas: t})}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            <button className="btn btn-dark w-100 rounded-pill py-3 mt-4 fw-bold shadow" disabled={!formData.laikas}>
+              PATVIRTINTI
+            </button>
+          </div>
+        )}
       </div>
+
+      <style jsx>{`
+        /* CSS Grid tinklelis laikams - prisitaiko automatiškai */
+        .time-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr); /* Telefone: 3 stulpeliai */
+          gap: 8px;
+        }
+
+        /* Nuo planšetės dydžio (768px) darome 4 stulpelius */
+        @media (min-width: 768px) {
+          .time-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Paslepia scrollbar, bet leidžia scrollinti */
+        div::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }
