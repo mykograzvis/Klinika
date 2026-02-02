@@ -1,21 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import Sidebar from "./kaireDalis";
+import AppointmentDetails from "./vidurineDalis";
+import PatientHistory from "./desineDalis";
 
-export default function GydytojoDarbalaukis() {
+export default function GydytojoValdymas() {
   const [vizitai, setVizitai] = useState([]);
   const [selectedVizitas, setSelectedVizitas] = useState(null);
+  const [viewDate, setViewDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
-  const [isFinishing, setIsFinishing] = useState(false); // Būsena siuntimo metu
 
-  const [procedura, setProcedura] = useState({ 
-    pavadinimas: "", 
-    kaina: "", 
-    aprasymas: "" 
-  });
-
-  useEffect(() => {
-    fetchManoVizitai();
-  }, []);
+  useEffect(() => { fetchManoVizitai(); }, []);
 
   const fetchManoVizitai = async () => {
     try {
@@ -27,197 +22,49 @@ export default function GydytojoDarbalaukis() {
         setVizitai(data);
         if (selectedVizitas) {
           const atnaujintas = data.find(v => v.id === selectedVizitas.id);
-          setSelectedVizitas(atnaujintas);
+          if (atnaujintas) setSelectedVizitas(atnaujintas);
         }
       }
-    } catch (err) {
-      console.error("Klaida kraunant vizitus:", err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
-  const handleUzbaigtiVizita = async () => {
-    if (!selectedVizitas) return;
-    if (!confirm("Ar tikrai norite užbaigti vizitą? Bus išsiųsta sąskaita el. paštu.")) return;
-
-    setIsFinishing(true);
-    try {
-      const res = await fetch(`https://localhost:7237/api/Vizitai/${selectedVizitas.id}/uzbaigti`, {
-        method: "PATCH", // Naudok PATCH arba HTTPPATCH pagal savo kontrolerį
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-      });
-
-      if (res.ok) {
-        alert("Vizitas užbaigtas sėkmingai!");
-        fetchManoVizitai();
-      } else {
-        alert("Klaida užbaigiant vizitą.");
-      }
-    } catch (err) {
-      alert("Tinklo klaida.");
-    } finally {
-      setIsFinishing(false);
-    }
-  };
-
-  const handlePridetiProcedura = async (e) => {
-    e.preventDefault();
-    const res = await fetch("https://localhost:7237/api/Proceduros", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`
-      },
-      body: JSON.stringify({
-        vizitasId: selectedVizitas.id,
-        pavadinimas: procedura.pavadinimas,
-        kaina: parseFloat(procedura.kaina),
-        aprasymas: procedura.aprasymas
-      })
-    });
-
-    if (res.ok) {
-      setProcedura({ pavadinimas: "", kaina: "", aprasymas: "" });
-      fetchManoVizitai();
-    }
-  };
-
-  const handleTrintiProcedura = async (id) => {
-    if (!confirm("Ar tikrai norite pašalinti šią paslaugą?")) return;
-    const res = await fetch(`https://localhost:7237/api/Proceduros/${id}`, {
-      method: "DELETE",
-      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-    });
-    if (res.ok) fetchManoVizitai();
-  };
-
-  if (loading) return <div className="p-5 text-center">Kraunami vizitai...</div>;
+  if (loading) return <div className="vh-100 d-flex align-items-center justify-content-center fw-bold text-primary">KRAUNAMA SISTEMA...</div>;
 
   return (
-    <div className="container py-4">
-      {/* CSS, kad spausdinant nesimatytų pašalinių elementų */}
-      <style>{`
+    <div className="container-fluid vh-100 p-0 bg-light overflow-hidden">
+      <div className="row g-0 h-100">
+        <Sidebar 
+          vizitai={vizitai} 
+          selectedVizitas={selectedVizitas} 
+          setSelectedVizitas={setSelectedVizitas}
+          viewDate={viewDate}
+          setViewDate={setViewDate}
+        />
+        <AppointmentDetails 
+          selectedVizitas={selectedVizitas} 
+          fetchManoVizitai={fetchManoVizitai} 
+        />
+        <PatientHistory 
+          selectedVizitas={selectedVizitas} 
+          visiVizitai={vizitai} 
+        />
+      </div>
+
+      <style jsx global>{`
+        .small-calendar { border: none !important; width: 100% !important; font-size: 0.82rem; padding: 5px; }
+        .react-calendar__tile--active { background: #0d6efd !important; border-radius: 8px !important; color: white !important; }
+        .react-calendar__tile--now { background: #f0f7ff !important; color: #0d6efd !important; font-weight: bold; border-radius: 8px; }
+        .has-appointment { position: relative; font-weight: bold !important; color: #0d6efd !important; }
+        .has-appointment::after { content: '●'; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 8px; color: #0d6efd; }
+        .hover-card:hover { transform: translateX(5px); box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important; }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @media print {
-          .no-print, .btn, nav, form { display: none !important; }
-          .card { border: none !important; box-shadow: none !important; }
-          body { background: white; }
+          .no-print { display: none !important; }
+          .printable-area { width: 100% !important; position: absolute; left: 0; top: 0; }
         }
       `}</style>
-
-      <div className="row">
-        <div className="col-12 no-print">
-          <h2 className="fw-bold mb-4">🩺 Gydytojo kabinetas</h2>
-        </div>
-        
-        {/* KAIRĖ PUSĖ: VIZITŲ SĄRAŠAS */}
-        <div className="col-md-5 no-print">
-          <h5 className="mb-3 text-muted">Vizitai</h5>
-          {vizitai.map(v => (
-            <div 
-              key={v.id} 
-              className={`card mb-3 shadow-sm transition-all ${selectedVizitas?.id === v.id ? 'border-primary border-2' : 'border-0'}`}
-              style={{ cursor: "pointer" }}
-              onClick={() => setSelectedVizitas(v)}
-            >
-              <div className="card-body">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h6 className="fw-bold mb-0">{v.pacientoVardas}</h6>
-                    <small className="text-muted">{new Date(v.pradziosLaikas).toLocaleDateString()} {new Date(v.pradziosLaikas).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
-                  </div>
-                  <span className={`badge ${v.busena === 'Atliktas' ? 'bg-success' : 'bg-primary'}`}>{v.bendraSuma} €</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* DEŠINĖ PUSĖ: VALDYMAS */}
-        <div className="col-md-7">
-          {selectedVizitas ? (
-            <div className="card shadow border-0 p-4 printable-area">
-              <div className="d-flex justify-content-between align-items-start mb-4">
-                <div>
-                  <h4 className="fw-bold m-0">Vizito detalės</h4>
-                  <small className="text-muted">ID: {selectedVizitas.id}</small>
-                </div>
-                <div className="no-print">
-                  <button className="btn btn-outline-dark btn-sm me-2" onClick={() => window.print()}>🖨️ PDF</button>
-                  <span className={`badge ${selectedVizitas.busena === 'Atliktas' ? 'bg-success' : 'bg-info text-dark'}`}>{selectedVizitas.busena}</span>
-                </div>
-              </div>
-
-              <div className="bg-light p-3 rounded mb-4">
-                <p className="mb-1"><b>Pacientas:</b> {selectedVizitas.pacientoVardas}</p>
-                <p className="mb-1"><b>Data:</b> {new Date(selectedVizitas.pradziosLaikas).toLocaleString('lt-LT')}</p>
-                {selectedVizitas.pastabos && <p className="mb-0 small"><b>Pastaba:</b> {selectedVizitas.pastabos}</p>}
-              </div>
-
-              <h6 className="fw-bold border-bottom pb-2">Atliktos procedūros</h6>
-              <table className="table table-sm">
-                <thead>
-                  <tr>
-                    <th>Paslauga</th>
-                    <th className="text-end">Kaina</th>
-                    <th className="no-print"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedVizitas.atliktosProceduros?.map((p) => (
-                    <tr key={p.id || p.Id} className="align-middle">
-                      <td>{p.pavadinimas || p.Pavadinimas}</td>
-                      <td className="text-end">{p.kaina || p.Kaina} €</td>
-                      <td className="text-end no-print">
-                        {selectedVizitas.busena !== "Atliktas" && (
-                          <button className="btn btn-link text-danger p-0" onClick={() => handleTrintiProcedura(p.id || p.Id)}>🗑️</button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                  <tr className="table-light fw-bold text-end">
-                    <td colSpan="2">Iš viso sumokėta: {selectedVizitas.bendraSuma} €</td>
-                    <td className="no-print"></td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {/* VALDYMO MYGTUKAI */}
-              <div className="no-print">
-                {selectedVizitas.busena !== "Atliktas" ? (
-                  <>
-                    <div className="mt-4 p-3 border rounded bg-white">
-                      <h6 className="fw-bold mb-3 text-success">Pridėti paslaugą</h6>
-                      <form onSubmit={handlePridetiProcedura}>
-                        <div className="row g-2">
-                          <div className="col-7"><input type="text" className="form-control form-control-sm" placeholder="Pavadinimas" required value={procedura.pavadinimas} onChange={e => setProcedura({...procedura, pavadinimas: e.target.value})} /></div>
-                          <div className="col-3"><input type="number" className="form-control form-control-sm" placeholder="€" required value={procedura.kaina} onChange={e => setProcedura({...procedura, kaina: e.target.value})} /></div>
-                          <div className="col-2"><button type="submit" className="btn btn-success btn-sm w-100">Pridėti</button></div>
-                        </div>
-                      </form>
-                    </div>
-                    <button 
-                      className="btn btn-primary w-100 py-3 mt-4 fw-bold" 
-                      onClick={handleUzbaigtiVizita}
-                      disabled={isFinishing || selectedVizitas.atliktosProceduros?.length === 0}
-                    >
-                      {isFinishing ? "SIUNČIAMA SĄSKAITA..." : "✅ UŽBAIGTI VIZITĄ"}
-                    </button>
-                  </>
-                ) : (
-                  <div className="alert alert-success mt-4 text-center">
-                    Vizitas sėkmingai užbaigtas. Sąskaita išsiųsta pacientui.
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="h-100 d-flex align-items-center justify-content-center border rounded bg-light" style={{ minHeight: "300px" }}>
-              <p className="text-muted">Pasirinkite vizitą</p>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
