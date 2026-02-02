@@ -23,8 +23,6 @@ export default function AdminAnalize() {
       
       if (res.ok) {
         setData(await res.json());
-      } else {
-        console.error("Klaida gaunant duomenis:", res.status);
       }
     } catch (err) {
       console.error("Tinklo klaida:", err);
@@ -34,112 +32,142 @@ export default function AdminAnalize() {
   };
 
   const eksportuotiIExcel = () => {
-    if (!data || !data.gydytojuEfektyvumas) return;
-
-    let csvRows = [];
-    csvRows.push("Gydytojas;Vizitai;Pajamos"); // Antraštė
-
-    data.gydytojuEfektyvumas.forEach(g => {
-      csvRows.push(`${g.vardas};${g.vizitai};${g.pajamos} EUR`);
-    });
+    if (!data) return;
+    let csvRows = [
+      "\uFEFFGydytojas;Vizitai;Pajamos", // UTF-8 BOM lietuviškoms raidėms
+      ...data.gydytojuEfektyvumas.map(g => `${g.vardas};${g.vizitai};${g.pajamos}`)
+    ];
 
     const blob = new Blob([csvRows.join("\n")], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.setAttribute('hidden', '');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `Klinikos_Analize_${filtras.metai}_${filtras.menesis}.csv`);
-    document.body.appendChild(a);
+    a.href = url;
+    a.download = `Klinikos_Ataskaita_${filtras.metai}_${filtras.menesis}.csv`;
     a.click();
-    document.body.removeChild(a);
   };
 
-  if (loading && !data) return <div className="p-5 text-center">Kraunama analitika...</div>;
+  if (loading && !data) return (
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="spinner-border text-primary" role="status"></div>
+    </div>
+  );
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <div>
-          <h2 className="fw-bold m-0">📊 Verslo analitika</h2>
-          <p className="text-muted m-0">Stebėkite klinikos veiklos rodiklius</p>
+    <div className="container py-5">
+      {/* HEADER */}
+      <div className="row align-items-center mb-5">
+        <div className="col-md-6">
+          <h1 className="fw-black display-5 text-dark mb-1">Finansinė Analitika</h1>
+          <p className="text-muted fs-5">Klinikos rezultatų stebėjimas realiu laiku</p>
         </div>
-        
-        <div className="d-flex gap-2 align-items-center">
-          <button className="btn btn-outline-success d-flex align-items-center gap-2" onClick={eksportuotiIExcel}>
-            📥 <span className="d-none d-md-inline">Eksportuoti</span>
-          </button>
-          
-          <select 
-            className="form-select w-auto" 
-            value={filtras.menesis} 
-            onChange={e => setFiltras({...filtras, menesis: parseInt(e.target.value)})}
-          >
-            {["Sausis", "Vasaris", "Kovas", "Balandis", "Gegužė", "Birželis", "Liepa", "Rugpjūtis", "Rugsėjis", "Spalis", "Lapkritis", "Gruodis"].map((m, i) => (
-              <option key={i+1} value={i+1}>{m}</option>
-            ))}
-          </select>
-          
-          <input 
-            type="number" 
-            className="form-control w-auto" 
-            style={{ width: '100px' }}
-            value={filtras.metai} 
-            onChange={e => setFiltras({...filtras, metai: parseInt(e.target.value)})} 
-          />
+        <div className="col-md-6">
+          <div className="card border-0 shadow-sm p-3 bg-light">
+            <div className="d-flex gap-2">
+              <select 
+                className="form-select border-0 shadow-none bg-white" 
+                value={filtras.menesis} 
+                onChange={e => setFiltras({...filtras, menesis: parseInt(e.target.value)})}
+              >
+                {["Sausis", "Vasaris", "Kovas", "Balandis", "Gegužė", "Birželis", "Liepa", "Rugpjūtis", "Rugsėjis", "Spalis", "Lapkritis", "Gruodis"].map((m, i) => (
+                  <option key={i+1} value={i+1}>{m}</option>
+                ))}
+              </select>
+              <input 
+                type="number" 
+                className="form-control border-0 shadow-none bg-white" 
+                style={{ width: '120px' }}
+                value={filtras.metai} 
+                onChange={e => setFiltras({...filtras, metai: parseInt(e.target.value)})} 
+              />
+              <button className="btn btn-dark rounded-3 px-4" onClick={eksportuotiIExcel}>
+                Eksportuoti
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
       {data && (
         <>
-          {/* PAGRINDINĖS KORTELĖS */}
-          <div className="row g-4 mb-4">
+          {/* KPI KORTELĖS */}
+          <div className="row g-4 mb-5">
             <div className="col-md-4">
-              <div className="card shadow-sm border-0 p-4 bg-primary text-white h-100">
-                <h6 className="text-uppercase opacity-75 small fw-bold mb-2">Mėnesio pajamos</h6>
-                <h2 className="fw-bold m-0">{data.bendraSuma} €</h2>
-                <div className="mt-3 small opacity-75">Tik užbaigti vizitai</div>
+              <div className="card border-0 shadow-lg p-4 h-100" style={{background: 'linear-gradient(45deg, #0d6efd, #0dcaf0)', color: 'white'}}>
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <span className="fs-1">💰</span>
+                  <span className="badge bg-white bg-opacity-25 rounded-pill">Mėnesio apyvarta</span>
+                </div>
+                <h2 className="display-6 fw-bold mb-1">{data.bendraSuma.toLocaleString()} €</h2>
+                <p className="m-0 opacity-75 small">Tik patvirtintos ir užbaigtos sąskaitos</p>
               </div>
             </div>
+            
             <div className="col-md-4">
-              <div className="card shadow-sm border-0 p-4 h-100">
-                <h6 className="text-uppercase text-muted small fw-bold mb-2">Unikalūs pacientai</h6>
-                <h2 className="fw-bold m-0 text-dark">{data.pacientuSkaicius}</h2>
-                <div className="mt-3 small text-success">↑ Aktyvūs šį mėnesį</div>
+              <div className="card border-0 shadow-sm p-4 h-100 bg-white">
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <span className="fs-1">👥</span>
+                  <span className="badge bg-light text-muted rounded-pill">Klientų bazė</span>
+                </div>
+                <h2 className="display-6 fw-bold mb-1 text-dark">{data.pacientuSkaicius}</h2>
+                <p className="m-0 text-success small fw-medium">Unikalūs pacientai šį mėnesį</p>
               </div>
             </div>
+
             <div className="col-md-4">
-              <div className="card shadow-sm border-0 p-4 h-100">
-                <h6 className="text-uppercase text-muted small fw-bold mb-2">Vidutinė vizito vertė</h6>
-                <h2 className="fw-bold m-0 text-dark">
-                  {data.pacientuSkaicius > 0 ? (data.bendraSuma / data.pacientuSkaicius).toFixed(2) : 0} €
+              <div className="card border-0 shadow-sm p-4 h-100 bg-white border-start border-primary border-5">
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <span className="fs-1">📈</span>
+                  <span className="badge bg-light text-muted rounded-pill">Pelningumas</span>
+                </div>
+                <h2 className="display-6 fw-bold mb-1 text-dark">
+                  {data.pacientuSkaicius > 0 ? (data.bendraSuma / data.pacientuSkaicius).toFixed(0) : 0} €
                 </h2>
-                <div className="mt-3 small text-muted">Vienam pacientui</div>
+                <p className="m-0 text-muted small">Vidutinė pajamų suma vienam pacientui</p>
               </div>
             </div>
           </div>
 
-          <div className="row g-4">
-            {/* GYDYTOJŲ EFEKTYVUMAS */}
-            <div className="col-lg-7">
-              <div className="card shadow-sm border-0 p-4 h-100">
-                <h5 className="fw-bold mb-4">🩺 Gydytojų rezultatai</h5>
+          <div className="row g-5">
+            {/* GYDYTOJŲ LENTELĖ */}
+            <div className="col-lg-8">
+              <div className="bg-white rounded-4 shadow-sm p-4 border h-100">
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <h4 className="fw-bold m-0 text-dark">Gydytojų Našumas</h4>
+                  <span className="text-muted small">Iš viso gydytojų: {data.gydytojuEfektyvumas.length}</span>
+                </div>
                 <div className="table-responsive">
-                  <table className="table align-middle">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Gydytojas</th>
-                        <th className="text-center">Vizitai</th>
-                        <th className="text-end">Sugeneruota pajamų</th>
+                  <table className="table table-hover align-middle border-0">
+                    <thead className="bg-light">
+                      <tr className="text-muted small text-uppercase">
+                        <th className="border-0 py-3">Specialistas</th>
+                        <th className="border-0 py-3 text-center">Vizitai</th>
+                        <th className="border-0 py-3">Apyvartos dalis</th>
+                        <th className="border-0 py-3 text-end">Suma</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.gydytojuEfektyvumas.map((g, i) => (
                         <tr key={i}>
-                          <td className="fw-medium">{g.vardas}</td>
-                          <td className="text-center">
-                            <span className="badge bg-light text-dark border">{g.vizitai}</span>
+                          <td className="py-3">
+                            <div className="d-flex align-items-center">
+                              <div className="avatar me-3 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style={{width: '40px', height: '40px'}}>
+                                {g.vardas.charAt(0)}
+                              </div>
+                              <span className="fw-semibold text-dark">{g.vardas}</span>
+                            </div>
                           </td>
-                          <td className="text-end fw-bold text-primary">{g.pajamos} €</td>
+                          <td className="text-center">
+                            <span className="fw-bold text-muted">{g.vizitai}</span>
+                          </td>
+                          <td style={{minWidth: '150px'}}>
+                            <div className="progress rounded-pill" style={{height: '6px'}}>
+                              <div 
+                                className="progress-bar bg-primary" 
+                                style={{ width: `${data.bendraSuma > 0 ? (g.pajamos / data.bendraSuma) * 100 : 0}%` }}
+                              ></div>
+                            </div>
+                          </td>
+                          <td className="text-end fw-bold text-dark">{g.pajamos.toLocaleString()} €</td>
                         </tr>
                       ))}
                     </tbody>
@@ -148,26 +176,27 @@ export default function AdminAnalize() {
               </div>
             </div>
 
-            {/* TOP PASLAUGOS */}
-            <div className="col-lg-5">
-              <div className="card shadow-sm border-0 p-4 h-100">
-                <h5 className="fw-bold mb-4">🏆 Populiariausios paslaugos</h5>
-                {data.topProceduros.length === 0 && <p className="text-muted">Duomenų nėra</p>}
+            {/* PASLAUGŲ ANALIZĖ */}
+            <div className="col-lg-4">
+              <div className="bg-dark text-white rounded-4 shadow-sm p-4 h-100">
+                <h4 className="fw-bold mb-4">Top Paslaugos</h4>
+                {data.topProceduros.length === 0 && <p className="text-muted">Šį mėnesį procedūrų neatlikta.</p>}
                 {data.topProceduros.map((p, i) => (
                   <div key={i} className="mb-4">
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="fw-bold small">{p.pavadinimas}</span>
-                      <span className="text-muted small">{p.suma} €</span>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="small fw-light text-info text-uppercase">{p.pavadinimas}</span>
+                      <span className="fw-bold">{p.suma.toLocaleString()} €</span>
                     </div>
-                    <div className="progress" style={{ height: "12px" }}>
+                    <div className="progress bg-secondary bg-opacity-25" style={{ height: "8px" }}>
                       <div 
-                        className="progress-bar bg-info" 
+                        className="progress-bar bg-info shadow-sm" 
                         role="progressbar" 
                         style={{ width: `${data.bendraSuma > 0 ? (p.suma / data.bendraSuma) * 100 : 0}%` }}
                       ></div>
                     </div>
-                    <div className="text-end mt-1">
-                      <small className="text-muted italic">{p.kiekis} kartų</small>
+                    <div className="d-flex justify-content-between mt-2">
+                      <small className="text-muted">{p.kiekis} kartai (-ų)</small>
+                      <small className="text-info">{((p.suma / data.bendraSuma) * 100).toFixed(1)}%</small>
                     </div>
                   </div>
                 ))}
@@ -177,9 +206,11 @@ export default function AdminAnalize() {
         </>
       )}
 
-      {data && data.gydytojuEfektyvumas.length === 0 && !loading && (
-        <div className="alert alert-info mt-4 text-center">
-          Pasirinktą laikotarpį užbaigtų vizitų nerasta.
+      {data && data.gydytojuEfektyvumas.length === 0 && (
+        <div className="text-center py-5">
+          <div className="display-1 mb-4">📁</div>
+          <h3 className="text-muted">Nėra duomenų apie {filtras.metai} m. {filtras.menesis} mėn.</h3>
+          <p>Patikrinkite, ar yra užbaigtų vizitų šiame laikotarpyje.</p>
         </div>
       )}
     </div>
