@@ -91,16 +91,27 @@ export default function PacientoIstorija() {
   };
 
   const dabar = new Date();
-  const filteredVizitai = vizitai
+const filteredVizitai = vizitai
     .filter(v => {
-      const vData = new Date(v.pradziosLaikas);
-      const isPaid = v.busena === "Apmokėta" || v.Busena === "Apmokėta";
-      const isCanceled = v.busena === "Atšauktas" || v.Busena === "Atšauktas";
+      // Suvienodiname būsenų pavadinimus (dėl case-sensitivity arba skirtingų API formatų)
+      const busena = (v.busena || v.Busena);
+      const isPaid = busena === "Apmokėta";
+      const isCanceled = busena === "Atšauktas";
+      const isCompleted = busena === "Atliktas"; // NAUJA: Tikriname ar būsena yra "Atliktas"
 
-      if (isCanceled) return false; // Atšauktų nerodome visai
+      // 1. Jei vizitas atšauktas, jo nerodome visai
+      if (isCanceled) return false; 
+
+      // 2. Apmokėti vizitai (nesvarbu, ar jie ateities, ar praeities)
       if (activeTab === "paid") return isPaid;
-      if (activeTab === "future") return vData >= dabar && !isPaid;
-      if (activeTab === "past") return vData < dabar && !isPaid;
+
+      // 3. Atlikti vizitai (tik tie, kurių būsena "Atliktas" ir jie nėra apmokėti)
+      // Jei norite, kad apmokėti vizitai dingtų iš "Atlikti" ir liktų tik "Apmokėti", palikite !isPaid
+      if (activeTab === "past") return isCompleted && !isPaid;
+
+      // 4. Būsimi vizitai (visi, kurie nėra atšaukti, nėra apmokėti ir nėra pažymėti kaip atlikti)
+      if (activeTab === "future") return !isCompleted && !isPaid;
+
       return false;
     })
     .sort((a, b) => activeTab === "future" 

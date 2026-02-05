@@ -48,6 +48,7 @@ export default function Sidebar() {
               <hr style={hrStyle} />
               <li style={liStyle}>
                 <Link href="/gydytojas/vizitai" style={adminLinkStyle}>👨‍⚕️ Vizitų valdymas</Link>
+                <Link href="/gydytojas/grafikas" style={adminLinkStyle}>⚙️ Darbo grafikas</Link>
               </li>
             </>
           )}
