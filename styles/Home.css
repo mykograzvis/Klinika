@@ -1,46 +1,274 @@
-/* Home.css */
+/* Home.css - Modern Dental Clinic with Better Contrast */
 
-/* Ensure the root primary color is accessible if defined elsewhere (e.g., in Navbar.css or global.css) */
-/* If you don't have a global CSS for variables, define it here: */
+/* ============================================
+   TYPOGRAPHY & VARIABLES - MODERN FONTS
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-    --primary-color: #007bff; /* Example: Bootstrap's default blue */
-    --text-dark: #343a40; /* Dark text for cards */
+  /* Modern Teal & Coral Palette */
+  --color-primary: #2a9d8f;        /* Warm Teal - main headers */
+   /* Dark Slate - secondary headers */
+  --color-primary-light: #4ecdc4;  /* Light Teal - accents */
+  --color-accent: #e76f51;         /* Coral/Orange - CTAs and highlights */
+  --color-accent-soft: #f4a261;    /* Soft Peach - hover states */
+  --color-text: #2d3748;
+  --color-text-light: #718096;
+  --color-background: #ffffff;
+  --color-background-warm: #faf9f7;
+  --color-background-cool: #f0f7f6; /* Very light teal tint */
+  --color-background-soft: #f8fafc;
+  --color-background-services: #f4f7fa; /* Light blue-gray for services section */
+  
+  /* Typography */
+
+  --font-body: 'Inter', sans-serif;
+  
+  /* Spacing */
+  --section-padding: 6rem;
+  --container-max: 1200px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
+/* ============================================
+   BASE STYLES
+   ============================================ */
+.homepage-main {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-/* 1. Services Section Overall Styling */
+/* Override Bootstrap defaults with new fonts */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  color: var(--color-primary-dark);
+  letter-spacing: -0.02em;
+}
+
+/* ============================================
+   SECTION LAYOUT SYSTEM WITH TRANSITIONS
+   ============================================ */
+.section-container {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Hero Section - Ensure white text */
+.section-hero {
+  position: relative;
+  margin-top: -80px;
+  padding-top: 80px;
+}
+
+/* Force white text in hero section */
+.section-hero h1,
+.section-hero h2,
+.section-hero p,
+.section-hero .hero-content,
+.section-hero .hero-content h1,
+.section-hero .hero-content p {
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Services Section - Light background for contrast */
+.section-services {
+  background-color: var(--color-background-services); /* Light blue-gray background */
+  padding: var(--section-padding) 0;
+  position: relative;
+}
+
+.section-services::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(42, 157, 143, 0.15), transparent);
+}
+
+/* Stats Section - Cool teal-gray gradient */
+.section-stats {
+  background: linear-gradient(135deg, var(--color-background-cool) 0%, #e8f4f3 100%);
+  padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-stats::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -10%;
+  width: 40%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(42, 157, 143, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Doctors Section - Warm cream */
+.section-doctors {
+  background-color: var(--color-background-warm);
+  padding: var(--section-padding) 0;
+  position: relative;
+}
+
+.section-doctors::before,
+.section-doctors::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(42, 157, 143, 0.1), transparent);
+}
+
+.section-doctors::before { top: 0; }
+.section-doctors::after { bottom: 0; }
+
+/* Testimonials Section - White background with visible cards */
+.section-testimonials {
+  background-color: var(--color-background);
+  padding: var(--section-padding) 0;
+  border-top: 1px solid rgba(42, 157, 143, 0.08);
+  border-bottom: 1px solid rgba(42, 157, 143, 0.08);
+}
+
+/* FAQ Section - Soft gray */
+.section-faq {
+  background-color: var(--color-background-soft);
+  padding: var(--section-padding) 0;
+}
+
+/* Contact Section - White with wave decoration */
+.section-contact {
+  background-color: var(--color-background);
+  padding: var(--section-padding) 0 4rem;
+  position: relative;
+  margin-top: 4rem;
+}
+
+.section-wave-top {
+  position: absolute;
+  top: -80px;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--color-background-soft);
+  clip-path: ellipse(60% 100% at 50% 100%);
+}
+
+/* ============================================
+   STATS BAR STYLES
+   ============================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  text-align: center;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-number {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  color: var(--color-primary);
+  line-height: 1;
+  font-weight: 400;
+}
+
+.stat-label {
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   SECTION HEADERS - NEW MODERN STYLE
+   ============================================ */
+.service-heading-clean {
+  font-family: var(--font-heading);
+  font-size: 2.75rem;
+  color: var(--color-primary-dark);
+  text-align: center;
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.service-heading-clean::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-accent);
+  margin: 1rem auto 0;
+  border-radius: 2px;
+}
+
+/* Alternative heading style with lines */
+.service-heading {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.service-heading .line {
+  flex: 1;
+  max-width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+}
+
+/* ============================================
+   SERVICE CARDS - WHITE CARDS ON COLORED BG
+   ============================================ */
 .services-section {
-    padding-top: 4rem; 
-    padding-bottom: 4rem;
-    /* Ensure no opacity: 1 !important or similar here */
+  padding: 0;
 }
 
-body {
-  /* Labai šviesiai pilkšvai melsva spalva */
-  background-color: #f4f7fa; 
-}
-
-
-/* 2. Service Card Styling */
-/* SERVICE CARD BASE */
 .service-card {
-  border: 2px solid rgba(102, 111, 124, 0.3);
-  border-radius: 18px; /* Slightly more rounded */
-  background-color: #fff; /* White background */
-  padding: 2.5rem !important; /* Spacious padding */
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  border: 1px solid rgba(102, 111, 124, 0.1); /* Softer border */
+  border-radius: 18px;
+  background-color: #ffffff; /* White cards on light background */
+  padding: 2.5rem !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
   position: relative;
-  overflow: hidden; /* For decorative effects */
+  overflow: hidden;
 }
 
-/* Hover effect */
 .service-card:hover {
-  transform: translateY(-12px) scale(1.02); /* Lift + slight zoom */
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.18); /* Stronger hover shadow */
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(42, 157, 143, 0.12);
+  border-color: rgba(42, 157, 143, 0.2);
 }
 
-/* Optional gradient top border effect */
+/* Gradient top border - teal to coral */
 .service-card::before {
   content: "";
   position: absolute;
@@ -48,7 +276,7 @@ body {
   left: 0;
   height: 5px;
   width: 100%;
-  background: linear-gradient(90deg, var(--primary-color), #ADD8E6);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent-soft));
   opacity: 0;
   transition: opacity 0.35s ease;
 }
@@ -57,48 +285,149 @@ body {
   opacity: 1;
 }
 
-/* ICON STYLING */
 .service-icon {
-  width: 120px;              /* Slightly larger but still elegant */
+  width: 120px;
   height: 120px;
-  object-fit: contain;      /* Keeps proportions */
-  display: block;           /* Forces it to behave like a block element */
-  margin: 0 auto 1rem auto; /* Centers horizontally + spacing below */
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 1rem auto;
+  transition: transform 0.35s ease;
 }
 
 .service-card:hover .service-icon {
   transform: scale(1.15) rotate(-2deg);
-  color: #ADD8E6; /* Slightly stronger primary */
 }
 
-/* TITLES */
 .service-card-title {
-  font-size: 1.4rem; /* A bit more balanced for multiple cards */
-  font-weight: 600;
-  color: var(--text-dark);
-  margin-bottom: 0.6rem;
-  letter-spacing: 0.3px;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.75rem;
   transition: color 0.35s ease;
 }
 
 .service-card:hover .service-card-title {
-  color: var(--primary-color); /* Highlight title on hover */
+  color: var(--color-primary);
 }
 
-/* PARAGRAPH TEXT */
 .service-card-text {
-  font-size: 1.05rem;
-  color: #6c757d;
+  font-size: 1rem;
+  color: var(--color-text-light);
   line-height: 1.6;
   margin: 0 auto;
   max-width: 90%;
 }
 
+/* "View All Services" Button - Coral accent */
+.all-services-btn {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%) !important;
+  border: none !important;
+  padding: 1rem 2.5rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3);
+  color: white !important;
+}
+
+.all-services-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(42, 157, 143, 0.4);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-soft) 100%) !important;
+}
+
+/* ============================================
+   TESTIMONIAL CARDS - ENHANCED VISIBILITY
+   ============================================ */
+.testimonials-section {
+  padding: 0;
+}
+
+.testimonials-section .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.testimonials-section .col-md-4 {
+  flex: 0 0 calc(33.333% - 1rem);
+  max-width: calc(33.333% - 1rem);
+}
+
+/* Individual testimonial card - visible on white background */
+.testimonials-section .h-100 {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(42, 157, 143, 0.15);
+  border-radius: 16px;
+  padding: 2rem !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonials-section .h-100:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(42, 157, 143, 0.12);
+  border-color: rgba(42, 157, 143, 0.25);
+}
+
+/* Top accent border for testimonials */
+.testimonials-section .h-100::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent-soft));
+  opacity: 0.7;
+}
+
+/* Quote icon styling */
+.testimonials-section .text-secondary {
+  color: var(--color-primary-light) !important;
+  opacity: 0.4 !important;
+  margin-bottom: 1rem;
+}
+
+/* Testimonial text */
+.testimonials-section .fst-italic {
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+/* Author name */
+.testimonials-section h6 {
+  color: var(--color-primary-dark);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Star rating */
+.testimonials-section .text-warning {
+  color: var(--color-accent-soft) !important;
+}
+
+/* ============================================
+   ORIGINAL STYLES PRESERVED & ENHANCED
+   ============================================ */
+
+/* Body background */
+body {
+  background-color: #f4f7fa; 
+}
+
+/* Scroll to top button - updated to teal */
 .scroll-to-top-btn {
   position: fixed;
   bottom: 30px;
   right: 30px;
-  background-color: var(--primary-color);
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -110,10 +439,11 @@ body {
 }
 
 .scroll-to-top-btn:hover {
-  background-color: #0056b3; /* darker shade */
+  background-color: var(--color-primary-dark);
   transform: translateY(-3px);
 }
-/* 3. Transition Divider Styling */
+
+/* Transition Divider */
 .transition-divider {
   height: 120px;
   background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
@@ -129,43 +459,19 @@ body {
   height: 120px;
 }
 
-.service-heading {
-  position: relative;
-   font-family: "Playfair Display", serif;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #4a90e2;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
-
-.service-heading .line {
-  content: "";
-  display: block;
-  width: 30%;
-  height: 3px;
-  background-color: #ADD8E6;
-  border-radius: 2px;
-}
-
-.services-section {
-  border-radius: 16px;
-  padding: 100px 0 10px; /* ⬆️ more top padding */
-  margin-top: 50px; /* ⬆️ extra space after Hero */
-}
-
+/* FAQ Item styling - enhanced */
 .faq-item {
   transition: all 0.3s ease;
-  border: 1px solid rgba(93, 123, 179, 0.1);
+  border: 1px solid rgba(42, 157, 143, 0.1);
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .faq-item:hover {
-  border-color: #5d7bb3;
+  border-color: var(--color-primary);
   transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(42, 157, 143, 0.1);
 }
 
 .faq-item button:focus {
@@ -173,57 +479,116 @@ body {
   box-shadow: none;
 }
 
-/* Ikonų apskritimai */
+/* Icon circles - updated to teal */
 .icon-circle {
   width: 45px;
   height: 45px;
-  background-color: rgba(93, 123, 179, 0.1);
-  color: #5d7bb3;
+  background-color: rgba(42, 157, 143, 0.1);
+  color: var(--color-primary);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
-/* Formos įvesties laukai */
+.icon-circle:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Form styling - teal focus states */
 .registration-form-card .form-control:focus, 
 .registration-form-card .form-select:focus {
   background-color: #fff !important;
-  box-shadow: 0 0 0 0.25rem rgba(93, 123, 179, 0.25);
-  border: 1px solid #5d7bb3 !important;
+  box-shadow: 0 0 0 0.25rem rgba(42, 157, 143, 0.25);
+  border: 1px solid var(--color-primary) !important;
 }
 
 .registration-form-card {
-  border: 1px solid rgba(93, 123, 179, 0.1);
+  border: 1px solid rgba(42, 157, 143, 0.1);
+  border-radius: 16px;
 }
 
-
-/* 5. Mobile Responsiveness for Services Section */
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
 @media (max-width: 768px) {
-    .services-section {
-    padding-top: 40px; /* Mažesnis tarpas telefone */
+  :root {
+    --section-padding: 4rem;
+  }
+  
+  .services-section {
+    padding-top: 40px;
     margin-bottom: 3rem !important;
   }
   
+  .service-heading-clean {
+    font-size: 2rem;
+  }
+  
   .service-heading {
-    font-size: 1.8rem;
-    margin-bottom: 30px !important;
+    font-size: 1.75rem;
+    flex-direction: column;
+    gap: 0.75rem;
   }
 
-    .service-card {
-        padding: 1.5rem !important; /* Less padding on mobile */
-    }
+  .service-heading .line {
+    max-width: 60px;
+    width: 20%;
+  }
 
-    .service-icon {
-        font-size: 2.8rem !important; /* Smaller icons on mobile */
-    }
+  .service-card {
+    padding: 1.5rem !important;
+  }
 
-    .service-card-title {
-        font-size: 1.3rem; /* Smaller card titles on mobile */
-    }
+  .service-icon {
+    width: 80px;
+    height: 80px;
+  }
 
-    .service-card-text {
-        font-size: 0.95rem; /* Smaller card text on mobile */
-    }
+  .service-card-title {
+    font-size: 1.3rem;
+  }
+
+  .service-card-text {
+    font-size: 0.95rem;
+  }
+  
+  .stat-number {
+    font-size: 2.25rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .section-wave-top {
+    top: -40px;
+    height: 40px;
+  }
+  
+  /* Testimonials mobile */
+  .testimonials-section .col-md-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .testimonials-section .h-100 {
+    padding: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-item {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+  }
 }
