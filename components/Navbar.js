@@ -32,7 +32,7 @@ function Navbar() {
         </button>
 
         {/* Center: Logo (always centered on mobile, left on desktop) */}
-        <Link className="navbar-brand mx-auto mx-lg-0 d-flex align-items-center gap-2" href="/">
+        <Link className="navbar-brand mx-auto mx-lg-0 d-flex align-items-center gap-2" href="/" prefetch={false}>
           <img src="/images/Logo.jpg" alt="Company Logo" className="navbar-logo" />
         </Link>
 
@@ -43,6 +43,7 @@ function Navbar() {
             <li className="nav-item dropdown service-dropdown ">
               <Link 
                 href="/services" 
+                prefetch={false}
                 className="nav-link px-3 dropdown-toggle" 
                 id="navbarDropdown" 
                 role="button" 
@@ -52,31 +53,28 @@ function Navbar() {
                 Paslaugos
               </Link>
               <ul className="dropdown-menu border-0 shadow-lg p-3" aria-labelledby="navbarDropdown">
-                <li><Link href="/paslaugos/burnos-higiena" className="dropdown-item">Burnos higiena</Link></li>
-                <li><Link href="/paslaugos/plombavimas" className="dropdown-item">Terapinis gydymas</Link></li>
-                <li><Link href="/paslaugos/implantavimas" className="dropdown-item">Dantų implantavimas</Link></li>
-                <li><Link href="/paslaugos/protezavimas" className="dropdown-item">Dantų protezavimas</Link></li>
-                <li><Link href="/paslaugos/dantu-rovimas" className="dropdown-item">Burnos chirurgija</Link></li>
-                <li><Link href="/paslaugos/kanalai" className="dropdown-item">Kanalų gydymas (Endodontija)</Link></li>
+                <li><Link href="/paslaugos/burnos-higiena" className="dropdown-item" prefetch={false}>Burnos higiena</Link></li>
+                <li><Link href="/paslaugos/plombavimas" className="dropdown-item" prefetch={false}>Terapinis gydymas</Link></li>
+                <li><Link href="/paslaugos/implantavimas" className="dropdown-item" prefetch={false}>Dantų implantavimas</Link></li>
+                <li><Link href="/paslaugos/protezavimas" className="dropdown-item" prefetch={false}>Dantų protezavimas</Link></li>
+                <li><Link href="/paslaugos/dantu-rovimas" className="dropdown-item" prefetch={false}>Burnos chirurgija</Link></li>
+                <li><Link href="/paslaugos/kanalai" className="dropdown-item" prefetch={false}>Kanalų gydymas (Endodontija)</Link></li>
                 <li><hr className="dropdown-divider" /></li>
-                <li><Link href="/paslaugos" className="dropdown-item fw-bold" style={{ color: '#5d7bb3' }}>Visos paslaugos</Link></li>
+                <li><Link href="/paslaugos" className="dropdown-item fw-bold" style={{ color: '#5d7bb3' }} prefetch={false}>Visos paslaugos</Link></li>
               </ul>
             </li>
             {/* DROP DOWN MENIU PABAIGA */}
             <li className="nav-item">
-              <Link className="nav-link text-dark nav-link-custom" href="/kainos">Kainos</Link>
+              <Link className="nav-link text-dark nav-link-custom" href="/kainos" prefetch={false}>Kainos</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link text-dark nav-link-custom" href="/apie">Apie Mus</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-dark nav-link-custom" href="/#registracija">Susisiekti</Link>
+              <Link className="nav-link text-dark nav-link-custom" href="/apie" prefetch={false}>Apie Mus</Link>
             </li>
             <li className="nav-item d-flex align-items-center">
               <a href="tel:+37065776229" className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap me-2" style={{textDecoration: 'none'}}>
                 +37065776229
               </a>
-              <Link className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap" href="/login">Registracija</Link>
+              <Link className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap" href="/#registracija" prefetch={false}>Susisiekti</Link>
             </li>
           </ul>
         </div>
