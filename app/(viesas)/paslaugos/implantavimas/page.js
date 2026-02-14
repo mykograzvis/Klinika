@@ -60,8 +60,7 @@ export default function DantuImplantavimas() {
             </p>
             <p>
               Mūsų klinikoje naudojami tik aukščiausios kokybės, visame pasaulyje pripažinti 
-              **titano implantai**. Procedūra planuojama pasitelkiant 3D kompiuterinę tomografiją, 
-              o tai užtikrina maksimalų tikslumą, saugumą ir greitą prigijimą.
+              **titano implantai**.
             </p>
 
             <h5 className="mt-4">Implantacijos privalumai:</h5>
@@ -87,22 +86,22 @@ export default function DantuImplantavimas() {
           <div className="col-md-4 mb-3">
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Konsultacija ir planas</h5>
-              <p>Gydymo plano sudarymas, 3D tomografijos analizė</p>
-              <span className="price-tag">nuo €40</span>
+              <p>Gydymo plano sudarymas</p>
+              <span className="price-tag">Nemokamai</span>
             </div>
           </div>
           <div className="col-md-4 mb-3">
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Danties implantas</h5>
               <p>Sraigto įsriegimas (chirurginis etapas)</p>
-              <span className="price-tag">nuo €600</span>
+              <span className="price-tag">nuo €550</span>
             </div>
           </div>
           <div className="col-md-4 mb-3">
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Protezavimas ant implanto</h5>
               <p>Cirkonio keramikos vainikėlis ir atrama</p>
-              <span className="price-tag">nuo €550</span>
+              <span className="price-tag">nuo €450</span>
             </div>
           </div>
         </div>

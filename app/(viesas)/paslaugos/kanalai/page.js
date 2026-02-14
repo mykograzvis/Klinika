@@ -58,12 +58,6 @@ export default function KanaluGydymas() {
               pažeidžiami uždegimo ar infekcijos. Tai dažniausiai sukelia gilūs karieso 
               pažeidimai, dantų skilimai ar traumos.
             </p>
-            <p>
-              Mūsų klinikoje kanalų gydymas atliekamas naudojant **modernų mikroskopą**. 
-              Tai leidžia gydytojui matyti net smulkiausias kanalų atšakas, užtikrinti 
-              maksimalų sterilumą ir sėkmingai išgydyti net sudėtingus atvejus, 
-              išvengiant danties šalinimo.
-            </p>
 
             <h5 className="mt-4">Simptomai, rodantys problemą:</h5>
             <ul>
@@ -89,7 +83,7 @@ export default function KanaluGydymas() {
             <div className="price-card shadow-sm p-4 rounded">
               <h5>1-o kanalo gydymas</h5>
               <p>Pirminis kanalo išvalymas, paruošimas ir užpildymas</p>
-              <span className="price-tag">nuo €80</span>
+              <span className="price-tag">nuo €50</span>
             </div>
           </div>
           <div className="col-md-4 mb-3">
@@ -102,7 +96,7 @@ export default function KanaluGydymas() {
           <div className="col-md-4 mb-3">
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Kanalų pergydymas</h5>
-              <p>Senų užpildų šalinimas ir pakartotinis gydymas mikroskopu</p>
+              <p>Senų užpildų šalinimas ir pakartotinis gydymas</p>
               <span className="price-tag">nuo €120</span>
             </div>
           </div>

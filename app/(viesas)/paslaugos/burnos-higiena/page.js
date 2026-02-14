@@ -85,14 +85,14 @@ export default function BurnosHigiena() {
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Standartinė higiena</h5>
               <p>Visos burnos valymas ultragarsu ir poliravimas</p>
-              <span className="price-tag">€50</span>
+              <span className="price-tag">€60</span>
             </div>
           </div>
           <div className="col-md-4 mb-3">
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Giluminė higiena</h5>
               <p>Pažengusios apnašos, dantenų giluminis valymas</p>
-              <span className="price-tag">€70</span>
+              <span className="price-tag">€80</span>
             </div>
           </div>
         </div>

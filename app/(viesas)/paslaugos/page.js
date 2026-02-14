@@ -22,13 +22,13 @@ const allServices = [
   {
     id: "implantavimas",
     title: "Dantų implantavimas",
-    description: "Prarastų dantų atkūrimas naudojant aukščiausios kokybės šveicariškus implantus.",
+    description: "Prarastų dantų atkūrimas naudojant aukščiausios kokybės šveicariškus „STRAUMANN” implantus.",
     icon: "/images/services/implant.png"
   },
   {
     id: "protezavimas",
     title: "Dantų protezavimas",
-    description: "Vainikėliai, tiltai ir protezai. Atliekame protezavimą kompensuojamą PSDF lėšomis.",
+    description: "Vainikėliai, tiltai ir išimami protezai. Atliekame protezavimą kompensuojamą PSDF lėšomis.",
     icon: "/images/services/prosthetics.png"
   },
   {
@@ -40,7 +40,7 @@ const allServices = [
   {
     id: "kanalai",
     title: "Endodontija",
-    description: "Šaknų kanalų gydymas ir pergydymas naudojant modernų mikroskopą.",
+    description: "Šaknų kanalų gydymas ir pergydymas.",
     icon: "/images/services/root-canal.png"
   }
 ];
@@ -73,29 +73,29 @@ export default function PaslaugosPage() {
             <motion.div 
               key={service.id}
               className="col-lg-4 col-md-6"
-              // PAKEITIMAS ČIA: Naudojame animate vietoj whileInView, 
-              // kad kortelės užsitikrintų krovimąsi iškart
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ 
                 duration: 0.5, 
-                delay: index * 0.1, // Kortelės atsiranda viena po kitos
+                delay: index * 0.1,
                 ease: "easeOut" 
               }}
             >
-              <div className="service-page-card shadow-sm h-100">
-                <div className="p-5 text-center d-flex flex-column h-100">
-                  <div className="icon-box mb-4 mx-auto">
-                    <img src={service.icon} alt={service.title} />
+              <Link href={`/paslaugos/${service.id}`} className="text-decoration-none">
+                <div className="service-page-card shadow-sm h-100" style={{ cursor: 'pointer' }}>
+                  <div className="p-5 text-center d-flex flex-column h-100">
+                    <div className="icon-box mb-4 mx-auto">
+                      <img src={service.icon} alt={service.title} />
+                    </div>
+                    <h3 className="mb-3 h4 fw-bold text-dark">{service.title}</h3>
+                    <p className="text-muted mb-4 flex-grow-1">{service.description}</p>
+                    
+                    <span className="read-more-btn mt-auto">
+                      Plačiau apie paslaugą <FaArrowRight className="ms-2" size={14} />
+                    </span>
                   </div>
-                  <h3 className="mb-3 h4 fw-bold text-dark">{service.title}</h3>
-                  <p className="text-muted mb-4 flex-grow-1">{service.description}</p>
-                  
-                  <Link href={`/paslaugos/${service.id}`} className="read-more-btn mt-auto">
-                    Plačiau apie paslaugą <FaArrowRight className="ms-2" size={14} />
-                  </Link>
                 </div>
-              </div>
+              </Link>
             </motion.div>
           ))}
         </div>
