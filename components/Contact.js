@@ -2,17 +2,47 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock, FaCheckCircle, FaInfoCircle, FaSpinner } from "react-icons/fa";
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaClock, FaCheckCircle, FaInfoCircle, FaSpinner, FaExclamationTriangle } from "react-icons/fa";
 
 export default function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const validateForm = (formData) => {
+    const errors = {};
+    
+    // Vardas validacija
+    if (!formData.name || formData.name.trim().length < 2) {
+      errors.name = "Įveskite vardą ir pavardę";
+    }
+
+    // Telefono validacija
+    const phoneRegex = /^[\d\s+()-]{6,}$/;
+    if (!formData.phone || !phoneRegex.test(formData.phone)) {
+      errors.phone = "Įveskite galiojantį telefono numerį";
+    }
+
+    // El. pašto validacija
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      errors.email = "Įveskite galiojantį el. pašto adresą";
+    }
+
+    // Paslaugos validacija
+    if (!formData.service) {
+      errors.service = "Pasirinkite paslaugą";
+    }
+
+    return errors;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setFieldErrors({});
 
     const formData = {
       name: e.target.name.value,
@@ -22,8 +52,16 @@ export default function ContactSection() {
       message: e.target.message.value,
     };
 
+    // Validuoti formą
+    const errors = validateForm(formData);
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch('/', { //api/contact
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,11 +73,13 @@ export default function ContactSection() {
 
       if (data.success) {
         setSubmitted(true);
+        // Išvalyti formą
+        e.target.reset();
       } else {
-        setError('Klaida siunčiant formą. Bandykite dar kartą.');
+        setError('Nepavyko išsiųsti užklausos. Bandykite dar kartą arba susisiekite telefonu.');
       }
     } catch (err) {
-      setError('Klaida siunčiant formą. Patikrinkite interneto ryšį.');
+      setError('Įvyko klaida. Patikrinkite interneto ryšį ir bandykite dar kartą.');
       console.error('Error:', err);
     } finally {
       setLoading(false);
@@ -122,47 +162,61 @@ export default function ContactSection() {
                   </button>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} noValidate>
                   <div className="row g-3">
                     <div className="col-md-6">
                       <label className="form-label small fw-bold">Vardas Pavardė *</label>
                       <input 
                         type="text" 
                         name="name"
-                        className="form-control bg-light border-0 py-3" 
+                        className={`form-control bg-light border-0 py-3 ${fieldErrors.name ? 'is-invalid' : ''}`}
                         placeholder="Vardas Pavardė" 
-                        required 
                         disabled={loading}
                       />
+                      {fieldErrors.name && (
+                        <div className="invalid-feedback d-flex align-items-center mt-2">
+                          <FaExclamationTriangle className="me-2" />
+                          {fieldErrors.name}
+                        </div>
+                      )}
                     </div>
                     <div className="col-md-6">
                       <label className="form-label small fw-bold">Telefono numeris *</label>
                       <input 
                         type="tel" 
                         name="phone"
-                        className="form-control bg-light border-0 py-3" 
+                        className={`form-control bg-light border-0 py-3 ${fieldErrors.phone ? 'is-invalid' : ''}`}
                         placeholder="+370 6..." 
-                        required 
                         disabled={loading}
                       />
+                      {fieldErrors.phone && (
+                        <div className="invalid-feedback d-flex align-items-center mt-2">
+                          <FaExclamationTriangle className="me-2" />
+                          {fieldErrors.phone}
+                        </div>
+                      )}
                     </div>
                     <div className="col-12">
                       <label className="form-label small fw-bold">El. pašto adresas *</label>
                       <input 
                         type="email" 
                         name="email"
-                        className="form-control bg-light border-0 py-3" 
+                        className={`form-control bg-light border-0 py-3 ${fieldErrors.email ? 'is-invalid' : ''}`}
                         placeholder="el.pastas@pavyzdys.lt" 
-                        required 
                         disabled={loading}
                       />
+                      {fieldErrors.email && (
+                        <div className="invalid-feedback d-flex align-items-center mt-2">
+                          <FaExclamationTriangle className="me-2" />
+                          {fieldErrors.email}
+                        </div>
+                      )}
                     </div>
                     <div className="col-12">
                       <label className="form-label small fw-bold">Paslauga *</label>
                       <select 
                         name="service"
-                        className="form-select bg-light border-0 py-3" 
-                        required 
+                        className={`form-select bg-light border-0 py-3 ${fieldErrors.service ? 'is-invalid' : ''}`}
                         defaultValue=""
                         disabled={loading}
                       >
@@ -174,6 +228,12 @@ export default function ContactSection() {
                         <option value="Protezavimas">Protezavimas</option>
                         <option value="Kita / Nežinau (reikia patarimo)">Kita / Nežinau (reikia patarimo)</option>
                       </select>
+                      {fieldErrors.service && (
+                        <div className="invalid-feedback d-flex align-items-center mt-2">
+                          <FaExclamationTriangle className="me-2" />
+                          {fieldErrors.service}
+                        </div>
+                      )}
                     </div>
                     <div className="col-12">
                       <label className="form-label small fw-bold">Žinutė</label>
@@ -188,9 +248,22 @@ export default function ContactSection() {
                     
                     {error && (
                       <div className="col-12">
-                        <div className="alert alert-danger" role="alert">
-                          {error}
-                        </div>
+                        <motion.div 
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="alert alert-danger d-flex align-items-center border-0 shadow-sm" 
+                          role="alert"
+                          style={{ 
+                            backgroundColor: '#f8d7da',
+                            borderRadius: '12px',
+                            padding: '1rem'
+                          }}
+                        >
+                          <FaExclamationTriangle className="me-3" size={24} style={{ color: '#842029' }} />
+                          <div>
+                            <strong>Klaida!</strong> {error}
+                          </div>
+                        </motion.div>
                       </div>
                     )}
 
@@ -203,7 +276,7 @@ export default function ContactSection() {
 
                     <div className="col-12 mt-4">
                       <button 
-                        type="Laikinai išjungta" 
+                        type="submit" 
                         className="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm transition-all" 
                         style={{ backgroundColor: "#5d7bb3", border: "none" }}
                         disabled={loading}
@@ -214,10 +287,10 @@ export default function ContactSection() {
                             Siunčiama...
                           </>
                         ) : (
-                          'Laikinai išjungta'
+                          'Registruotis vizitui'
                         )}
                       </button>
-                      <p className="text-center text-muted small mt-3">* Užpildykite visus privalomus laukus</p>
+                      <p className="text-center text-muted small mt-3">* Privalomi laukai</p>
                     </div>
                   </div>
                 </form>
