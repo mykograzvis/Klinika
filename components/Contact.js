@@ -35,7 +35,7 @@ export default function ContactSection() {
                 <div className="icon-circle me-3"><FaPhoneAlt /></div>
                 <div>
                   <h6 className="mb-0 fw-bold">Telefonas</h6>
-                  <a href="tel:+37060000000" className="text-muted text-decoration-none">+370 600 00000</a>
+                  <a href="tel:+37068793063" className="text-muted text-decoration-none">+37068793063</a>
                 </div>
               </div>
 
@@ -43,7 +43,7 @@ export default function ContactSection() {
                 <div className="icon-circle me-3"><FaEnvelope /></div>
                 <div>
                   <h6 className="mb-0 fw-bold">El. paštas</h6>
-                  <a href="mailto:info@klinika.lt" className="text-muted text-decoration-none">info@klinika.lt</a>
+                  <a href="mailto:gelmidenta@gmail.com" className="text-muted text-decoration-none">gelmidenta@gmail.com</a>
                 </div>
               </div>
 
@@ -51,7 +51,15 @@ export default function ContactSection() {
                 <div className="icon-circle me-3"><FaMapMarkerAlt /></div>
                 <div>
                   <h6 className="mb-0 fw-bold">Adresas</h6>
-                  <span className="text-muted">Klinikos g. 10, Vilnius</span>
+                  <a 
+                href="https://www.google.com/maps?q=Nemuno+g.+11,+Panevėžys,+36236+Panevėžio+m.+sav." 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-black text-decoration-none"
+              >
+                Nemuno g. 11, Panevėžys, 36236 Panevėžio m. sav.
+              </a>
+                  
                 </div>
               </div>
 
@@ -60,7 +68,7 @@ export default function ContactSection() {
                 <div className="icon-circle me-3"><FaClock /></div>
                 <div>
                   <h6 className="mb-0 fw-bold">Darbo laikas</h6>
-                  <span className="text-muted">I-V: 08:00 - 20:00, VI: 09:00 - 14:00</span>
+                  <span className="text-muted">I-V: 08:00 - 20:00</span>
                 </div>
               </div>
             </div>

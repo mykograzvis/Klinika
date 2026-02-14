@@ -73,8 +73,8 @@ function Navbar() {
               <Link className="nav-link text-dark nav-link-custom" href="/#registracija">Susisiekti</Link>
             </li>
             <li className="nav-item d-flex align-items-center">
-              <a href="tel:+37060000000" className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap me-2" style={{textDecoration: 'none'}}>
-                +37060000000
+              <a href="tel:+37065776229" className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap me-2" style={{textDecoration: 'none'}}>
+                +37065776229
               </a>
               <Link className="btn btn-primary px-4 py-2 rounded-pill fw-bold cta-button text-nowrap" href="/login">Registracija</Link>
             </li>

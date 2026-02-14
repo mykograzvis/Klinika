@@ -11,7 +11,7 @@ const faqData = [
   },
   {
     question: "Kaip pasiruošti pirmajam vizitui?",
-    answer: "Pirmojo vizito metu atliekama išsami burnos apžiūra. Rekomenduojame su savimi turėti asmens dokumentą. Jei turite neseniai darytą panoraminę rentgeno nuotrauką, galite ją atsinešti, tačiau prireikus nuotrauką padarysime vietoje.",
+    answer: "Pirmojo vizito metu atliekama išsami burnos apžiūra. Rekomenduojame su savimi turėti asmens dokumentą. Jei turite neseniai darytą panoraminę rentgeno nuotrauką, galite ją atsinešti.",
   },
   {
     question: "Ar procedūros yra skausmingos?",
@@ -23,7 +23,7 @@ const faqData = [
   },
   {
     question: "Kiek laiko trunka pirminė konsultacija?",
-    answer: "Pirminė konsultacija paprastai trunka apie 30–45 minutes. Per šį laiką gydytojas ne tik apžiūri dantis, bet ir išklauso Jūsų lūkesčius, sudaro preliminarų gydymo planą bei aptaria galimas išlaidas.",
+    answer: "Pirminė konsultacija paprastai trunka apie 15–45 minutes. Per šį laiką gydytojas ne tik apžiūri dantis, bet ir išklauso Jūsų lūkesčius, sudaro preliminarų gydymo planą bei aptaria galimas išlaidas.",
   },
   {
     question: "Ką daryti pajutus ūmų danties skausmą?",

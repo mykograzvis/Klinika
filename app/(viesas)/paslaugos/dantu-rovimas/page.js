@@ -89,7 +89,7 @@ export default function DantuRovimas() {
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Paprastas rovimas</h5>
               <p>Vieno vienšaknio danties šalinimas su vietine nejautra</p>
-              <span className="price-tag">nuo €50</span>
+              <span className="price-tag">nuo €40</span>
             </div>
           </div>
           <div className="col-md-4 mb-3">

@@ -22,13 +22,13 @@ const allServices = [
   {
     id: "implantavimas",
     title: "Dantų implantavimas",
-    description: "Prarastų dantų atkūrimas naudojant aukščiausios kokybės šveicariškus implantus.",
+    description: "Prarastų dantų atkūrimas naudojant aukščiausios kokybės šveicariškus „STRAUMANN“ implantus.",
     icon: "/images/services/implant.png"
   },
   {
     id: "protezavimas",
     title: "Dantų protezavimas",
-    description: "Vainikėliai, tiltai ir protezai. Atliekame protezavimą kompensuojamą PSDF lėšomis.",
+    description: "Vainikėliai, tiltai ir išimami protezai. Atliekame protezavimą kompensuojamą PSDF lėšomis.",
     icon: "/images/services/prosthetics.png"
   },
   {
@@ -40,7 +40,7 @@ const allServices = [
   {
     id: "kanalai",
     title: "Endodontija",
-    description: "Šaknų kanalų gydymas ir pergydymas naudojant modernų mikroskopą.",
+    description: "Šaknų kanalų gydymas ir pergydymas.",
     icon: "/images/services/root-canal.png"
   }
 ];

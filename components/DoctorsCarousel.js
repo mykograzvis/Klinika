@@ -6,10 +6,14 @@ import "slick-carousel/slick/slick-theme.css";
 import "./DoctorsCarousel.css"; // Sukursime šį failą stiliui
 
 const doctors = [
-  { name: "Dr. Agnė Petrauskienė", specialization: "Odontologė", image: "/images/Agne.jpg" },
-  { name: "Dr. Neringa Kazlauskienė", specialization: "Endodontistė", image: "/images/neringa.jpg" },
-  { name: "Justė Jonauskaitė", specialization: "Higienistė", image: "/images/juste.jpg" },
-  { name: "Ugnius Vaitkevičius", specialization: "Chirurgas", image: "/images/ugnius.jpg" },
+  { name: "Gelmina Mykolaitienė", specialization: "Odontologė", image: "/images/Agne.jpg" },
+  { name: "Sigita Šilalienė", specialization: "Odontologė", image: "/images/neringa.jpg" },
+  { name: "Deimantė Bambonienė", specialization: "Higienistė", image: "/images/juste.jpg" },
+  { name: "Ingrida Daščioraitė", specialization: "Odontologė", image: "/images/neringa.jpg" },
+  { name: "Ignė Sniečkuvienė", specialization: "Odontologė", image: "/images/neringa.jpg" },
+  { name: "Lina Narkūnė", specialization: "Odontologė", image: "/images/neringa.jpg" },
+  { name: "Aušvydas Baltuonis", specialization: "Chirurgas", image: "/images/ugnius.jpg" },
+  { name: "Judita Montvilienė", specialization: "Odontologė", image: "/images/neringa.jpg" },
 ];
 
 function DoctorsCarousel() {

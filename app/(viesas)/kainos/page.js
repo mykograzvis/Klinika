@@ -12,22 +12,21 @@ const priceCategories = [
       { name: "Burnos higiena vaikams", price: "30 - 45 €" },
       { name: "Gydytojo odontologo konsultacija ir apžiūra", price: "20 - 30 €" },
       { name: "Pakartotinė konsultacija gydymo metu", price: "0 - 15 €" },
-      { name: "Fluoro aplikacija (visi dantis)", price: "20 €" },
+      { name: "Fluoro aplikacija (vienas dantis)", price: "20 €" },
     ],
   },
   {
     category: "Diagnostika",
     items: [
       { name: "Skaitmeninė danties rentgeno nuotrauka", price: "10 €" },
-      { name: "Panoraminė rentgeno nuotrauka", price: "30 €" },
       { name: "Gydymo plano sudarymas", price: "20 - 40 €" },
     ],
   },
   {
     category: "Terapinis gydymas",
     items: [
-      { name: "Estetinis plombavimas (priedinis dantis)", price: "100 - 180 €" },
-      { name: "Šviesoje kietėjanti plomba (maža/vidutinė/didelė)", price: "50 - 90 €" },
+      { name: "Estetinis plombavimas (priekinis dantis)", price: "100 - 180 €" },
+      { name: "Šviesoje kietėjanti plomba (maža/vidutinė/didelė)", price: "60 - 150 €" },
       { name: "Paviršinio karieso gydymas (be gręžimo)", price: "40 €" },
       { name: "Danties jautrumo gydymas (vienas dantis)", price: "15 €" },
     ],
@@ -35,17 +34,17 @@ const priceCategories = [
   {
     category: "Endodontija (Kanalų gydymas)",
     items: [
-      { name: "Vieno kanalo paruošimas ir pildymas", price: "80 - 110 €" },
-      { name: "Dviejų kanalų paruošimas ir pildymas", price: "130 - 160 €" },
-      { name: "Trijų-keturių kanalų paruošimas ir pildymas", price: "180 - 240 €" },
+      { name: "Vieno kanalo paruošimas ir pildymas", price: "100 - 120 €" },
+      { name: "Dviejų kanalų paruošimas ir pildymas", price: "200 - 210 €" },
+      { name: "Trijų-keturių kanalų paruošimas ir pildymas", price: "300 - 320 €" },
       { name: "Seno užpildo išėmimas iš kanalo", price: "30 - 50 €" },
     ],
   },
   {
     category: "Chirurgija",
     items: [
-      { name: "Paprastas danties rovimas", price: "40 - 70 €" },
-      { name: "Sudėtingas (operacinis) rovimas", price: "90 - 150 €" },
+      { name: "Paprastas danties rovimas", price: "40 - 80 €" },
+      { name: "Sudėtingas (operacinis) rovimas", price: "120 - 150 €" },
       { name: "Protinio danties rovimas", price: "100 - 180 €" },
       { name: "Pūlinio atvėrimas ir drenažas", price: "30 - 50 €" },
     ],
@@ -63,9 +62,9 @@ const priceCategories = [
     category: "Protezavimas",
     items: [
       { name: "Bemetalės keramikos (cirkonio) vainikėlis", price: "380 - 480 €" },
-      { name: "Laikinas vainikėlis (pagamintas klinikoje)", price: "40 - 60 €" },
+      { name: "Laikinas vainikėlis (pagamintas klinikoje)", price: "40 - 100 €" },
       { name: "Lanko atraminis protezas", price: "600 - 900 €" },
-      { name: "Pilna viršutinio/apatinio žandikaulio plokštelė", price: "450 - 600 €" },
+      { name: "Pilna arba dalinė viršutinio/apatinio žandikaulio plokštelė", price: "350 - 600 €" },
     ],
   },
   {
@@ -120,6 +119,20 @@ export default function KainosPage() {
             </motion.div>
           ))}
         </div>
+        {/* Išsimokėjimo blokas */}
+<div className="mt-4 p-4 rounded-4 shadow-sm text-white position-relative overflow-hidden"
+     style={{ background: "linear-gradient(135deg, #5d7bb3, #2a4f9c)" }}>
+  <div className="row align-items-center">
+    <div className="col-md-8">
+      <h5 className="fw-bold mb-2">Paslaugos išsimokėtinai</h5>
+      <p className="mb-0 small">
+        Siūlome galimybę už odontologines paslaugas atsiskaityti dalimis.
+        Gydymą galite pradėti iš karto, o mokėjimą paskirstyti patogiais mėnesiniais įmokėjimais.
+      </p>
+    </div>
+  </div>
+</div>
+
 
         {/* PSDF Blokas */}
         <div className="mt-5 p-4 bg-white rounded-4 shadow-sm border-start border-4 border-primary">

@@ -77,8 +77,8 @@ export default function ApieMus() {
         <h2 className="mb-5">Kodėl verta rinktis mus?</h2>
         
         {[
-          { icon: <FaUserMd size={40} />, title: "Patyrę specialistai", desc: "Mūsų gydytojai yra savo srities profesionalai, nuolat stažuojantys užsienyje." },
-          { icon: <FaMicroscope size={40} />, title: "Moderni įranga", desc: "Naudojame 3D tomografiją, mikroskopus ir lazerines technologijas." },
+          { icon: <FaUserMd size={40} />, title: "Patyrę specialistai", desc: "Mūsų gydytojai yra savo srities profesionalai, nuolat besistažuojantys užsienyje." },
+          { icon: <FaMicroscope size={40} />, title: "Moderni įranga", desc: "Dirbame su šiuolaikiška ir patikima įranga, kuri leidžia užtikrinti tikslų gydymą bei aukščiausią paslaugų kokybę."  },
           { icon: <FaAward size={40} />, title: "Garantuota kokybė", desc: "Visiems atliktiems darbams suteikiame ilgalaikę kokybės garantiją." },
           { icon: <FaHeartbeat size={40} />, title: "Be skausmo", desc: "Taikome pažangius nuskausminimo metodus, užtikrinančius komfortą." }
         ].map((item, index) => (

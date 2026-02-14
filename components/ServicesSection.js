@@ -19,10 +19,10 @@ const cardVariants = {
 
 const services = [
   { slug: "burnos-higiena", img: "/images/services/hygiene.png", title: "Burnos higiena", text: "Profesionalus dantų akmenų ir apnašų šalinimas bei profilaktinė priežiūra." },
-  { slug: "plombavimas", img: "/images/services/filling.png", title: "Plombavimas", text: "Estetinis ir funkcionalus dantų atkūrimas moderniomis plombavimo medžiagomis." },
+  { slug: "plombavimas", img: "/images/services/filling.png", title: "Terapinis gydymas", text: "Estetinis ir funkcionalus dantų atkūrimas moderniomis plombavimo medžiagomis." },
   { slug: "kanalai", img: "/images/services/root-canal.png", title: "Kanalų gydymas", text: "Šaknų kanalų gydymas pažangia įranga, siekiant išsaugoti natūralius dantis." },
-  { slug: "dantu-rovimas", img: "/images/services/extraction.png", title: "Dantų rovimas", text: "Neskausmingas ir saugus dantų šalinimas su profesionalia priežiūra po procedūros." },
-  { slug: "implantavimas", img: "/images/services/implant.png", title: "Implantavimas", text: "Ilgalaikiai sprendimai prarastiems dantims atkurti naudojant aukštos kokybės implantus." },
+  { slug: "dantu-rovimas", img: "/images/services/extraction.png", title: "Burnos chirurgija", text: "Neskausmingas ir saugus dantų šalinimas su profesionalia priežiūra po procedūros." },
+  { slug: "implantavimas", img: "/images/services/implant.png", title: "Dantų implantai", text: "Ilgalaikiai sprendimai prarastiems dantims atkurti naudojant aukštos kokybės implantus." },
   { slug: "protezavimas", img: "/images/services/prosthetics.png", title: "Protezavimas", text: "Dantų protezavimas estetiniais vainikėliais, užtikrinant natūralią šypseną ir komfortą." },
 ];
 

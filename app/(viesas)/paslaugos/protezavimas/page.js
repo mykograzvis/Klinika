@@ -91,9 +91,6 @@ export default function DantuProtezavimas() {
           <li className="col-md-6">Neįgaliesiems asmenims</li>
           <li className="col-md-6">Onkologiniams ligoniams</li>
         </ul>
-        <p className="small mt-2 text-muted italic">
-          * Dokumentų tvarkymu pasirūpinsime mes – Jums tereikia atvykti konsultacijai.
-        </p>
       </motion.div>
 
       {/* Kainų sekcija */}
@@ -116,14 +113,14 @@ export default function DantuProtezavimas() {
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Cirkonio keramika</h5>
               <p>Ypač tvirtas ir estetiškas vainikėlis krūminiams dantims</p>
-              <span className="price-tag">nuo €300</span>
+              <span className="price-tag">nuo €350</span>
             </div>
           </div>
           <div className="col-md-4 mb-3">
             <div className="price-card shadow-sm p-4 rounded">
               <h5>Išimamas protezas</h5>
               <p>Pilna arba dalinė plokštelė prarastiems dantims atkurti</p>
-              <span className="price-tag">nuo €250</span>
+              <span className="price-tag">nuo €350</span>
             </div>
           </div>
           <p className="text-muted small">

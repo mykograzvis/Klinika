@@ -42,18 +42,18 @@ function Footer() {
             </p>
             <p>
               <a 
-                href="tel:+1234567890" 
+                href="tel:+37065776229" 
                 className="text-white text-decoration-none"
               >
-                📞 +123 456 7890
+                📞 +37065776229
               </a>
             </p>
             <p>
               <a 
-                href="tel:+1234567888" 
+                href="tel:+37068793063" 
                 className="text-white text-decoration-none"
               >
-                📞 +123 456 7888
+                📞 +37068793063
               </a>
             </p>
             <p>
