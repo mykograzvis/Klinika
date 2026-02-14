@@ -73,9 +73,13 @@ function Footer() {
         <div className="text-center mt-3 border-top pt-3">
           &copy; 2025 Gelmidenta. All rights reserved.
         </div>
+        
       </div>
     </footer>
+    
   );
+  
 }
+
 
 export default Footer;

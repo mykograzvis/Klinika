@@ -144,3 +144,16 @@
   font-weight: bold;
   margin-top: 10px;
 }
+
+.footer,
+.footer p,
+.footer a,
+.footer li,
+.footer h5 {
+  color: white !important;
+}
+
+.footer a:hover {
+  color: #ddd !important;
+  text-decoration: underline;
+}
