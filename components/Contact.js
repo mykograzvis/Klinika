@@ -23,7 +23,7 @@ export default function ContactSection() {
     };
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/', { //api/contact
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -203,7 +203,7 @@ export default function ContactSection() {
 
                     <div className="col-12 mt-4">
                       <button 
-                        type="submit" 
+                        type="Laikinai išjungta" 
                         className="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm transition-all" 
                         style={{ backgroundColor: "#5d7bb3", border: "none" }}
                         disabled={loading}
@@ -214,7 +214,7 @@ export default function ContactSection() {
                             Siunčiama...
                           </>
                         ) : (
-                          'Registruotis vizitui'
+                          'Laikinai išjungta'
                         )}
                       </button>
                       <p className="text-center text-muted small mt-3">* Užpildykite visus privalomus laukus</p>
