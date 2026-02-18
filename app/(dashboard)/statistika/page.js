@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 export default function AdminAnalize() {
   const dabar = new Date();
-  const [filtras, setFiltras] = useState({ 
-    metai: dabar.getFullYear(), 
-    menesis: dabar.getMonth() + 1 
+  const [filtras, setFiltras] = useState({
+    metai: dabar.getFullYear(),
+    menesis: dabar.getMonth() + 1,
   });
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,10 +17,15 @@ export default function AdminAnalize() {
   const fetchAnalize = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`https://localhost:7237/api/Statistika/analize?metai=${filtras.metai}&menesis=${filtras.menesis}`, {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-      });
-      
+      const res = await fetch(
+        `https://localhost:7237/api/Statistika/analize?metai=${filtras.metai}&menesis=${filtras.menesis}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
       if (res.ok) {
         setData(await res.json());
       }
@@ -33,186 +38,436 @@ export default function AdminAnalize() {
 
   const eksportuotiIExcel = () => {
     if (!data) return;
-    let csvRows = [
-      "\uFEFFGydytojas;Vizitai;Pajamos", // UTF-8 BOM lietuviškoms raidėms
-      ...data.gydytojuEfektyvumas.map(g => `${g.vardas};${g.vizitai};${g.pajamos}`)
-    ];
+    const header = "\uFEFFGydytojas;Vizitai;Pajamos";
+    const rows = data.gydytojuEfektyvumas.map(
+      (g) => `${g.vardas};${g.vizitai};${g.pajamos}`
+    );
+    const csvRows = [header, ...rows];
 
-    const blob = new Blob([csvRows.join("\n")], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvRows.join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `Klinikos_Ataskaita_${filtras.metai}_${filtras.menesis}.csv`;
     a.click();
   };
 
-  if (loading && !data) return (
-    <div className="d-flex justify-content-center align-items-center vh-100">
-      <div className="spinner-border text-primary" role="status"></div>
-    </div>
-  );
+  const stats = useMemo(() => {
+    if (!data) {
+      return {
+        totalVisits: 0,
+        avgPerVisit: 0,
+        avgPerPatient: 0,
+        topDoctor: null,
+      };
+    }
 
-  return (
-    <div className="container py-5">
-      {/* HEADER */}
-      <div className="row align-items-center mb-5">
-        <div className="col-md-6">
-          <h1 className="fw-black display-5 text-dark mb-1">Finansinė Analitika</h1>
-          <p className="text-muted fs-5">Klinikos rezultatų stebėjimas realiu laiku</p>
-        </div>
-        <div className="col-md-6">
-          <div className="card border-0 shadow-sm p-3 bg-light">
-            <div className="d-flex gap-2">
-              <select 
-                className="form-select border-0 shadow-none bg-white" 
-                value={filtras.menesis} 
-                onChange={e => setFiltras({...filtras, menesis: parseInt(e.target.value)})}
-              >
-                {["Sausis", "Vasaris", "Kovas", "Balandis", "Gegužė", "Birželis", "Liepa", "Rugpjūtis", "Rugsėjis", "Spalis", "Lapkritis", "Gruodis"].map((m, i) => (
-                  <option key={i+1} value={i+1}>{m}</option>
-                ))}
-              </select>
-              <input 
-                type="number" 
-                className="form-control border-0 shadow-none bg-white" 
-                style={{ width: '120px' }}
-                value={filtras.metai} 
-                onChange={e => setFiltras({...filtras, metai: parseInt(e.target.value)})} 
-              />
-              <button className="btn btn-dark rounded-3 px-4" onClick={eksportuotiIExcel}>
-                Eksportuoti
-              </button>
-            </div>
-          </div>
+    const totalVisits = data.gydytojuEfektyvumas.reduce(
+      (sum, g) => sum + g.vizitai,
+      0
+    );
+    const avgPerVisit =
+      totalVisits > 0 ? data.bendraSuma / totalVisits : 0;
+    const avgPerPatient =
+      data.pacientuSkaicius > 0
+        ? data.bendraSuma / data.pacientuSkaicius
+        : 0;
+
+    let topDoctor = null;
+    if (data.gydytojuEfektyvumas.length > 0 && data.bendraSuma > 0) {
+      const max = data.gydytojuEfektyvumas.reduce((best, cur) =>
+        cur.pajamos > best.pajamos ? cur : best
+      );
+      topDoctor = {
+        ...max,
+        procentas: (max.pajamos / data.bendraSuma) * 100,
+      };
+    }
+
+    return { totalVisits, avgPerVisit, avgPerPatient, topDoctor };
+  }, [data]);
+
+  if (loading && !data) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status" />
+          <div className="text-muted">Kraunama statistika...</div>
         </div>
       </div>
+    );
+  }
 
-      {data && (
-        <>
-          {/* KPI KORTELĖS */}
-          <div className="row g-4 mb-5">
-            <div className="col-md-4">
-              <div className="card border-0 shadow-lg p-4 h-100" style={{background: 'linear-gradient(45deg, #0d6efd, #0dcaf0)', color: 'white'}}>
-                <div className="d-flex justify-content-between align-items-start mb-3">
-                  <span className="fs-1">💰</span>
-                  <span className="badge bg-white bg-opacity-25 rounded-pill">Mėnesio apyvarta</span>
-                </div>
-                <h2 className="display-6 fw-bold mb-1">{data.bendraSuma.toLocaleString()} €</h2>
-                <p className="m-0 opacity-75 small">Tik patvirtintos ir užbaigtos sąskaitos</p>
-              </div>
-            </div>
-            
-            <div className="col-md-4">
-              <div className="card border-0 shadow-sm p-4 h-100 bg-white">
-                <div className="d-flex justify-content-between align-items-start mb-3">
-                  <span className="fs-1">👥</span>
-                  <span className="badge bg-light text-muted rounded-pill">Klientų bazė</span>
-                </div>
-                <h2 className="display-6 fw-bold mb-1 text-dark">{data.pacientuSkaicius}</h2>
-                <p className="m-0 text-success small fw-medium">Unikalūs pacientai šį mėnesį</p>
-              </div>
+  return (
+    <div className="w-100 min-vh-100 bg-light py-4 d-flex flex-column align-items-center">
+      <div className="container" style={{ maxWidth: "1150px" }}>
+        {/* HEADER */}
+        <header className="mb-4 pb-3 border-bottom">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+              <h2 className="fw-bold text-dark mb-1">Finansinė analizė</h2>
+              <p className="text-muted mb-0">
+                Vizitų ir pajamų statistika pasirinktam mėnesiui.
+              </p>
             </div>
 
-            <div className="col-md-4">
-              <div className="card border-0 shadow-sm p-4 h-100 bg-white border-start border-primary border-5">
-                <div className="d-flex justify-content-between align-items-start mb-3">
-                  <span className="fs-1">📈</span>
-                  <span className="badge bg-light text-muted rounded-pill">Pelningumas</span>
-                </div>
-                <h2 className="display-6 fw-bold mb-1 text-dark">
-                  {data.pacientuSkaicius > 0 ? (data.bendraSuma / data.pacientuSkaicius).toFixed(0) : 0} €
-                </h2>
-                <p className="m-0 text-muted small">Vidutinė pajamų suma vienam pacientui</p>
+            <div className="card border-0 shadow-sm bg-white">
+              <div className="card-body py-2 px-3 d-flex gap-2 align-items-center">
+                <select
+                  className="form-select form-select-sm"
+                  style={{ minWidth: 140 }}
+                  value={filtras.menesis}
+                  onChange={(e) =>
+                    setFiltras({
+                      ...filtras,
+                      menesis: parseInt(e.target.value, 10),
+                    })
+                  }
+                >
+                  {[
+                    "Sausis",
+                    "Vasaris",
+                    "Kovas",
+                    "Balandis",
+                    "Gegužė",
+                    "Birželis",
+                    "Liepa",
+                    "Rugpjūtis",
+                    "Rugsėjis",
+                    "Spalis",
+                    "Lapkritis",
+                    "Gruodis",
+                  ].map((m, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+
+                <input
+                  type="number"
+                  className="form-control form-control-sm"
+                  style={{ width: 90 }}
+                  value={filtras.metai}
+                  onChange={(e) =>
+                    setFiltras({
+                      ...filtras,
+                      metai: parseInt(e.target.value, 10),
+                    })
+                  }
+                />
+
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={eksportuotiIExcel}
+                >
+                  Eksportuoti CSV
+                </button>
               </div>
             </div>
           </div>
+        </header>
 
-          <div className="row g-5">
-            {/* GYDYTOJŲ LENTELĖ */}
-            <div className="col-lg-8">
-              <div className="bg-white rounded-4 shadow-sm p-4 border h-100">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h4 className="fw-bold m-0 text-dark">Gydytojų Našumas</h4>
-                  <span className="text-muted small">Iš viso gydytojų: {data.gydytojuEfektyvumas.length}</span>
-                </div>
-                <div className="table-responsive">
-                  <table className="table table-hover align-middle border-0">
-                    <thead className="bg-light">
-                      <tr className="text-muted small text-uppercase">
-                        <th className="border-0 py-3">Specialistas</th>
-                        <th className="border-0 py-3 text-center">Vizitai</th>
-                        <th className="border-0 py-3">Apyvartos dalis</th>
-                        <th className="border-0 py-3 text-end">Suma</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.gydytojuEfektyvumas.map((g, i) => (
-                        <tr key={i}>
-                          <td className="py-3">
-                            <div className="d-flex align-items-center">
-                              <div className="avatar me-3 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style={{width: '40px', height: '40px'}}>
-                                {g.vardas.charAt(0)}
-                              </div>
-                              <span className="fw-semibold text-dark">{g.vardas}</span>
-                            </div>
-                          </td>
-                          <td className="text-center">
-                            <span className="fw-bold text-muted">{g.vizitai}</span>
-                          </td>
-                          <td style={{minWidth: '150px'}}>
-                            <div className="progress rounded-pill" style={{height: '6px'}}>
-                              <div 
-                                className="progress-bar bg-primary" 
-                                style={{ width: `${data.bendraSuma > 0 ? (g.pajamos / data.bendraSuma) * 100 : 0}%` }}
-                              ></div>
-                            </div>
-                          </td>
-                          <td className="text-end fw-bold text-dark">{g.pajamos.toLocaleString()} €</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
+        {!data && (
+          <section className="text-center py-5">
+            <h4 className="text-muted mb-2">
+              Nėra duomenų pasirinktam laikotarpiui.
+            </h4>
+            <p className="text-muted mb-0">
+              Pabandykite pakeisti mėnesį arba metus.
+            </p>
+          </section>
+        )}
 
-            {/* PASLAUGŲ ANALIZĖ */}
-            <div className="col-lg-4">
-              <div className="bg-dark text-white rounded-4 shadow-sm p-4 h-100">
-                <h4 className="fw-bold mb-4">Top Paslaugos</h4>
-                {data.topProceduros.length === 0 && <p className="text-muted">Šį mėnesį procedūrų neatlikta.</p>}
-                {data.topProceduros.map((p, i) => (
-                  <div key={i} className="mb-4">
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className="small fw-light text-info text-uppercase">{p.pavadinimas}</span>
-                      <span className="fw-bold">{p.suma.toLocaleString()} €</span>
-                    </div>
-                    <div className="progress bg-secondary bg-opacity-25" style={{ height: "8px" }}>
-                      <div 
-                        className="progress-bar bg-info shadow-sm" 
-                        role="progressbar" 
-                        style={{ width: `${data.bendraSuma > 0 ? (p.suma / data.bendraSuma) * 100 : 0}%` }}
-                      ></div>
-                    </div>
-                    <div className="d-flex justify-content-between mt-2">
-                      <small className="text-muted">{p.kiekis} kartai (-ų)</small>
-                      <small className="text-info">{((p.suma / data.bendraSuma) * 100).toFixed(1)}%</small>
+        {data && (
+          <>
+            {/* 1. APŽVALGA */}
+            <section className="mb-4">
+              <h6 className="text-uppercase text-muted small mb-2">
+                Apžvalga
+              </h6>
+              <div className="row g-3">
+                <div className="col-md-3">
+                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-primary">
+                    <div className="card-body">
+                      <div className="text-muted small mb-1">
+                        Bendra mėnesio apyvarta
+                      </div>
+                      <div className="h4 fw-bold mb-0">
+                        {data.bendraSuma.toLocaleString()} €
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+                </div>
 
-      {data && data.gydytojuEfektyvumas.length === 0 && (
-        <div className="text-center py-5">
-          <div className="display-1 mb-4">📁</div>
-          <h3 className="text-muted">Nėra duomenų apie {filtras.metai} m. {filtras.menesis} mėn.</h3>
-          <p>Patikrinkite, ar yra užbaigtų vizitų šiame laikotarpyje.</p>
-        </div>
-      )}
+                <div className="col-md-3">
+                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-info">
+                    <div className="card-body">
+                      <div className="text-muted small mb-1">
+                        Vizitų skaičius
+                      </div>
+                      <div className="h4 fw-bold mb-0">
+                        {stats.totalVisits}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-3">
+                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-success">
+                    <div className="card-body">
+                      <div className="text-muted small mb-1">
+                        Unikalūs pacientai
+                      </div>
+                      <div className="h4 fw-bold mb-0">
+                        {data.pacientuSkaicius}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-3">
+                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-secondary">
+                    <div className="card-body">
+                      <div className="text-muted small mb-1">
+                        Vidutinė suma vizitui
+                      </div>
+                      <div className="h4 fw-bold mb-0">
+                        {stats.avgPerVisit.toFixed(2)} €
+                      </div>
+                      <div className="small text-muted">
+                        Pajamos vienam vizitui
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <hr className="my-4" />
+
+            {/* 2. PACIENTAI + TOP GYDYTOJAS */}
+            <section className="mb-4">
+              <div className="row g-3">
+                <div className="col-md-4">
+                  <div className="card border-0 shadow-sm h-100">
+                    <div className="card-body">
+                      <div className="text-muted small mb-1">
+                        Vidutinė suma pacientui
+                      </div>
+                      <div className="h4 fw-bold mb-0">
+                        {stats.avgPerPatient.toFixed(2)} €
+                      </div>
+                      <div className="small text-muted">
+                        Bendra apyvarta / unikalūs pacientai
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {stats.topDoctor && (
+                  <div className="col-md-8">
+                    <div className="card border-0 shadow-sm h-100">
+                      <div className="card-body">
+                        <div className="text-muted small mb-2">
+                          Top gydytojas pagal apyvartą
+                        </div>
+                        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                          <div>
+                            <div className="h5 fw-bold mb-1">
+                              {stats.topDoctor.vardas}
+                            </div>
+                            <div className="small text-muted mb-1">
+                              Vizitai: {stats.topDoctor.vizitai} · Pajamos:{" "}
+                              {stats.topDoctor.pajamos.toLocaleString()} €
+                            </div>
+                            <div
+                              className="progress"
+                              style={{ height: "6px", maxWidth: "260px" }}
+                            >
+                              <div
+                                className="progress-bar bg-primary"
+                                role="progressbar"
+                                style={{
+                                  width: `${Math.min(
+                                    stats.topDoctor.procentas,
+                                    100
+                                  ).toFixed(1)}%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="text-end">
+                            <div className="text-muted small">
+                              Gydytojo apyvartos dalis
+                            </div>
+                            <div className="h4 fw-bold mb-0">
+                              {stats.topDoctor.procentas.toFixed(1)}%
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <hr className="my-4" />
+
+            {/* 3. GYDYTOJŲ „GRAFIKAS“ + TOP PASLAUGOS */}
+            <section className="mb-3">
+              <div className="row g-4">
+                {/* Gydytojų lentelė + juostinis grafikas */}
+                <div className="col-lg-8">
+                  <div className="card border-0 shadow-sm h-100">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-between align-items-center mb-3">
+                        <h6 className="text-uppercase text-muted small mb-0">
+                          Gydytojų našumas
+                        </h6>
+                        <span className="text-muted small">
+                          Gydytojų: {data.gydytojuEfektyvumas.length}
+                        </span>
+                      </div>
+
+                      <div className="table-responsive mb-3">
+                        <table className="table table-sm align-middle mb-0">
+                          <thead className="table-light">
+                            <tr className="small text-muted text-uppercase">
+                              <th style={{ width: "40%" }}>Gydytojas</th>
+                              <th className="text-center" style={{ width: "10%" }}>
+                                Vizitai
+                              </th>
+                              <th className="text-end" style={{ width: "20%" }}>
+                                Suma
+                              </th>
+                              <th className="text-end" style={{ width: "15%" }}>
+                                Apyvartos %
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {data.gydytojuEfektyvumas.map((g, i) => {
+                              const procentas =
+                                data.bendraSuma > 0
+                                  ? (g.pajamos / data.bendraSuma) * 100
+                                  : 0;
+                              return (
+                                <tr key={i}>
+                                  <td>
+                                    <div className="fw-semibold">
+                                      {g.vardas}
+                                    </div>
+                                    <div className="progress mt-1" style={{ height: "4px" }}>
+                                      <div
+                                        className="progress-bar bg-primary"
+                                        role="progressbar"
+                                        style={{
+                                          width: `${Math.min(
+                                            procentas,
+                                            100
+                                          ).toFixed(1)}%`,
+                                        }}
+                                      ></div>
+                                    </div>
+                                  </td>
+                                  <td className="text-center">{g.vizitai}</td>
+                                  <td className="text-end">
+                                    {g.pajamos.toLocaleString()} €
+                                  </td>
+                                  <td className="text-end">
+                                    {procentas.toFixed(1)}%
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {data.gydytojuEfektyvumas.length === 0 && (
+                        <p className="text-muted small mb-0">
+                          Šiame laikotarpyje nėra gydytojų vizitų.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Top paslaugos su juostomis */}
+                <div className="col-lg-4">
+                  <div className="card border-0 shadow-sm h-100">
+                    <div className="card-body d-flex flex-column">
+                      <h6 className="text-uppercase text-muted small mb-3">
+                        Top paslaugos
+                      </h6>
+
+                      {data.topProceduros.length === 0 && (
+                        <p className="text-muted mb-0">
+                          Šį mėnesį procedūrų neatlikta.
+                        </p>
+                      )}
+
+                      {data.topProceduros.length > 0 && (
+                        <div
+                          className="small"
+                          style={{ maxHeight: 260, overflowY: "auto" }}
+                        >
+                          {data.topProceduros.map((p, i) => {
+                            const procentas =
+                              data.bendraSuma > 0
+                                ? (p.suma / data.bendraSuma) * 100
+                                : 0;
+                            return (
+                              <div key={i} className="mb-3 pb-2 border-bottom">
+                                <div className="d-flex justify-content-between mb-1">
+                                  <span className="fw-semibold">
+                                    {p.pavadinimas}
+                                  </span>
+                                  <span className="fw-bold">
+                                    {p.suma.toLocaleString()} €
+                                  </span>
+                                </div>
+                                <div
+                                  className="progress bg-light"
+                                  style={{ height: "6px" }}
+                                >
+                                  <div
+                                    className="progress-bar bg-info"
+                                    role="progressbar"
+                                    style={{
+                                      width: `${Math.min(
+                                        procentas,
+                                        100
+                                      ).toFixed(1)}%`,
+                                    }}
+                                  ></div>
+                                </div>
+                                <div className="d-flex justify-content-between mt-1">
+                                  <span className="text-muted">
+                                    {p.kiekis} kartai (-ų)
+                                  </span>
+                                  <span className="text-muted">
+                                    {procentas.toFixed(1)}% apyvartos
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+      </div>
     </div>
   );
 }

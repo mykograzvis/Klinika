@@ -49,7 +49,7 @@ export async function POST(request) {
     // Email to clinic
 const mailOptions = {
   from: process.env.EMAIL_USER,
-  to: 'rskeistuolis@gmail.com',
+  to: 'gelmidentabot@gmail.com',
   replyTo: email,
   subject: `🦷 NAUJA REGISTRACIJA: ${name} - ${service}`, // ← Aiškesnis subject
   html: `

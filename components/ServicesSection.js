@@ -44,7 +44,7 @@ export default function ServicesSection() {
       <div className="row g-4 mb-5">
         {services.map((service, i) => (
           <motion.div key={i} className="col-md-4 text-center" variants={cardVariants}>
-            <Link href={`/paslaugos/${service.slug}`} className="text-decoration-none">
+            <Link href={`/paslaugos/${service.slug}`} className="text-decoration-none" prefetch={false}>
               <div className="card shadow-sm p-4 h-100 service-card border-0">
                 <img src={service.img} alt={service.title} className="service-icon mb-3" />
                 <h5 className="service-card-title">{service.title}</h5>
@@ -64,6 +64,7 @@ export default function ServicesSection() {
         <Link 
           href="/paslaugos" 
           className="btn btn-lg px-5 rounded-pill shadow-sm all-services-btn"
+          prefetch={false}
           style={{ 
             backgroundColor: "#5d7bb3", 
             color: "white", 
