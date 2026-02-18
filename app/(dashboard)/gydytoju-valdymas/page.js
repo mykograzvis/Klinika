@@ -95,7 +95,7 @@ export default function AdminGydytojai() {
               <option value="">Pasirinkite...</option>
               <option value="Gydytojas odontologas">Gydytojas odontologas</option>
               <option value="Burnos chirurgas">Burnos chirurgas</option>
-              <option value="Ortodontas">Ortodontas</option>
+              <option value="Endodontas">Endodontas</option>
               <option value="Burnos higienistas">Burnos higienistas</option>
             </select>
           </div>

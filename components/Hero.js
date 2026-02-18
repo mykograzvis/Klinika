@@ -76,9 +76,8 @@ function Hero() {
         <h1>{currentSlide.title}</h1>
         <p>{currentSlide.subtitle}</p>
         <div className="hero-buttons">
-          <button className="btn btn-primary cta-button">Registracija</button>
-          <a href="tel:+37060000000" className="btn btn-outline-light ms-3 phone-button">
-            <i className="bi bi-telephone-fill me-2"></i>+370 600 00000
+          <a href="tel:+37065776229" className="btn btn-outline-light ms-3 phone-button">
+            <i className="bi bi-telephone-fill me-2"></i>+370 657 76229
           </a>
         </div>
       </div>

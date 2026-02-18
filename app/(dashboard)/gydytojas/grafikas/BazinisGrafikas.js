@@ -27,11 +27,7 @@ export default function BazinisGrafikas({ grafikas, updateDiena, onSave, saving 
                     <span className="text-muted small">iki</span>
                     <input type="time" className="form-control" value={d.pabaiga || ""} onChange={e => updateDiena(index, 'pabaiga', e.target.value)} />
                   </div>
-                  <div className="d-flex align-items-center gap-2 bg-info bg-opacity-10 p-2 rounded-3">
-                    <span className="small fw-bold text-info">☕ PERTRAUKA:</span>
-                    <input type="time" className="form-control form-control-sm" value={d.pertraukaNuo || ""} onChange={e => updateDiena(index, 'pertraukaNuo', e.target.value)} />
-                    <input type="time" className="form-control form-control-sm" value={d.pertraukaIki || ""} onChange={e => updateDiena(index, 'pertraukaIki', e.target.value)} />
-                  </div>
+
                 </div>
               ) : <div className="col-md-9 text-muted italic small text-end">Šią dieną vizitai nepriimami</div>}
             </div>

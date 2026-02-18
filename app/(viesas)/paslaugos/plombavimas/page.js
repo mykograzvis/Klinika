@@ -110,6 +110,7 @@ export default function Plombavimas() {
         <Link
           href="/kainos"
           className="btn btn-outline-primary mt-4 px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm"
+          prefetch={false}
           style={{
             borderRadius: "2rem",
             fontSize: "1.1rem",

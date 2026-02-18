@@ -27,7 +27,7 @@ export default function GrafikoIsimtys({ isimtys, naujaIsimtis, setNaujaIsimtis,
     <div className="row g-4 mb-5">
       {/* KAIRĖ: Pridėjimo forma */}
       <div className="col-md-5">
-        <div className="card shadow-sm border-0 rounded-4 p-4 bg-warning bg-opacity-10 border-warning border-opacity-25">
+        <div className="card shadow-sm border-0 rounded-4 p-4 bg-opacity-10 border-warning border-opacity-25">
           <h5 className="fw-bold mb-3">🚫 Paskelbti laisvą dieną</h5>
           <div className="mb-3">
             <label className="small fw-bold mb-1">Pasirinkite datą</label>

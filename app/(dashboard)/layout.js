@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Sidebar from "@/components/Sidebar"; // Importuojame naują komponentą
+import styles from "./style.module.css";
 
 export default function DashboardLayout({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
