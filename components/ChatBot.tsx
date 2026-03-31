@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import styles from "./ChatBot.module.css";
 
 interface Message {
   role: "user" | "assistant";
@@ -8,112 +9,196 @@ interface Message {
 }
 
 export default function ChatBot() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "assistant",
+      content: "Sveiki! Esu klinikos asistentas. Galiu padėti surasti pacientų informaciją, patikrinti vizitų istoriją arba užregistruoti naują vizitą.",
+    },
+  ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(scrollToBottom, [messages]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+    const text = input.trim();
+    if (!text || loading) return;
 
-    const userMessage: Message = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const userMsg: Message = { role: "user", content: text };
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setInput("");
     setLoading(true);
 
     try {
-      // Tavo .NET backend URL (pakeisk port’ą)
+      const token = localStorage.getItem("token");
+
+      // Pirmą sveikinimo žinutę praleidžiam — backend jos nepriima
+      const history = messages
+        .slice(1)
+        .map(m => ({ role: m.role, content: m.content }));
+
       const res = await fetch("https://localhost:7237/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ message: text, history }),
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`${res.status}: ${errText}`);
+      }
 
       const data = await res.json();
-      const aiMessage: Message = { role: "assistant", content: data.response };
-      setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      const errorMsg: Message = { 
-        role: "assistant", 
-        content: "Klaida jungiantis prie AI. Patikrink, ar LM Studio serveris paleistas localhost:1234." 
-      };
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages([
+        ...updatedMessages,
+        { role: "assistant", content: data.response ?? "Negavau atsakymo." },
+      ]);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Nežinoma klaida";
+      setMessages([
+        ...updatedMessages,
+        { role: "assistant", content: `Klaida: ${errorMessage}` },
+      ]);
+    } finally {
+      setLoading(false);
+      inputRef.current?.focus();
     }
-
-    setLoading(false);
   };
 
-  return (
-    <div className="max-w-2xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">🦷 Klinikos asistentas</h2>
-        <p className="text-gray-600">Paklauskite apie laisvus laikus, gydytojus ar rezervacijas</p>
-      </div>
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
 
-      {/* Messages */}
-      <div className="h-96 overflow-y-auto bg-white border-2 border-gray-200 rounded-2xl p-6 mb-6 shadow-xl">
-        {messages.length === 0 ? (
-          <div className="text-center text-gray-500 py-12">
-            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full flex items-center justify-center">
-              <span className="text-2xl">🤖</span>
+  const clearChat = () => {
+    setMessages([
+      {
+        role: "assistant",
+        content: "Sveiki! Esu klinikos asistentas. Galiu padėti surasti pacientų informaciją, patikrinti vizitų istoriją arba užregistruoti naują vizitą.",
+      },
+    ]);
+    setInput("");
+  };
+
+  const quickActions = [
+    "Kada paskutinis Jonas Stepukonis vizitas?",
+    "Laisvi laikai higienai šią savaitę",
+    "Paciento vizitų istorija",
+  ];
+
+  return (
+    <div className={styles.wrapper}>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.headerLeft}>
+            <div className={styles.avatar}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" fill="currentColor" opacity="0.3"/>
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-6h2v2h-2zm0-8h2v6h-2z" fill="currentColor"/>
+              </svg>
             </div>
-            <p>Parašykite žinutę ir pradėkime!</p>
+            <div>
+              <h1 className={styles.title}>Klinikos asistentas</h1>
+              <span className={styles.status}>
+                <span className={styles.statusDot} />
+                Veikia
+              </span>
+            </div>
           </div>
-        ) : (
-          messages.map((msg, i) => (
-            <div key={i} className={`flex ${msg.role === "user" ? "justify-end mb-4" : "justify-start mb-4"}`}>
-              <div className={`max-w-xs lg:max-w-md p-4 rounded-2xl shadow-md ${
-                msg.role === "user" 
-                  ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white" 
-                  : "bg-gray-100 border"
-              }`}>
-                <p>{msg.content}</p>
+          <button className={styles.clearBtn} onClick={clearChat} title="Pradėti naują pokalbį">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M8 16H3v5"/>
+            </svg>
+            Naujas
+          </button>
+        </div>
+
+        <div className={styles.messages}>
+          {messages.map((msg, i) => (
+            <div key={i} className={`${styles.messageRow} ${msg.role === "user" ? styles.userRow : styles.assistantRow}`}>
+              {msg.role === "assistant" && <div className={styles.msgAvatar}>AI</div>}
+              <div className={`${styles.bubble} ${msg.role === "user" ? styles.userBubble : styles.assistantBubble}`}>
+                {formatMessage(msg.content)}
               </div>
             </div>
-          ))
-        )}
-        {loading && (
-          <div className="flex justify-start mb-4">
-            <div className="p-4 bg-gray-100 border rounded-2xl animate-pulse">
-              <div className="h-4 bg-gray-300 rounded w-48"></div>
+          ))}
+
+          {loading && (
+            <div className={`${styles.messageRow} ${styles.assistantRow}`}>
+              <div className={styles.msgAvatar}>AI</div>
+              <div className={`${styles.bubble} ${styles.assistantBubble} ${styles.loadingBubble}`}>
+                <span className={styles.dot} />
+                <span className={styles.dot} />
+                <span className={styles.dot} />
+              </div>
             </div>
+          )}
+          <div ref={bottomRef} />
+        </div>
+
+        {messages.length === 1 && (
+          <div className={styles.quickActions}>
+            {quickActions.map((q, i) => (
+              <button key={i} className={styles.quickBtn} onClick={() => { setInput(q); inputRef.current?.focus(); }}>
+                {q}
+              </button>
+            ))}
           </div>
         )}
-        <div ref={messagesEndRef} />
-      </div>
 
-      {/* Input */}
-      <div className="flex gap-3 p-4 bg-white border-2 border-gray-200 rounded-2xl shadow-lg">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-          className="flex-1 p-4 border-none outline-none text-lg placeholder-gray-500 resize-none"
-          placeholder="Pvz: kokie laikai laisvi pas Sandrą higienai..."
-          disabled={loading}
-          maxLength={500}
-        />
-        <button
-          onClick={sendMessage}
-          disabled={loading || !input.trim()}
-          className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "..." : "Siųsti"}
-        </button>
-      </div>
-
-      <div className="text-xs text-gray-500 text-center mt-4">
-        AI veikia per vietinį Llama modelį • LM Studio localhost:1234
+        <div className={styles.inputArea}>
+          <textarea
+            ref={inputRef}
+            className={styles.textarea}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Rašykite klausimą... (Enter – siųsti, Shift+Enter – nauja eilutė)"
+            rows={1}
+            disabled={loading}
+          />
+          <button className={styles.sendBtn} onClick={sendMessage} disabled={!input.trim() || loading} title="Siųsti">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
+  );
+}
+
+function formatMessage(text: string) {
+  const lines = text.split("\n");
+  return (
+    <>
+      {lines.map((line, i) => {
+        const parts = line.split(/(\*\*[^*]+\*\*)/g);
+        return (
+          <span key={i}>
+            {parts.map((part, j) =>
+              part.startsWith("**") && part.endsWith("**")
+                ? <strong key={j}>{part.slice(2, -2)}</strong>
+                : part
+            )}
+            {i < lines.length - 1 && <br />}
+          </span>
+        );
+      })}
+    </>
   );
 }

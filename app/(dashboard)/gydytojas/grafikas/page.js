@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import BazinisGrafikas from "./BazinisGrafikas";
 import GrafikoIsimtys from "./GrafikoIsimtys";
+import styles from "./grafikas.module.css";
 
 const parseJwt = (token) => {
-  try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
+  try { return JSON.parse(atob(token.split(".")[1])); } catch { return null; }
 };
 
 export default function GrafikoValdymas() {
@@ -37,7 +38,7 @@ export default function GrafikoValdymas() {
   const fetchGydytojai = async () => {
     try {
       const res = await fetch("https://localhost:7237/api/Gydytojai", {
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -53,8 +54,8 @@ export default function GrafikoValdymas() {
     const query = pasirinktasGydytojasId ? `?gydytojoId=${pasirinktasGydytojasId}` : "";
     try {
       const [gRes, iRes] = await Promise.all([
-        fetch(`https://localhost:7237/api/Grafikas/mano${query}`, { headers: { "Authorization": `Bearer ${token}` }}),
-        fetch(`https://localhost:7237/api/Grafikas/isimtys${query}`, { headers: { "Authorization": `Bearer ${token}` }})
+        fetch(`https://localhost:7237/api/Grafikas/mano${query}`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`https://localhost:7237/api/Grafikas/isimtys${query}`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       if (gRes.ok) setGrafikas(await gRes.json());
       if (iRes.ok) setIsimtys(await iRes.json());
@@ -66,10 +67,10 @@ export default function GrafikoValdymas() {
     const query = pasirinktasGydytojasId ? `?gydytojoId=${pasirinktasGydytojasId}` : "";
     const res = await fetch(`https://localhost:7237/api/Grafikas/atnaujinti${query}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
-      body: JSON.stringify(grafikas)
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+      body: JSON.stringify(grafikas),
     });
-    if (res.ok) alert("✅ Grafikas išsaugotas!");
+    if (res.ok) alert("Grafikas išsaugotas.");
     setSaving(false);
   };
 
@@ -79,85 +80,103 @@ export default function GrafikoValdymas() {
     const decoded = parseJwt(token);
     const manoId = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/nameidentifier"] || decoded["sub"];
 
-    const body = { 
-        gydytojoId: userRole === "Adminas" ? pasirinktasGydytojasId : (manoId || ""),
-        data: new Date(naujaIsimtis.data).toISOString(), 
-        priezastis: naujaIsimtis.priezastis || "Laisvadienis",
-        arDirba: false
+    const gydytojoId = userRole === "Adminas"
+      ? String(pasirinktasGydytojasId)
+      : String(manoId || "");
+
+    if (!gydytojoId) return alert("Nepavyko nustatyti gydytojo ID.");
+
+    const body = {
+      gydytojoId,
+      data: new Date(naujaIsimtis.data).toISOString(),
+      priezastis: naujaIsimtis.priezastis || "Laisvadienis",
+      arDirba: false,
     };
 
-    const res = await fetch("https://localhost:7237/api/Grafikas/isimtis", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify(body)
-    });
+    try {
+      const res = await fetch("https://localhost:7237/api/Grafikas/isimtis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
 
-    if (res.ok) {
-      setNaujaIsimtis({ data: "", priezastis: "", arDirba: false });
-      fetchDuomenys();
-      alert("✅ Išimtis pridėta!");
+      const responseText = await res.text();
+
+      if (res.ok) {
+        const data = JSON.parse(responseText);
+        setNaujaIsimtis({ data: "", priezastis: "", arDirba: false });
+        fetchDuomenys();
+        if (data.atsauktuKiekis > 0)
+          alert(`Išimtis pridėta. Atšaukta vizitų: ${data.atsauktuKiekis}`);
+      } else {
+        alert(`Klaida ${res.status}: ${responseText}`);
+      }
+    } catch (err) {
+      alert(`Ryšio klaida: ${err.message}`);
     }
+  };
+
+  const handleTrintiIsimti = async (id) => {
+    if (!confirm("Ištrinti šią išimtį?")) return;
+    const res = await fetch(`https://localhost:7237/api/Grafikas/isimtis/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    if (res.ok) fetchDuomenys();
+    else alert("Nepavyko ištrinti.");
   };
 
   const updateDiena = (index, laukas, verte) => {
     const naujas = [...grafikas];
     naujas[index][laukas] = verte;
-    if (laukas === 'dirba' && verte && !naujas[index].pradzia) {
-        naujas[index].pradzia = "08:00"; naujas[index].pabaiga = "17:00";
-        naujas[index].pertraukaNuo = "12:00"; naujas[index].pertraukaIki = "13:00";
+    if (laukas === "dirba" && verte && !naujas[index].pradzia) {
+      naujas[index].pradzia = "08:00";
+      naujas[index].pabaiga = "17:00";
     }
     setGrafikas(naujas);
   };
 
-  // page.js viduje pridėk šią funkciją:
-const handleTrintiIsimti = async (id) => {
-    if (!confirm("Ar tikrai norite ištrinti šią išimtį?")) return;
-
-    const res = await fetch(`https://localhost:7237/api/Grafikas/isimtis/${id}`, {
-        method: "DELETE",
-        headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
-    });
-
-    if (res.ok) {
-        fetchDuomenys(); // Atnaujiname sąrašą
-    } else {
-        alert("Nepavyko ištrinti.");
-    }
-};
-
-// Return dalyje perduok funkciją komponentui:
-
-
-  if (loading && !grafikas.length) return <div className="p-5 text-center"><div className="spinner-border text-primary"></div></div>;
+  if (loading && !grafikas.length)
+    return (
+      <div className={styles.loadingState}>
+        <div className={styles.spinner} />
+      </div>
+    );
 
   return (
-    <div className="container py-5" style={{ maxWidth: '1000px' }}>
-      {userRole === "Adminas" && (
-        <div className="alert alert-primary d-flex justify-content-between align-items-center mb-4 rounded-4 shadow-sm border-0">
-          <h5 className="fw-bold m-0 text-primary">👨‍⚕️ Administratoriaus valdymas</h5>
-          <div style={{ minWidth: '250px' }}>
-            <select className="form-select border-primary fw-bold" value={pasirinktasGydytojasId} onChange={e => setPasirinktasGydytojasId(e.target.value)}>
-              {gydytojai.map(g => <option key={g.id} value={g.id}>{g.vardas} {g.pavarde}</option>)}
-            </select>
-          </div>
-        </div>
-      )}
+    <div className={styles.page}>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Darbo grafikas</h1>
+        {userRole === "Adminas" && (
+          <select
+            className={styles.doctorSelect}
+            value={pasirinktasGydytojasId}
+            onChange={e => setPasirinktasGydytojasId(e.target.value)}
+          >
+            {gydytojai.map(g => (
+              <option key={g.id} value={g.id}>{g.vardas} {g.pavarde}</option>
+            ))}
+          </select>
+        )}
+      </div>
 
-      <BazinisGrafikas 
-        grafikas={grafikas} 
-        updateDiena={updateDiena} 
-        onSave={handleIssaugotiBaze} 
-        saving={saving} 
+      <BazinisGrafikas
+        grafikas={grafikas}
+        updateDiena={updateDiena}
+        onSave={handleIssaugotiBaze}
+        saving={saving}
       />
-      
-      <h4 className="fw-bold mb-4">📅 Konkrečių dienų laisvadieniai</h4>
-      <GrafikoIsimtys 
-    isimtys={isimtys} 
-    naujaIsimtis={naujaIsimtis} 
-    setNaujaIsimtis={setNaujaIsimtis} 
-    onAdd={handlePridetiIsimti} 
-    onDelete={handleTrintiIsimti} // <-- Naujas prop'sas
-/>
+
+      <GrafikoIsimtys
+        isimtys={isimtys}
+        naujaIsimtis={naujaIsimtis}
+        setNaujaIsimtis={setNaujaIsimtis}
+        onAdd={handlePridetiIsimti}
+        onDelete={handleTrintiIsimti}
+      />
     </div>
   );
 }
