@@ -66,7 +66,6 @@ export default function PacientoIstorija() {
     } catch (err) { alert("Sistemos klaida."); }
   };
 
-  // --- ATŠAUKIMO FUNKCIJA SUGRĄŽINTA ---
   const handleCancel = async (e, id) => {
     e.stopPropagation();
     if (!confirm("Ar tikrai norite atšaukti šį vizitą?")) return;
@@ -93,23 +92,14 @@ export default function PacientoIstorija() {
   const dabar = new Date();
 const filteredVizitai = vizitai
     .filter(v => {
-      // Suvienodiname būsenų pavadinimus (dėl case-sensitivity arba skirtingų API formatų)
       const busena = (v.busena || v.Busena);
       const isPaid = busena === "Apmokėta";
       const isCanceled = busena === "Atšauktas";
-      const isCompleted = busena === "Atliktas"; // NAUJA: Tikriname ar būsena yra "Atliktas"
+      const isCompleted = busena === "Atliktas";
 
-      // 1. Jei vizitas atšauktas, jo nerodome visai
       if (isCanceled) return false; 
-
-      // 2. Apmokėti vizitai (nesvarbu, ar jie ateities, ar praeities)
       if (activeTab === "paid") return isPaid;
-
-      // 3. Atlikti vizitai (tik tie, kurių būsena "Atliktas" ir jie nėra apmokėti)
-      // Jei norite, kad apmokėti vizitai dingtų iš "Atlikti" ir liktų tik "Apmokėti", palikite !isPaid
       if (activeTab === "past") return isCompleted && !isPaid;
-
-      // 4. Būsimi vizitai (visi, kurie nėra atšaukti, nėra apmokėti ir nėra pažymėti kaip atlikti)
       if (activeTab === "future") return !isCompleted && !isPaid;
 
       return false;
@@ -153,8 +143,10 @@ const filteredVizitai = vizitai
                       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                         <div className="d-flex align-items-center">
                           <div className="bg-primary bg-opacity-10 text-primary rounded-4 p-3 text-center me-3" style={{ minWidth: '70px' }}>
-                            <div className="small fw-bold text-uppercase">{new Date(v.pradziosLaikas).toLocaleDateString('lt-LT', { weekday: 'short' })}</div>
-                            <div className="fs-4 fw-bold">{new Date(v.pradziosLaikas).getDate()}</div>
+                            <div className="small fw-bold text-uppercase" style={{ fontSize: '0.65rem' }}>
+                              {new Date(v.pradziosLaikas).toLocaleDateString('lt-LT', { month: 'long' })}
+                            </div>
+                            <div className="fs-4 fw-bold lh-1 my-1">{new Date(v.pradziosLaikas).getDate()}</div>
                           </div>
                           <div>
                             <h6 className="fw-bold mb-1">{new Date(v.pradziosLaikas).toLocaleTimeString('lt-LT', { hour: '2-digit', minute: '2-digit' })} val.</h6>

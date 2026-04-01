@@ -1,0 +1,264 @@
+.sidebar {
+  width: 25%;
+  flex: 0 0 25%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #dee2e6;
+  background: #fff;
+  overflow: hidden;
+}
+
+/* Calendar */
+.calendarBlock {
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem 1.25rem 0.75rem;
+  flex-shrink: 0;
+}
+
+.calHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.calTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.todayBtn {
+  background: none;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #0d6efd;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.todayBtn:hover {
+  border-color: #0d6efd;
+  background: #cfe2ff;
+}
+
+/* react-calendar overrides */
+:global(.vizitai-calendar) {
+  border: none !important;
+  width: 100% !important;
+  font-size: 0.8rem !important;
+}
+
+:global(.vizitai-calendar .react-calendar__tile) {
+  border-radius: 6px !important;
+  font-size: 0.8rem !important;
+  padding: 0.4em 0.3em !important;
+}
+
+:global(.vizitai-calendar .react-calendar__tile--active) {
+  background: #0d6efd !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
+
+:global(.vizitai-calendar .react-calendar__tile--now) {
+  background: #cfe2ff !important;
+  font-weight: 600 !important;
+  color: #084298 !important;
+}
+
+:global(.vizitai-calendar .react-calendar__navigation button) {
+  font-size: 0.8rem !important;
+  min-width: 28px !important;
+}
+
+:global(.vizitai-calendar .react-calendar__month-view__weekdays__weekday) {
+  font-size: 0.7rem !important;
+}
+
+:global(.has-appointment) {
+  font-weight: 700 !important;
+  color: #0d6efd !important;
+  position: relative !important;
+}
+
+:global(.has-appointment::after) {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 3px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 4px !important;
+  height: 4px !important;
+  background: #0d6efd !important;
+  border-radius: 50% !important;
+}
+
+/* Day list */
+.dayBlock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid #dee2e6;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.dayTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+/* Toggle */
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggleTrack {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+  background: #dee2e6;
+  border-radius: 17px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggleTrack::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  top: 2.5px;
+  left: 2.5px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.toggleInput:checked ~ .toggleTrack { background: #0d6efd; }
+.toggleInput:checked ~ .toggleTrack::after { transform: translateX(13px); }
+
+.toggleText { font-size: 0.75rem; color: #6c757d; }
+
+.dayList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.875rem;
+}
+
+.dayList::-webkit-scrollbar { width: 4px; }
+.dayList::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 4px; }
+
+.emptyDay {
+  font-size: 0.8125rem;
+  color: #adb5bd;
+  text-align: center;
+  padding: 2rem 0;
+  margin: 0;
+}
+
+/* Vizitas card */
+.vizitasCard {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 9px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.vizitasCard:hover { border-color: #0d6efd; }
+
+.vizitasSelected {
+  border-color: #0d6efd;
+  background: #0d6efd;
+}
+
+.vizitasCancelled { opacity: 0.5; }
+
+.vizitasTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.375rem;
+}
+
+.vizitasTime {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.vizitasSelected .vizitasTime { color: #fff; }
+
+.vizitasBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #f8f9fa;
+  color: #6c757d;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.vizitasSelected .vizitasBadge {
+  background: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.9);
+}
+
+.vizitasBadgeCancelled { background: #f8d7da; color: #58151c; }
+
+.vizitasName {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #212529;
+  margin: 0 0 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vizitasSelected .vizitasName { color: #fff; }
+
+.vizitasProc {
+  font-size: 0.78rem;
+  color: #6c757d;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vizitasSelected .vizitasProc { color: rgba(255,255,255,0.7); }

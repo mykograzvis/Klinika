@@ -1,11 +1,12 @@
 import { useState } from "react";
+import styles from "./vizitai.module.css";
 
 export default function PatientHistory({ selectedVizitas, visiVizitai }) {
   const [historySearch, setHistorySearch] = useState("");
 
-  const istorija = visiVizitai.filter(v => 
-    selectedVizitas && v.pacientoVardas === selectedVizitas.pacientoVardas && v.id !== selectedVizitas.id
-  ).sort((a, b) => new Date(b.pradziosLaikas) - new Date(a.pradziosLaikas));
+  const istorija = visiVizitai
+    .filter(v => selectedVizitas && v.pacientoVardas === selectedVizitas.pacientoVardas && v.id !== selectedVizitas.id)
+    .sort((a, b) => new Date(b.pradziosLaikas) - new Date(a.pradziosLaikas));
 
   const filtered = istorija.filter(h => {
     if (!historySearch) return true;
@@ -14,31 +15,49 @@ export default function PatientHistory({ selectedVizitas, visiVizitai }) {
   });
 
   return (
-    <div className="col-md-3 bg-light h-100 d-flex flex-column border-start no-print">
-      <div className="p-3 bg-white border-bottom shadow-sm">
-        <h6 className="mb-2 fw-bold small text-dark text-uppercase">Paciento istorija</h6>
+    <div className={`${styles.panel} ${styles.panelRight} no-print`}>
+      <div className={styles.panelHeader}>
+        <span className={styles.panelTitle}>Istorija</span>
         {selectedVizitas && (
-          <div className="input-group input-group-sm">
-            <input type="text" className="form-control bg-light border-0" placeholder="Ieškoti procedūros..." value={historySearch} onChange={(e) => setHistorySearch(e.target.value)} />
-          </div>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Ieškoti..."
+            value={historySearch}
+            onChange={e => setHistorySearch(e.target.value)}
+          />
         )}
       </div>
-      <div className="flex-grow-1 overflow-auto p-3">
-        {selectedVizitas ? (
-          filtered.map(h => (
-            <div key={h.id} className="mb-3 p-3 bg-white rounded-4 shadow-sm border-start border-primary border-4 animate-fade-in">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <div className="fw-bold text-dark small">{new Date(h.pradziosLaikas).toLocaleDateString('lt-LT')}</div>
-                <span className="badge bg-light text-primary border">{h.bendraSuma} €</span>
+
+      <div className={styles.panelScroll}>
+        {!selectedVizitas ? (
+          <p className={styles.emptyHint}>Pasirinkite vizitą.</p>
+        ) : filtered.length === 0 ? (
+          <p className={styles.emptyHint}>
+            {historySearch ? "Nerasta." : "Ankstesnių vizitų nėra."}
+          </p>
+        ) : (
+          filtered.map(h => {
+            const pros = h.atliktosProceduros || h.AtliktosProceduros || [];
+            return (
+              <div key={h.id} className={styles.historyCard}>
+                <div className={styles.historyCardTop}>
+                  <span className={styles.historyDate}>
+                    {new Date(h.pradziosLaikas).toLocaleDateString("lt-LT")}
+                  </span>
+                  <span className={styles.historySum}>{h.bendraSuma} €</span>
+                </div>
+                <div className={styles.historyPros}>
+                  {pros.map((p, i) => (
+                    <span key={i} className={styles.historyPro}>
+                      {p.pavadinimas || p.Pavadinimas}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div className="small text-muted">
-                {(h.atliktosProceduros || h.AtliktosProceduros)?.map((p, i) => (
-                  <div key={i} className="py-1 border-bottom border-light">• {p.pavadinimas || p.Pavadinimas}</div>
-                ))}
-              </div>
-            </div>
-          ))
-        ) : <div className="text-center mt-5 text-muted small px-3">Pasirinkite pacientą istorijai matyti.</div>}
+            );
+          })
+        )}
       </div>
     </div>
   );
