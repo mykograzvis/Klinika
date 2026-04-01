@@ -59,8 +59,6 @@ export default function AdminAnalize() {
       return {
         totalVisits: 0,
         avgPerVisit: 0,
-        avgPerPatient: 0,
-        topDoctor: null,
       };
     }
 
@@ -68,25 +66,11 @@ export default function AdminAnalize() {
       (sum, g) => sum + g.vizitai,
       0
     );
+    // bendraSuma backend'e turi skaičiuoti TIK "Apmokėta" vizitus
     const avgPerVisit =
       totalVisits > 0 ? data.bendraSuma / totalVisits : 0;
-    const avgPerPatient =
-      data.pacientuSkaicius > 0
-        ? data.bendraSuma / data.pacientuSkaicius
-        : 0;
 
-    let topDoctor = null;
-    if (data.gydytojuEfektyvumas.length > 0 && data.bendraSuma > 0) {
-      const max = data.gydytojuEfektyvumas.reduce((best, cur) =>
-        cur.pajamos > best.pajamos ? cur : best
-      );
-      topDoctor = {
-        ...max,
-        procentas: (max.pajamos / data.bendraSuma) * 100,
-      };
-    }
-
-    return { totalVisits, avgPerVisit, avgPerPatient, topDoctor };
+    return { totalVisits, avgPerVisit };
   }, [data]);
 
   if (loading && !data) {
@@ -190,19 +174,24 @@ export default function AdminAnalize() {
                 Apžvalga
               </h6>
               <div className="row g-3">
+                {/* Bendra apyvarta — tik Apmokėta vizitai */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100 border-start border-4 border-primary">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
-                        Bendra mėnesio apyvarta
+                        Gautos pajamos
                       </div>
                       <div className="h4 fw-bold mb-0">
                         {data.bendraSuma.toLocaleString()} €
+                      </div>
+                      <div className="small text-muted">
+                        Tik apmokėti vizitai
                       </div>
                     </div>
                   </div>
                 </div>
 
+                {/* Vizitų skaičius */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100 border-start border-4 border-info">
                     <div className="card-body">
@@ -216,6 +205,7 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
+                {/* Unikalūs pacientai */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100 border-start border-4 border-success">
                     <div className="card-body">
@@ -229,6 +219,7 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
+                {/* Vidutinė suma vizitui */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100 border-start border-4 border-secondary">
                     <div className="card-body">
@@ -249,66 +240,70 @@ export default function AdminAnalize() {
 
             <hr className="my-4" />
 
-            {/* 2. PACIENTAI + TOP GYDYTOJAS */}
+            {/* 2. NEAPMOKĖTI VIZITAI */}
             <section className="mb-4">
+              <h6 className="text-uppercase text-muted small mb-2">
+                Neapmokėti vizitai
+              </h6>
               <div className="row g-3">
                 <div className="col-md-4">
-                  <div className="card border-0 shadow-sm h-100">
+                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-warning">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
-                        Vidutinė suma pacientui
+                        Neapmokėtų vizitų skaičius
                       </div>
-                      <div className="h4 fw-bold mb-0">
-                        {stats.avgPerPatient.toFixed(2)} €
+                      <div className="h4 fw-bold mb-0 text-warning">
+                        {data.neapmoketi?.skaicius ?? 0}
                       </div>
                       <div className="small text-muted">
-                        Bendra apyvarta / unikalūs pacientai
+                        Atlikti, bet dar neapmokėti
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {stats.topDoctor && (
-                  <div className="col-md-8">
+                <div className="col-md-4">
+                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-danger">
+                    <div className="card-body">
+                      <div className="text-muted small mb-1">
+                        Neapmokėta suma
+                      </div>
+                      <div className="h4 fw-bold mb-0 text-danger">
+                        {(data.neapmoketi?.suma ?? 0).toLocaleString()} €
+                      </div>
+                      <div className="small text-muted">
+                        Laukiama apmokėjimo
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Procentas nuo visos potencialios apyvartos */}
+                {(data.neapmoketi?.suma ?? 0) > 0 && (
+                  <div className="col-md-4">
                     <div className="card border-0 shadow-sm h-100">
                       <div className="card-body">
                         <div className="text-muted small mb-2">
-                          Top gydytojas pagal apyvartą
+                          Neapmokėta dalis nuo visos apyvartos
                         </div>
-                        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                          <div>
-                            <div className="h5 fw-bold mb-1">
-                              {stats.topDoctor.vardas}
-                            </div>
-                            <div className="small text-muted mb-1">
-                              Vizitai: {stats.topDoctor.vizitai} · Pajamos:{" "}
-                              {stats.topDoctor.pajamos.toLocaleString()} €
-                            </div>
-                            <div
-                              className="progress"
-                              style={{ height: "6px", maxWidth: "260px" }}
-                            >
-                              <div
-                                className="progress-bar bg-primary"
-                                role="progressbar"
-                                style={{
-                                  width: `${Math.min(
-                                    stats.topDoctor.procentas,
-                                    100
-                                  ).toFixed(1)}%`,
-                                }}
-                              ></div>
-                            </div>
-                          </div>
-                          <div className="text-end">
-                            <div className="text-muted small">
-                              Gydytojo apyvartos dalis
-                            </div>
-                            <div className="h4 fw-bold mb-0">
-                              {stats.topDoctor.procentas.toFixed(1)}%
-                            </div>
-                          </div>
-                        </div>
+                        {(() => {
+                          const viso = data.bendraSuma;
+                          const proc = viso > 0 ? ((data.neapmoketi.suma / viso) * 100) : 0;
+                          return (
+                            <>
+                              <div className="h4 fw-bold mb-1">
+                                {proc.toFixed(1)}%
+                              </div>
+                              <div className="progress" style={{ height: "6px" }}>
+                                <div
+                                  className="progress-bar bg-danger"
+                                  role="progressbar"
+                                  style={{ width: `${Math.min(proc, 100).toFixed(1)}%` }}
+                                />
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -318,10 +313,10 @@ export default function AdminAnalize() {
 
             <hr className="my-4" />
 
-            {/* 3. GYDYTOJŲ „GRAFIKAS“ + TOP PASLAUGOS */}
+            {/* 3. GYDYTOJŲ NAŠUMAS + TOP PASLAUGOS */}
             <section className="mb-3">
               <div className="row g-4">
-                {/* Gydytojų lentelė + juostinis grafikas */}
+                {/* Gydytojų lentelė */}
                 <div className="col-lg-8">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
@@ -359,20 +354,15 @@ export default function AdminAnalize() {
                               return (
                                 <tr key={i}>
                                   <td>
-                                    <div className="fw-semibold">
-                                      {g.vardas}
-                                    </div>
+                                    <div className="fw-semibold">{g.vardas}</div>
                                     <div className="progress mt-1" style={{ height: "4px" }}>
                                       <div
                                         className="progress-bar bg-primary"
                                         role="progressbar"
                                         style={{
-                                          width: `${Math.min(
-                                            procentas,
-                                            100
-                                          ).toFixed(1)}%`,
+                                          width: `${Math.min(procentas, 100).toFixed(1)}%`,
                                         }}
-                                      ></div>
+                                      />
                                     </div>
                                   </td>
                                   <td className="text-center">{g.vizitai}</td>
@@ -398,7 +388,7 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
-                {/* Top paslaugos su juostomis */}
+                {/* Top paslaugos */}
                 <div className="col-lg-4">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-body d-flex flex-column">
@@ -425,9 +415,7 @@ export default function AdminAnalize() {
                             return (
                               <div key={i} className="mb-3 pb-2 border-bottom">
                                 <div className="d-flex justify-content-between mb-1">
-                                  <span className="fw-semibold">
-                                    {p.pavadinimas}
-                                  </span>
+                                  <span className="fw-semibold">{p.pavadinimas}</span>
                                   <span className="fw-bold">
                                     {p.suma.toLocaleString()} €
                                   </span>
@@ -440,12 +428,9 @@ export default function AdminAnalize() {
                                     className="progress-bar bg-info"
                                     role="progressbar"
                                     style={{
-                                      width: `${Math.min(
-                                        procentas,
-                                        100
-                                      ).toFixed(1)}%`,
+                                      width: `${Math.min(procentas, 100).toFixed(1)}%`,
                                     }}
-                                  ></div>
+                                  />
                                 </div>
                                 <div className="d-flex justify-content-between mt-1">
                                   <span className="text-muted">
