@@ -176,7 +176,7 @@ export default function AdminAnalize() {
               <div className="row g-3">
                 {/* Bendra apyvarta — tik Apmokėta vizitai */}
                 <div className="col-md-3">
-                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-primary">
+                  <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
                         Gautos pajamos
@@ -193,7 +193,7 @@ export default function AdminAnalize() {
 
                 {/* Vizitų skaičius */}
                 <div className="col-md-3">
-                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-info">
+                  <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
                         Vizitų skaičius
@@ -207,7 +207,7 @@ export default function AdminAnalize() {
 
                 {/* Unikalūs pacientai */}
                 <div className="col-md-3">
-                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-success">
+                  <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
                         Unikalūs pacientai
@@ -221,7 +221,7 @@ export default function AdminAnalize() {
 
                 {/* Vidutinė suma vizitui */}
                 <div className="col-md-3">
-                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-secondary">
+                  <div className="card border-0 shadow-sm h-100 ">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
                         Vidutinė suma vizitui
@@ -247,7 +247,7 @@ export default function AdminAnalize() {
               </h6>
               <div className="row g-3">
                 <div className="col-md-4">
-                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-warning">
+                  <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
                         Neapmokėtų vizitų skaičius
@@ -263,7 +263,7 @@ export default function AdminAnalize() {
                 </div>
 
                 <div className="col-md-4">
-                  <div className="card border-0 shadow-sm h-100 border-start border-4 border-danger">
+                  <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
                       <div className="text-muted small mb-1">
                         Neapmokėta suma

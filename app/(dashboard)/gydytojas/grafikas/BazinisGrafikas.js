@@ -35,21 +35,21 @@ export default function BazinisGrafikas({ grafikas, updateDiena, onSave, saving 
             {d.dirba ? (
               <div className={styles.timeInputs}>
                 <input
-                  type="time"
+                  type="text"
                   className={styles.timeInput}
                   value={d.pradzia || ""}
                   onChange={e => updateDiena(index, "pradzia", e.target.value)}
-                  lang="lt-LT"
-                  step="900"
+                  placeholder="08:00"
+                  pattern="^([01]\\d|2[0-3]):([0-5]\\d)$"
                 />
                 <span className={styles.timeSep}>—</span>
                 <input
-                  type="time"
+                  type="text"
                   className={styles.timeInput}
                   value={d.pabaiga || ""}
                   onChange={e => updateDiena(index, "pabaiga", e.target.value)}
-                  lang="lt-LT"
-                  step="900"
+                  placeholder="17:00"
+                  pattern="^([01]\\d|2[0-3]):([0-5]\\d)$"
                 />
               </div>
             ) : (
