@@ -125,6 +125,9 @@ export default function LoginPage() {
         localStorage.setItem('role', data.role);
         localStorage.setItem('userName', data.vardas);
         localStorage.setItem('userId', data.userId);
+          document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
+  document.cookie = `role=${data.role}; path=/; max-age=86400; SameSite=Strict`;
+
         router.push('/profilis?complete=true');
       } else {
         loginSuccess(data);
@@ -143,6 +146,9 @@ export default function LoginPage() {
     localStorage.setItem('role', data.role);
     localStorage.setItem('userName', data.vardas);
     localStorage.setItem('userId', data.userId);
+      document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
+  document.cookie = `role=${data.role}; path=/; max-age=86400; SameSite=Strict`;
+
     router.push('/rezervacija');
   };
 
