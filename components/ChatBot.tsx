@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import styles from "./ChatBot.module.css";
+import API_URL from '@/services/api';
 
 interface Message {
   role: "user" | "assistant";

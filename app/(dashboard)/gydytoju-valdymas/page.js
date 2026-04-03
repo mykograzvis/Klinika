@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import API_URL from '@/services/api';
 
 export default function AdminGydytojai() {
   const router = useRouter(); // Navigacijai
@@ -23,7 +24,7 @@ export default function AdminGydytojai() {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch('https://localhost:7237/api/Gydytojai', {
+      const res = await fetch(`${API_URL}/api/Gydytojai`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

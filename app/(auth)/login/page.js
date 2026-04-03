@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import styles from './login.module.css';
+import API_URL from '@/services/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -39,7 +40,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await fetch('https://localhost:7237/api/Auth/login', {
+      const response = await fetch(`${API_URL}/api/Auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ elPastas: email, slaptazodis: password })
@@ -74,7 +75,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://localhost:7237/api/Auth/login-2fa', {
+      const response = await fetch(`${API_URL}/api/Auth/login-2fa`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: tempUserId, code: twoFactorCode })
@@ -95,7 +96,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await fetch('https://localhost:7237/api/Auth/google-login', {
+      const response = await fetch(`${API_URL}/api/Auth/google-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken: credentialResponse.credential })

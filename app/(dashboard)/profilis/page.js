@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import API_URL from '@/services/api';
 
 export default function ProfilisPage() {
   const router = useRouter();
@@ -45,7 +46,7 @@ export default function ProfilisPage() {
       return;
     }
     try {
-      const res = await fetch("https://localhost:7237/api/Vartotojai/profilis", {
+      const res = await fetch(`${API_URL}/api/Vartotojai/profilis`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {
@@ -68,7 +69,7 @@ export default function ProfilisPage() {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("https://localhost:7237/api/Vartotojai/atnaujinti", {
+      const res = await fetch(`${API_URL}/api/Vartotojai/atnaujinti`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -91,7 +92,7 @@ export default function ProfilisPage() {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("https://localhost:7237/api/Vartotojai/keisti-el-pasta", {
+      const res = await fetch(`${API_URL}/api/Vartotojai/keisti-el-pasta`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -120,7 +121,7 @@ export default function ProfilisPage() {
     }
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("https://localhost:7237/api/Vartotojai/keisti-slaptazodi", {
+      const res = await fetch(`${API_URL}/api/Vartotojai/keisti-slaptazodi`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -148,7 +149,7 @@ export default function ProfilisPage() {
     if (!window.confirm("Ar tikrai norite išjungti 2FA? Tai sumažins jūsų paskyros saugumą.")) return;
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("https://localhost:7237/api/Auth/disable-self-2fa", {
+      const res = await fetch(`${API_URL}/api/Auth/disable-self-2fa`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` }
       });

@@ -4,6 +4,7 @@ import Sidebar from "./kaireDalis";
 import AppointmentDetails from "./vidurineDalis";
 import PatientHistory from "./desineDalis";
 import styles from "./vizitaiPage.module.css";
+import API_URL from '@/services/api';
 
 export default function GydytojoValdymas() {
   const [vizitai, setVizitai] = useState([]);
@@ -15,7 +16,7 @@ export default function GydytojoValdymas() {
 
   const fetchManoVizitai = async () => {
     try {
-      const res = await fetch("https://localhost:7237/api/Vizitai/mano-vizitai", {
+      const res = await fetch(`${API_URL}/api/Vizitai/mano-vizitai`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) {

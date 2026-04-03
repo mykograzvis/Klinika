@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from '../login/login.module.css';
+import API_URL from '@/services/api';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -62,7 +63,7 @@ export default function RegisterPage() {
         tipas: "Pacientas" // Pagal nutylėjimą pacientas
       };
 
-      const res = await fetch('https://localhost:7237/api/Auth/registracija', {
+      const res = await fetch(`${API_URL}/api/Auth/registracija`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(submitData)

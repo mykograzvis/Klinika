@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
+import API_URL from '@/services/api';
 
 export default function Rezervacija() {
   const router = useRouter();
@@ -100,7 +101,7 @@ export default function Rezervacija() {
     const role = localStorage.getItem("role");
     setUserRole(role);
 
-    fetch("https://localhost:7237/api/Gydytojai", {
+    fetch(`${API_URL}/api/Gydytojai`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -108,7 +109,7 @@ export default function Rezervacija() {
       .catch((err) => console.error(err));
 
     if (role === "Adminas" || role === "Gydytojas") {
-      fetch("https://localhost:7237/api/Vartotojai", {
+      fetch(`${API_URL}/api/Vartotojai`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
@@ -135,7 +136,7 @@ export default function Rezervacija() {
       setIsFullDayBusy(false);
 
       fetch(
-        `https://localhost:7237/api/Vizitai/uzimti-laikai?gydytojasId=${formData.gydytojasId}&data=${formData.data}`,
+        `${API_URL}/api/Vizitai/uzimti-laikai?gydytojasId=${formData.gydytojasId}&data=${formData.data}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -203,7 +204,7 @@ export default function Rezervacija() {
 
     try {
       const res = await fetch(
-        "https://localhost:7237/api/Vizitai/registruotis",
+        `${API_URL}/api/Vizitai/registruotis`,
         {
           method: "POST",
           headers: {
