@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import API_URL from '@/services/api';
 
 export default function VartotojuSarasas() {
   const [vartotojai, setVartotojai] = useState([]);
@@ -14,7 +15,7 @@ export default function VartotojuSarasas() {
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("https://localhost:7237/api/Vartotojai", {
+      const res = await fetch(`${API_URL}/api/Vartotojai`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       if (res.ok) {

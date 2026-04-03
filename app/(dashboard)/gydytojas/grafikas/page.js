@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import BazinisGrafikas from "./BazinisGrafikas";
 import GrafikoIsimtys from "./GrafikoIsimtys";
 import styles from "./grafikas.module.css";
+import API_URL from '@/services/api';
 
 const parseJwt = (token) => {
   try { return JSON.parse(atob(token.split(".")[1])); } catch { return null; }
@@ -37,7 +38,7 @@ export default function GrafikoValdymas() {
 
   const fetchGydytojai = async () => {
     try {
-      const res = await fetch("https://localhost:7237/api/Gydytojai", {
+      const res = await fetch(`${API_URL}/api/Gydytojai`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) {
@@ -54,8 +55,8 @@ export default function GrafikoValdymas() {
     const query = pasirinktasGydytojasId ? `?gydytojoId=${pasirinktasGydytojasId}` : "";
     try {
       const [gRes, iRes] = await Promise.all([
-        fetch(`https://localhost:7237/api/Grafikas/mano${query}`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`https://localhost:7237/api/Grafikas/isimtys${query}`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/api/Grafikas/mano${query}`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/api/Grafikas/isimtys${query}`, { headers: { Authorization: `Bearer ${token}` } }),
       ]);
       if (gRes.ok) setGrafikas(await gRes.json());
       if (iRes.ok) setIsimtys(await iRes.json());
@@ -65,7 +66,7 @@ export default function GrafikoValdymas() {
   const handleIssaugotiBaze = async () => {
     setSaving(true);
     const query = pasirinktasGydytojasId ? `?gydytojoId=${pasirinktasGydytojasId}` : "";
-    const res = await fetch(`https://localhost:7237/api/Grafikas/atnaujinti${query}`, {
+    const res = await fetch(`${API_URL}/api/Grafikas/atnaujinti${query}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
       body: JSON.stringify(grafikas),
@@ -94,7 +95,7 @@ export default function GrafikoValdymas() {
     };
 
     try {
-      const res = await fetch("https://localhost:7237/api/Grafikas/isimtis", {
+      const res = await fetch(`${API_URL}/api/Grafikas/isimtis`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +122,7 @@ export default function GrafikoValdymas() {
 
   const handleTrintiIsimti = async (id) => {
     if (!confirm("Ištrinti šią išimtį?")) return;
-    const res = await fetch(`https://localhost:7237/api/Grafikas/isimtis/${id}`, {
+    const res = await fetch(`${API_URL}/api/Grafikas/isimtis/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });

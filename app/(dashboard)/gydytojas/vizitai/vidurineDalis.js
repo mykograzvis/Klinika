@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "./vizitai.module.css";
+import API_URL from '@/services/api';
 
 const PASLAUGOS = [
   { pavadinimas: "Dantų balinimas", kaina: 60 },
@@ -36,7 +37,7 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
 
   const handlePrideti = async e => {
     e.preventDefault();
-    const res = await fetch("https://localhost:7237/api/Proceduros", {
+    const res = await fetch(`${API_URL}/api/Proceduros`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
       body: JSON.stringify({ vizitasId: selectedVizitas.id, ...procedura, kaina: parseFloat(procedura.kaina) }),
@@ -46,7 +47,7 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
 
   const handleTrinti = async id => {
     if (!confirm("Pašalinti šią procedūrą?")) return;
-    const res = await fetch(`https://localhost:7237/api/Proceduros/${id}`, {
+    const res = await fetch(`${API_URL}/api/Proceduros/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
@@ -57,7 +58,7 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
     if (!confirm("Užbaigti vizitą? Bus išsiųsta sąskaita el. paštu.")) return;
     setIsFinishing(true);
     try {
-      const res = await fetch(`https://localhost:7237/api/Vizitai/${selectedVizitas.id}/uzbaigti`, {
+      const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/uzbaigti`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -69,7 +70,7 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
     if (!confirm("Atšaukti vizitą? Pacientas bus informuotas el. paštu.")) return;
     setIsCancelling(true);
     try {
-      const res = await fetch(`https://localhost:7237/api/Vizitai/${selectedVizitas.id}/atsaukti-gydytojas`, {
+      const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/atsaukti-gydytojas`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -81,7 +82,7 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
     if (!confirm("Patvirtinti, kad pacientas atsiskaitė vietoje?")) return;
     setIsPaying(true);
     try {
-      const res = await fetch(`https://localhost:7237/api/Vizitai/${selectedVizitas.id}/apmoketi`, {
+      const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/apmoketi`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -91,7 +92,7 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
 
   const handleDownloadPdf = async () => {
     try {
-      const res = await fetch(`https://localhost:7237/api/Vizitai/${selectedVizitas.id}/generuoti-pdf`, {
+      const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/generuoti-pdf`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (res.ok) {

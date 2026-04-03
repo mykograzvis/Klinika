@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import API_URL from '@/services/api';
 
 export default function PacientoIstorija() {
   const [vizitai, setVizitai] = useState([]);
@@ -16,7 +17,7 @@ export default function PacientoIstorija() {
   const fetchVizitai = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("https://localhost:7237/api/Vizitai/mano-vizitai", {
+      const res = await fetch(`${API_URL}/api/Vizitai/mano-vizitai`, {
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });
       if (res.ok) {
@@ -36,7 +37,7 @@ export default function PacientoIstorija() {
 
     if (success === "true" && vizitasId && !hasConfirmed.current) {
       hasConfirmed.current = true;
-      fetch(`https://localhost:7237/api/Vizitai/patvirtinti-apmokejima/${vizitasId}`, {
+      fetch(`${API_URL}/api/Vizitai/patvirtinti-apmokejima/${vizitasId}`, {
         method: "GET",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       })
@@ -55,7 +56,7 @@ export default function PacientoIstorija() {
   const handlePayment = async (e, id) => {
     e.stopPropagation();
     try {
-      const res = await fetch(`https://localhost:7237/api/Vizitai/${id}/sukurti-apmokejima`, {
+      const res = await fetch(`${API_URL}/api/Vizitai/${id}/sukurti-apmokejima`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });
@@ -70,7 +71,7 @@ export default function PacientoIstorija() {
     e.stopPropagation();
     if (!confirm("Ar tikrai norite atšaukti šį vizitą?")) return;
     try {
-      const res = await fetch(`https://localhost:7237/api/Vizitai/${id}/atshaukti`, {
+      const res = await fetch(`${API_URL}/api/Vizitai/${id}/atshaukti`, {
         method: "PUT",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });

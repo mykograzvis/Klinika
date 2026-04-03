@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import API_URL from '@/services/api';
 
 export default function AdminRedaguotiVartotoja() {
   const { id } = useParams();
@@ -33,7 +34,7 @@ export default function AdminRedaguotiVartotoja() {
 
   const fetchUser = async (token) => {
     try {
-      const res = await fetch(`https://localhost:7237/api/Vartotojai/${id}`, {
+      const res = await fetch(`${API_URL}/api/Vartotojai/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -56,7 +57,7 @@ export default function AdminRedaguotiVartotoja() {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`https://localhost:7237/api/Vartotojai/admin-atnaujinti/${id}`, {
+    const res = await fetch(`${API_URL}/api/Vartotojai/admin-atnaujinti/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -93,7 +94,7 @@ export default function AdminRedaguotiVartotoja() {
     };
 
     try {
-      const res = await fetch(`https://localhost:7237/api/Vartotojai/admin-atnaujinti-prieiga/${id}`, {
+      const res = await fetch(`${API_URL}/api/Vartotojai/admin-atnaujinti-prieiga/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -123,7 +124,7 @@ export default function AdminRedaguotiVartotoja() {
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`https://localhost:7237/api/Vartotojai/admin-reset-2fa/${id}`, {
+      const res = await fetch(`${API_URL}/api/Vartotojai/admin-reset-2fa/${id}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -144,7 +145,7 @@ export default function AdminRedaguotiVartotoja() {
     if (!confirm("DĖMESIO: Ar tikrai norite ištrinti šį vartotoją visam laikui?")) return;
 
     const token = localStorage.getItem("token");
-    const res = await fetch(`https://localhost:7237/api/Vartotojai/${id}`, {
+    const res = await fetch(`${API_URL}/api/Vartotojai/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

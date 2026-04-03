@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
+import API_URL from '@/services/api';
 
 export default function AdminAnalize() {
   const dabar = new Date();
@@ -18,7 +19,7 @@ export default function AdminAnalize() {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://localhost:7237/api/Statistika/analize?metai=${filtras.metai}&menesis=${filtras.menesis}`,
+        `${API_URL}/api/Statistika/analize?metai=${filtras.metai}&menesis=${filtras.menesis}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

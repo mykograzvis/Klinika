@@ -1,4 +1,5 @@
 "use client"; // Būtina Next.js App Routeryje
+import API_URL from '@/services/api';
 import { useState } from "react"; // Importuojame hook'ą
 
 export default function Login2FA({ userId, onLoginSuccess }) {
@@ -6,7 +7,7 @@ export default function Login2FA({ userId, onLoginSuccess }) {
 
     const handleSubmit = async () => {
         try {
-            const res = await fetch("https://localhost:7237/api/Auth/verify-2fa", {
+            const res = await fetch(`${API_URL}/api/Auth/verify-2fa`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId, pin })

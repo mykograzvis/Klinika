@@ -1,4 +1,5 @@
 "use client";
+import API_URL from '@/services/api';
 import { useState } from "react";
 
 export default function AiTestPage() {
@@ -18,7 +19,7 @@ export default function AiTestPage() {
     try {
       addLog("→ fetch pradėtas...");
 
-      const res = await fetch("https://localhost:7237/api/chat", {
+      const res = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message, history: [] }),
@@ -49,7 +50,7 @@ export default function AiTestPage() {
     setLoading(true);
     addLog("→ Ping testas...");
     try {
-      const res = await fetch("https://localhost:7237/api/chat/ping");
+      const res = await fetch(`${API_URL}/api/chat/ping`);
       addLog(`→ Ping statusas: ${res.status}`);
       const text = await res.text();
       addLog(`→ Ping atsakymas: ${text}`);

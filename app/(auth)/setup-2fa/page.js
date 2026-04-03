@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import API_URL from '@/services/api';
 
 export default function Setup2FAPage() {
     return (
@@ -27,7 +28,7 @@ function SetupContent() {
             return;
         }
 
-        fetch(`https://localhost:7237/api/Auth/setup-2fa?userId=${userId}`)
+        fetch(`${API_URL}/api/Auth/setup-2fa?userId=${userId}`)
             .then(res => {
                 if (!res.ok) throw new Error("Nepavyko gauti 2FA nustatymų");
                 return res.json();
@@ -44,7 +45,7 @@ function SetupContent() {
         setError(""); // Išvalome seną klaidą prieš bandant vėl
         setLoading(true);
         try {
-            const res = await fetch(`https://localhost:7237/api/Auth/verify-2fa?userId=${userId}`, {
+            const res = await fetch(`${API_URL}/api/Auth/verify-2fa?userId=${userId}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(pin)
