@@ -432,3 +432,8 @@
   border-style: dashed;
   cursor: not-allowed;
 }
+
+html {
+  zoom: calc(100vw / 1280);
+  min-width: 1280px;
+}
