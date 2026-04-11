@@ -2,10 +2,12 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 export default function Rezervacija() {
   const router = useRouter();
   const scrollRef = useRef(null);
+  const { success, error, warning } = useToast();
 
   const paslaugos = [
     { id: 1, pavadinimas: "Burnos higiena", kaina: 50, specializacija: "Burnos higienistas", trukmeMin: 60 },
@@ -182,7 +184,7 @@ export default function Rezervacija() {
         : parseInt(storedUserId);
 
     if (!galutinisPacientasId) {
-      alert("Klaida: Nepasirinktas pacientas.");
+      warning("Nepasirinktas pacientas", "Pasirinkite pacientą prieš tęsiant.");
       setLoading(false);
       return;
     }
@@ -216,14 +218,14 @@ export default function Rezervacija() {
       );
 
       if (res.ok) {
-        alert("Rezervacija sėkmingai sukurta!");
+        success("Rezervacija sukurta!", "Vizitas sėkmingai užregistruotas.");
         router.push("/istorija");
       } else {
         const errorMsg = await res.text();
-        alert("Klaida: " + errorMsg);
+        error("Klaida", errorMsg);
       }
     } catch (err) {
-      alert("Sistemos klaida.");
+      error("Sistemos klaida", "Nepavyko sukurti rezervacijos. Bandykite dar kartą.");
     } finally {
       setLoading(false);
     }

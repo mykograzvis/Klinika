@@ -126,9 +126,8 @@ export default function LoginPage() {
         localStorage.setItem('role', data.role);
         localStorage.setItem('userName', data.vardas);
         localStorage.setItem('userId', data.userId);
-          document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
-  document.cookie = `role=${data.role}; path=/; max-age=86400; SameSite=Strict`;
-
+        document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
+        document.cookie = `role=${data.role}; path=/; max-age=86400; SameSite=Strict`;
         router.push('/profilis?complete=true');
       } else {
         loginSuccess(data);
@@ -147,9 +146,8 @@ export default function LoginPage() {
     localStorage.setItem('role', data.role);
     localStorage.setItem('userName', data.vardas);
     localStorage.setItem('userId', data.userId);
-      document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
-  document.cookie = `role=${data.role}; path=/; max-age=86400; SameSite=Strict`;
-
+    document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict`;
+    document.cookie = `role=${data.role}; path=/; max-age=86400; SameSite=Strict`;
     router.push('/rezervacija');
   };
 
@@ -171,7 +169,6 @@ export default function LoginPage() {
               <h1 className={styles.authTitle}>Sveiki sugrįžę!</h1>
               <p className={styles.authSubtitle}>Prisijunkite prie savo paskyros</p>
 
-              {/* Step indikatorius */}
               <div className={styles.stepIndicator}>
                 <div className={`${styles.stepDot} ${styles.active}`}></div>
                 <div className={styles.stepDot}></div>
@@ -204,6 +201,12 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     required
                   />
+                  {/* NAUJIENA: Pamiršau slaptažodį nuoroda */}
+                  <div className={styles.forgotPasswordRow}>
+                    <Link href="/pamirso-slaptazodi" className={styles.authLink}>
+                      Pamiršote slaptažodį?
+                    </Link>
+                  </div>
                 </div>
 
                 {error && <div className={styles.errorMessage}>{error}</div>}
@@ -257,7 +260,6 @@ export default function LoginPage() {
                 Atidarykite autentifikatoriaus programėlę ir įveskite 6 skaitmenų kodą
               </p>
 
-              {/* Step indikatorius */}
               <div className={styles.stepIndicator}>
                 <div className={styles.stepDot}></div>
                 <div className={`${styles.stepDot} ${styles.active}`}></div>

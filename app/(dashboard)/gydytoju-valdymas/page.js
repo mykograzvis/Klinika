@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 export default function AdminGydytojai() {
-  const router = useRouter(); // Navigacijai
+  const router = useRouter();
+  const { success, error } = useToast();
   
   const [formData, setFormData] = useState({
     vardas: '',
@@ -38,14 +40,14 @@ export default function AdminGydytojai() {
       });
 
       if (res.ok) {
-        alert("Gydytojas sėkmingai pridėtas!");
-        router.push("/vartotojai"); // Po sėkmingo kūrimo grįžtame į sąrašą
+        success("Gydytojas pridėtas!", "Paskyra sėkmingai sukurta.");
+        router.push("/vartotojai");
       } else {
         const errorData = await res.json();
-        alert("Klaida: " + (errorData.message || "Patikrinkite duomenis"));
+        error("Klaida", errorData.message || "Patikrinkite įvestus duomenis.");
       }
     } catch (err) {
-      alert("Nepavyko susisiekti su serveriu.");
+      error("Ryšio klaida", "Nepavyko susisiekti su serveriu.");
     }
   };
 

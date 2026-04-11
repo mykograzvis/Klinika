@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 export default function Setup2FAPage() {
     return (
@@ -16,6 +17,7 @@ function SetupContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const userId = searchParams.get("userId");
+    const { success } = useToast();
 
     const [setupData, setSetupData] = useState(null);
     const [pin, setPin] = useState("");
@@ -52,7 +54,7 @@ function SetupContent() {
             });
 
             if (res.ok) {
-                alert("2FA sėkmingai aktyvuotas! Prisijunkite iš naujo.");
+                success("2FA aktyvuotas!", "Prisijunkite iš naujo.");
                 router.push("/login");
             } else {
                 const msg = await res.text();

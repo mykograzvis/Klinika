@@ -1,9 +1,11 @@
-"use client"; // Būtina Next.js App Routeryje
+"use client";
 import API_URL from '@/services/api';
-import { useState } from "react"; // Importuojame hook'ą
+import { useState } from "react";
+import { useToast } from "@/context/ToastContext";
 
 export default function Login2FA({ userId, onLoginSuccess }) {
     const [pin, setPin] = useState("");
+    const { error } = useToast();
 
     const handleSubmit = async () => {
         try {
@@ -16,15 +18,13 @@ export default function Login2FA({ userId, onLoginSuccess }) {
             if (res.ok) {
                 const data = await res.json();
                 localStorage.setItem("token", data.token);
-                // Jei turi userId, išsisaugok ir jį, kad rezervacija veiktų:
-                // localStorage.setItem("userId", userId); 
                 onLoginSuccess();
             } else {
-                alert("Neteisingas kodas!");
+                error("Neteisingas kodas", "Patikrinkite kodą savo programėlėje ir bandykite dar kartą.");
             }
         } catch (err) {
             console.error("Klaida:", err);
-            alert("Nepavyko susisiekti su serveriu.");
+            error("Ryšio klaida", "Nepavyko susisiekti su serveriu.");
         }
     };
 

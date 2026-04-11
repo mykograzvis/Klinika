@@ -257,7 +257,7 @@ export default function RegisterPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="kraujoGrupe">Kraujo grupė</label>
+              <label htmlFor="kraujoGrupe">Kraujo grupė *</label>
               <input
                 type="text"
                 id="kraujoGrupe"
@@ -266,7 +266,6 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="A+, B-, O+ ir kt."
               />
-              <small className={styles.formHint}>Neprivaloma</small>
             </div>
           </div>
 

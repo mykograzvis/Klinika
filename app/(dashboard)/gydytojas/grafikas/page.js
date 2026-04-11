@@ -4,12 +4,41 @@ import BazinisGrafikas from "./BazinisGrafikas";
 import GrafikoIsimtys from "./GrafikoIsimtys";
 import styles from "./grafikas.module.css";
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 const parseJwt = (token) => {
   try { return JSON.parse(atob(token.split(".")[1])); } catch { return null; }
 };
 
+// Universalus patvirtinimo modal
+function ConfirmModal({ isOpen, title, message, confirmLabel = "Patvirtinti", danger = false, onConfirm, onCancel }) {
+  if (!isOpen) return null;
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9998 }}
+      onClick={onCancel}
+    >
+      <div
+        style={{ background: "#fff", borderRadius: 16, padding: "2rem", maxWidth: 360, width: "90%", boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h5 style={{ marginBottom: "0.5rem", fontWeight: 700, fontSize: "1.1rem" }}>{title}</h5>
+        <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.5rem", lineHeight: 1.5 }}>{message}</p>
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <button onClick={onCancel} style={{ flex: 1, padding: "0.625rem 1rem", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9fafb", cursor: "pointer", fontWeight: 600, fontSize: "0.875rem" }}>
+            Atšaukti
+          </button>
+          <button onClick={onConfirm} style={{ flex: 1, padding: "0.625rem 1rem", borderRadius: 8, border: "none", background: danger ? "#ef4444" : "#2563eb", color: "#fff", cursor: "pointer", fontWeight: 600, fontSize: "0.875rem" }}>
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function GrafikoValdymas() {
+  const { success, error, warning, info } = useToast();
   const [grafikas, setGrafikas] = useState([]);
   const [isimtys, setIsimtys] = useState([]);
   const [gydytojai, setGydytojai] = useState([]);
@@ -18,6 +47,7 @@ export default function GrafikoValdymas() {
   const [userRole, setUserRole] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -71,12 +101,12 @@ export default function GrafikoValdymas() {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
       body: JSON.stringify(grafikas),
     });
-    if (res.ok) alert("Grafikas išsaugotas.");
+    if (res.ok) success("Grafikas išsaugotas", "Darbo grafikas sėkmingai atnaujintas.");
     setSaving(false);
   };
 
   const handlePridetiIsimti = async () => {
-    if (!naujaIsimtis.data) return alert("Pasirinkite datą");
+    if (!naujaIsimtis.data) return warning("Pasirinkite datą", "Įveskite išimties datą.");
     const token = localStorage.getItem("token");
     const decoded = parseJwt(token);
     const manoId = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/nameidentifier"] || decoded["sub"];
@@ -85,7 +115,7 @@ export default function GrafikoValdymas() {
       ? String(pasirinktasGydytojasId)
       : String(manoId || "");
 
-    if (!gydytojoId) return alert("Nepavyko nustatyti gydytojo ID.");
+    if (!gydytojoId) return error("Klaida", "Nepavyko nustatyti gydytojo ID.");
 
     const body = {
       gydytojoId,
@@ -97,37 +127,39 @@ export default function GrafikoValdymas() {
     try {
       const res = await fetch(`${API_URL}/api/Grafikas/isimtis`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(body),
       });
-
       const responseText = await res.text();
-
       if (res.ok) {
         const data = JSON.parse(responseText);
         setNaujaIsimtis({ data: "", priezastis: "", arDirba: false });
         fetchDuomenys();
         if (data.atsauktuKiekis > 0)
-          alert(`Išimtis pridėta. Atšaukta vizitų: ${data.atsauktuKiekis}`);
+          info("Išimtis pridėta", `Atšaukta vizitų: ${data.atsauktuKiekis}`);
+        else
+          success("Išimtis pridėta", "Data sėkmingai pažymėta kaip laisvadienis.");
       } else {
-        alert(`Klaida ${res.status}: ${responseText}`);
+        error("Klaida", `${res.status}: ${responseText}`);
       }
     } catch (err) {
-      alert(`Ryšio klaida: ${err.message}`);
+      error("Ryšio klaida", err.message);
     }
   };
 
-  const handleTrintiIsimti = async (id) => {
-    if (!confirm("Ištrinti šią išimtį?")) return;
+  const handleTrintiIsimti = (id) => {
+    setConfirmDeleteId(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    const id = confirmDeleteId;
+    setConfirmDeleteId(null);
     const res = await fetch(`${API_URL}/api/Grafikas/isimtis/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
     if (res.ok) fetchDuomenys();
-    else alert("Nepavyko ištrinti.");
+    else error("Klaida", "Nepavyko ištrinti išimties.");
   };
 
   const updateDiena = (index, laukas, verte) => {
@@ -177,6 +209,16 @@ export default function GrafikoValdymas() {
         setNaujaIsimtis={setNaujaIsimtis}
         onAdd={handlePridetiIsimti}
         onDelete={handleTrintiIsimti}
+      />
+
+      <ConfirmModal
+        isOpen={!!confirmDeleteId}
+        title="Ištrinti išimtį?"
+        message="Ši data bus pašalinta iš išimčių sąrašo."
+        confirmLabel="Ištrinti"
+        danger
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDeleteId(null)}
       />
     </div>
   );
