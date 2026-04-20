@@ -1,5 +1,3 @@
-/* login.module.css */
-
 .authContainer {
   min-height: 100vh;
   display: flex;
@@ -285,7 +283,6 @@
   line-height: 1.6;
 }
 
-/* Responsive design */
 @media (max-width: 480px) {
   .authCard {
     padding: 32px 24px;
@@ -305,7 +302,6 @@
   }
 }
 
-/* Animation for card entrance */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -320,8 +316,6 @@
 .authCard {
   animation: fadeInUp 0.5s ease-out;
 }
-
-/* Rezervacijos puslapio papildomos klasės */
 
 .reservationSectionTitle {
   font-size: 14px;

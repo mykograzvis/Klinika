@@ -2,7 +2,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import styles from '../login/login.module.css';
+import styles from '../prisijungti/login.module.css';
 import API_URL from '@/services/api';
 
 function ResetPasswordForm() {
@@ -64,7 +64,7 @@ function ResetPasswordForm() {
 
       if (res.ok) {
         setSuccess(true);
-        setTimeout(() => router.push('/login'), 3000);
+        setTimeout(() => router.push('/prisijungti'), 3000);
       } else {
         setError(data.message || 'Nuoroda negaliojanti arba pasibaigė galiojimo laikas.');
       }
@@ -146,7 +146,6 @@ function ResetPasswordForm() {
               </button>
             </div>
 
-            {/* Stiprumo indikatorius */}
             {password.length > 0 && (
               <div style={{ marginTop: '8px' }}>
                 <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
@@ -202,7 +201,7 @@ function ResetPasswordForm() {
 
         <div className={styles.authFooter}>
           <p>
-            <Link href="/login" className={styles.authLink}>
+            <Link href="/prisijungti" className={styles.authLink}>
               ← Grįžti į prisijungimą
             </Link>
           </p>

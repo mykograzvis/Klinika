@@ -54,7 +54,6 @@ export default function AdminGydytojai() {
   return (
     <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
       
-      {/* Navigacijos viršus */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', gap: '15px' }}>
         <button 
           onClick={() => router.back()} 
@@ -134,7 +133,6 @@ export default function AdminGydytojai() {
   );
 }
 
-// Patobulinti stiliai
 const formStyle = { background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9' };
 const inputGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' };
 const inputGroup = { display: 'flex', flexDirection: 'column' };

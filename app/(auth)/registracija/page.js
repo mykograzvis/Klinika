@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import styles from '../login/login.module.css';
+import styles from '../prisijungti/login.module.css';
 import API_URL from '@/services/api';
 
 export default function RegisterPage() {
@@ -46,7 +46,7 @@ export default function RegisterPage() {
       ...prev,
       [name]: value
     }));
-    setError(''); // Išvalyti klaidą kai vartotojas keičia duomenis
+    setError('');
   };
 
   const handleSubmit = async (e) => {
@@ -56,11 +56,10 @@ export default function RegisterPage() {
     setIsSubmitting(true);
 
     try {
-      // Paversti amžių į skaičių
       const submitData = {
         ...formData,
         amzius: parseInt(formData.amzius) || 0,
-        tipas: "Pacientas" // Pagal nutylėjimą pacientas
+        tipas: "Pacientas"
       };
 
       const res = await fetch(`${API_URL}/api/Auth/registracija`, {
@@ -72,7 +71,7 @@ export default function RegisterPage() {
       if (res.ok) {
         setSuccess("Registracija sėkminga! Nukreipiame į prisijungimą...");
         setTimeout(() => {
-          router.push('/login');
+          router.push('/prisijungti');
         }, 2000);
       } else {
         const errorData = await res.json().catch(() => null);
@@ -85,7 +84,6 @@ export default function RegisterPage() {
     }
   };
 
-  // Slaptažodžio stiprumo tikrinimas
   const getPasswordStrength = (password) => {
     if (!password) return 0;
     let strength = 0;
@@ -116,7 +114,6 @@ export default function RegisterPage() {
         <p className={styles.authSubtitle}>Užpildykite formą ir pradėkite naudotis</p>
 
         <form onSubmit={handleSubmit} className={styles.authForm}>
-          {/* Vardas ir Pavardė */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="vardas">Vardas *</label>
@@ -149,7 +146,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* El. paštas */}
           <div className={styles.formGroup}>
             <label htmlFor="elPastas">El. paštas *</label>
             <input
@@ -165,7 +161,6 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Slaptažodis */}
           <div className={styles.formGroup}>
             <label htmlFor="slaptazodis">Slaptažodis *</label>
             <input
@@ -201,7 +196,6 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Asmens kodas ir Telefonas */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="asmensKodas">Asmens kodas *</label>
@@ -237,7 +231,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Amžius ir Kraujo grupė */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label htmlFor="amzius">Amžius *</label>
@@ -269,11 +262,9 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Klaidos/Sėkmės pranešimai */}
           {error && <div className={styles.errorMessage}>{error}</div>}
           {success && <div className={styles.successMessage}>{success}</div>}
 
-          {/* Submit mygtukas */}
           <button 
             type="submit" 
             className={styles.btnPrimary}
@@ -282,12 +273,10 @@ export default function RegisterPage() {
             {isSubmitting ? 'Registruojama...' : 'Registruotis'}
           </button>
         </form>
-
-        {/* Footer su nuoroda į Login */}
         <div className={styles.authFooter}>
           <p>
             Jau turite paskyrą?{' '}
-            <Link href="/login" className={styles.authLink}>
+            <Link href="/prisijungti" className={styles.authLink}>
               Prisijungti
             </Link>
           </p>

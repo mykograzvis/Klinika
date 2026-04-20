@@ -44,7 +44,7 @@ function SetupContent() {
     }, [userId]);
 
     const handleVerify = async () => {
-        setError(""); // Išvalome seną klaidą prieš bandant vėl
+        setError("");
         setLoading(true);
         try {
             const res = await fetch(`${API_URL}/api/Auth/verify-2fa?userId=${userId}`, {
@@ -55,7 +55,7 @@ function SetupContent() {
 
             if (res.ok) {
                 success("2FA aktyvuotas!", "Prisijunkite iš naujo.");
-                router.push("/login");
+                router.push("/prisijungti");
             } else {
                 const msg = await res.text();
                 // VIETOJ white screen, tiesiog įrašome tekstą į error būseną
@@ -67,8 +67,6 @@ function SetupContent() {
             setLoading(false);
         }
     };
-
-    // --- SVARBU: IŠTRYNIAU "if (error) return..." EILUTĘ IŠ ČIA ---
 
     if (!setupData && !error) return <div style={{ padding: 40, textAlign: 'center' }}>Kraunama...</div>;
 
@@ -113,7 +111,6 @@ function SetupContent() {
                         }}
                     />
 
-                    {/* ČIA RODOME KLAIDĄ, KAD NEBŪTŲ WHITE SCREEN */}
                     {error && (
                         <div style={{ 
                             color: '#d32f2f', 
@@ -142,7 +139,7 @@ function SetupContent() {
                 </button>
                 
                 <button 
-                    onClick={() => router.push('/login')}
+                    onClick={() => router.push('/prisijungti')}
                     style={{ background: 'none', border: 'none', marginTop: 15, color: '#666', cursor: 'pointer', textDecoration: 'underline' }}
                 >
                     Atšaukti
@@ -152,7 +149,6 @@ function SetupContent() {
     );
 }
 
-// Stiliai (lieka tie patys)
 const containerStyle = { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' };
 const cardStyle = { padding: 40, border: '1px solid #ddd', borderRadius: 12, textAlign: 'center', width: 400, background: '#fff' };
 const inputStyle = { width: '100%', padding: 12, fontSize: 18, textAlign: 'center', marginBottom: 15, borderRadius: 6 };

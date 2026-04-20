@@ -15,14 +15,14 @@ export default function Sidebar() {
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     setRole(storedRole);
-    setIsOpen(false); // uždarom sidebar pasikeitus route
+    setIsOpen(false);
   }, [pathname]);
 
   const handleLogout = () => {
     localStorage.clear();
     document.cookie = 'token=; path=/; max-age=0';
     document.cookie = 'role=; path=/; max-age=0';
-    router.push("/login");
+    router.push("/prisijungti");
   };
 
   const commonItems = [
@@ -59,7 +59,7 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobilus „Meniu“ mygtukas */}
+      {}
       <button
         type="button"
         className={styles.mobileToggle}
@@ -68,7 +68,7 @@ export default function Sidebar() {
         {isOpen ? "Uždaryti" : "Meniu"}
       </button>
 
-      {/* Overlay mobiliajame */}
+      {}
       {isOpen && (
         <div
           className={styles.overlay}
@@ -112,7 +112,7 @@ export default function Sidebar() {
           Atsijungti
         </button>
 
-        {/* Sticky elgesys >=768px kaip ir anksčiau */}
+        {}
         <style jsx>{`
           @media (min-width: 768px) {
             .sidebar-nav {

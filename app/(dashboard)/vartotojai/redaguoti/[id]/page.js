@@ -40,7 +40,6 @@ export default function AdminRedaguotiVartotoja() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [accessData, setAccessData] = useState({ naujasEmail: "", naujasSlaptazodis: "" });
 
-  // Modal state: null | "access" | "reset2fa" | "delete"
   const [confirmType, setConfirmType] = useState(null);
 
   useEffect(() => {
@@ -85,7 +84,6 @@ export default function AdminRedaguotiVartotoja() {
     else error("Klaida", "Nepavyko atnaujinti bendrų duomenų.");
   };
 
-  // Called when user clicks submit on access form — validate first, then open modal
   const handleUpdateAccessClick = (e) => {
     e.preventDefault();
     if (!accessData.naujasEmail && !accessData.naujasSlaptazodis) {

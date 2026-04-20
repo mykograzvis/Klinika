@@ -1,4 +1,5 @@
 "use client";
+import API_URL from '@/services/api';
 
 import { useState, useRef, useEffect } from "react";
 import styles from "./ChatBot.module.css";
@@ -8,15 +9,9 @@ interface Message {
   content: string;
 }
 
-const API_BASE = "https://localhost:7237";
-
-// Paima viską IKI </think> kaip "think" dalį — nepaisant ar pradžioje yra <think> ar ne.
-// Pvz.: "Galvoju...\nResultas</think>Atsakymas" → think="Galvoju...\nResultas", content="Atsakymas"
 function parseThink(text: string): { think: string; content: string } {
   const closeTag = text.indexOf("</think>");
   if (closeTag === -1) return { think: "", content: text.trim() };
-
-  // Viskas iki </think> — pašaliname galimą <think> atidaromąjį žymą jei yra
   let think = text.slice(0, closeTag).replace(/^<think>/i, "").trim();
   const content = text.slice(closeTag + "</think>".length).trim();
   return { think, content };
@@ -35,7 +30,7 @@ export default function ChatBot() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
-    fetch(`${API_BASE}/api/chat/quick-actions`, {
+    fetch(`${API_URL}/api/chat/quick-actions`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(r => r.ok ? r.json() : null)
@@ -65,7 +60,7 @@ export default function ChatBot() {
       const token   = localStorage.getItem("token");
       const history = messages.slice(1).map(m => ({ role: m.role, content: m.content }));
 
-      const res = await fetch(`${API_BASE}/api/chat`, {
+      const res = await fetch(`${API_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 .hero-section {
   position: relative;
-  width: 100vw; /* full viewport width */
-  height: 80vh;  /* 80% of viewport height */
+  width: 100vw;
+  height: 80vh;
   overflow: hidden;
   margin-top: 25px;
 }
@@ -10,7 +10,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw; /* full viewport width */
+  width: 100vw;
   height: 100%;
   background-size: cover;
   background-position: center;
@@ -21,7 +21,7 @@
 .hero-background.top-layer {
   z-index: 0; 
   opacity: 1; 
-  transition: opacity 1s ease-in-out; /* MUST be 1s */
+  transition: opacity 1s ease-in-out;
 }
 
 .hero-background.top-layer.fading {
@@ -34,14 +34,13 @@
 .top-layer {
   opacity: 1;
   transition: opacity 1s ease-in-out;
-  z-index: 2; /* Make sure top layer is on top */
+  z-index: 2;
 }
 
 .top-layer.fading {
   opacity: 0;
 }
 
-/* This is the new class that fixes the flash */
 .top-layer.resetting {
   transition: none;
 }
@@ -56,7 +55,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  /* Gradientas iš kairės (tamsesnis, kur tekstas) į dešinę (šviesesnis) */
   background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.2) 100%);
   z-index: 1;
 }
@@ -64,44 +62,37 @@
 .hero-content {
   position: absolute;
   top: 50%;
-  /* Shift content to the left side */
   left: 10%; 
-  /* Adjust transform for left alignment */
   transform: translateY(-50%); 
   
-  /* Set a maximum width so the text doesn't stretch across the entire screen */
   max-width: 600px; 
   
   color: white;
-  text-align: left; /* Alignment changed to left */
+  text-align: left;
   z-index: 2;
   
-  /* Keep the transition for fading */
   transition: opacity 1s ease-in-out, transform 1s ease-in-out;
   opacity: 1; 
 }
 
 .hero-content h1 {
-  font-size: 3.5rem; /* Larger heading size for impact */
+  font-size: 3.5rem;
   margin-bottom: 0.5rem;
-  font-weight: 700; /* Bolder */
+  font-weight: 700;
 }
 
 .hero-content p {
-  font-size: 1.5rem; /* Larger paragraph/subtitle */
+  font-size: 1.5rem;
   font-weight: 300;
   margin-bottom: 2rem;
 }
 
-/* This class is applied when the image is fading, making the text fade out too */
 .hero-content.content-fading {
     opacity: 0;
-    /* Move slightly up during fade */
     transform: translateY(-40%); 
 }
 
 .hero-content .btn-primary {
-    /* Base style: Išlaikome baltą foną su baltu rėmeliu */
     background-color: transparent !important;
     border: 2px solid white !important;
     color: white !important;
@@ -114,51 +105,46 @@
 
 .hero-content .btn-primary:hover,
 .hero-content .btn-primary:focus {
-    /* HOVER EFEKTAS: Pastelinė spalva */
-    /* Pastelinė Žalia (pakeiskite šį kodą, jei norite kitos spalvos) */
     --pastel-color: #A8DADC; 
     
     background-color: var(--pastel-color) !important; 
-    color: #333 !important; /* Pakeičiame teksto spalvą į tamsią, kad gerai matytųsi ant šviesaus fono */
+    color: #333 !important;
     border-color: var(--pastel-color) !important;
     transform: scale(1.05); 
 }
 
 .hero-buttons {
-    display: flex; /* Makes buttons sit side-by-side */
-    align-items: center; /* Vertically aligns buttons */
-    justify-content: flex-start; /* Aligns them to the left */
-    flex-wrap: wrap; /* Allows buttons to wrap to next line on small screens */
-    margin-top: 2rem; /* Space below the paragraph */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-top: 2rem;
 }
 
-/* * 2. Phone Button Specific Styling 
- */
 .phone-button {
-    /* Base styles for the outline button */
-    border: 2px solid white !important; /* Ensure a white border */
-    color: white !important; /* White text */
-    background-color: transparent !important; /* Transparent background */
+    border: 2px solid white !important;
+    color: white !important;
+    background-color: transparent !important;
     
-    padding: 0.75rem 1.5rem !important; /* Adjust padding to match primary button */
+    padding: 0.75rem 1.5rem !important;
     font-size: 1.1rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    border-radius: 50rem; /* Pill shape */
+    border-radius: 50rem;
     transition: all 0.3s ease;
 }
 
 .phone-button:hover {
-    background-color: rgba(255, 255, 255, 0.2) !important; /* Subtle white background on hover */
-    border-color: rgba(255, 255, 255, 0.5) !important; /* Slightly more visible border */
-    transform: scale(1.03); /* Slight lift */
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    transform: scale(1.03);
 }
 
 html, body {
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Prevent horizontal scrollbar */
+  overflow-x: hidden;
 }
 
 .hero-nav-button {
@@ -182,7 +168,7 @@ html, body {
 }
 
 .hero-nav-button.right {
-  right: 30px; /* Atstumas nuo dešinio krašto */
+  right: 30px;
 }
 
 .hero-nav-button:hover {
@@ -191,27 +177,24 @@ html, body {
   transform: translateY(-50%) scale(1.1);
 }
 
-/* Jūsų esami stiliai */
 @media (max-width: 768px) {
   .hero-section {
-    /* Padidiname nuo 40vh iki 60vh, kad tilptų tekstas ir 2 mygtukai */
     height: 60vh; 
-    margin-top: 10px; /* Mažesnis tarpas viršuje telefone */
+    margin-top: 10px;
   }
 
   .hero-content {
     left: 50%;
-    /* Naudojame 50%, bet jei tekstas vis tiek lipa lauk, galime koreguoti */
     top: 50%; 
     transform: translate(-50%, -50%);
     text-align: center;
-    width: 95%; /* Naudojame daugiau ekrano pločio */
+    width: 95%;
     max-width: none;
     padding: 0;
   }
 
   .hero-content h1 {
-    font-size: 1.6rem; /* Dar šiek tiek mažesnis, kad tilptų į 1-2 eilutes */
+    font-size: 1.6rem;
     line-height: 1.2;
     margin-bottom: 0.4rem;
   }
@@ -219,25 +202,24 @@ html, body {
   .hero-content p {
     font-size: 0.9rem;
     line-height: 1.3;
-    margin-bottom: 1.2rem; /* Mažesnis tarpas iki mygtukų */
+    margin-bottom: 1.2rem;
   }
 
   .hero-buttons {
-    margin-top: 1rem; /* Mažesnis tarpas virš mygtukų */
+    margin-top: 1rem;
     flex-direction: column;
-    gap: 8px; /* Naudojame gap vietoj margin-bottom geresniam valdymui */
+    gap: 8px;
   }
 
   .hero-buttons .btn {
-    width: 85%; /* Mygtukai šiek tiek siauresni, kad atrodytų geriau */
+    width: 85%;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    margin-bottom: 0 !important; /* Naudojame gap iš tėvinio elemento */
-    padding: 10px 15px !important; /* Patogus dydis paspausti */
+    margin-bottom: 0 !important;
+    padding: 10px 15px !important;
     font-size: 0.9rem;
   }
 
-  /* Užtikriname, kad navigacijos rodyklė netrukdytų tekstui */
   .hero-nav-button.right {
     right: 5px;
     width: 35px;

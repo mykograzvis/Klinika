@@ -210,8 +210,6 @@ export default function PacientoIstorija() {
           </div>
         )}
       </div>
-
-      {/* Atšaukimo patvirtinimo modal */}
       {confirmId && (
         <div
           style={{

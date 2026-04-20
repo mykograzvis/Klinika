@@ -1,6 +1,6 @@
 :root {
-  --primary-color: #A8DADC; /* pastel mint/teal */
-  --secondary-color: #457B9D; /* soft blue accent */
+  --primary-color: #A8DADC;
+  --secondary-color: #457B9D;
   --text-color: #333;
   --bg-light: #f8fafc;
   --border-color: #d0d4dc;
@@ -55,7 +55,6 @@ p {
   box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.5);
 }
 
-/* Custom form validation styles */
 .form-control.is-invalid,
 .form-select.is-invalid {
   border: 2px solid #dc3545 !important;
@@ -75,7 +74,6 @@ p {
   font-weight: 500;
 }
 
-/* Alert animation */
 .alert {
   animation: slideDown 0.3s ease-out;
 }
@@ -90,10 +88,6 @@ p {
     transform: translateY(0);
   }
 }
-
-/* ============================================================
-   TOAST NOTIFICATION SISTEMA
-   ============================================================ */
 
 .toast-container {
   position: fixed;

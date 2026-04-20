@@ -6,7 +6,7 @@ function Footer() {
       <div className="container text-center text-md-start">
         <div className="row">
 
-          {/* About */}
+          {}
           <div className="col-md-4 mb-3">
             <img src="/images/logo4.jpg" alt="Company Logo" className="navbar-logo" />
             <p>
@@ -16,7 +16,7 @@ function Footer() {
             </p>
           </div>
 
-          {/* Links */}
+          {}
           <div className="col-md-4 mb-3">
             <h5 className="fw-bold">Mūsų Paslaugos</h5>
             <ul className="list-unstyled">
@@ -29,7 +29,7 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
+          {}
           <div className="col-md-4 mb-3">
             <h5 className="fw-bold">Susisiekite</h5>
             <p>

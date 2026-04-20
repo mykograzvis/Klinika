@@ -29,7 +29,6 @@ export default function VartotojuSarasas() {
     }
   };
 
-  // Filtravimo logika: tikriname el. paštą ir pavardę
   const filtruotiVartotojai = vartotojai.filter(u => 
     u.elPastas?.toLowerCase().includes(paieska.toLowerCase()) ||
     u.pavarde?.toLowerCase().includes(paieska.toLowerCase())
@@ -40,7 +39,6 @@ export default function VartotojuSarasas() {
   return (
     <div className="container py-4" style={{ maxWidth: "1100px", fontFamily: 'sans-serif' }}>
       
-      {/* Viršutinė dalis: Antraštė ir Gydytojų kūrimas */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2 className="fw-bold m-0">Vartotojų valdymas</h2>
@@ -51,7 +49,6 @@ export default function VartotojuSarasas() {
         </Link>
       </div>
 
-      {/* Paieškos juosta */}
       <div className="card border-0 shadow-sm mb-4 p-3 bg-light rounded-4">
         <div className="input-group">
           <span className="input-group-text bg-white border-0 ps-3">🔍</span>
@@ -65,7 +62,6 @@ export default function VartotojuSarasas() {
         </div>
       </div>
 
-      {/* Vartotojų lentelė */}
       <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div className="table-responsive">
           <table className="table table-hover align-middle mb-0 bg-white">

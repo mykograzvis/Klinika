@@ -10,7 +10,6 @@ const parseJwt = (token) => {
   try { return JSON.parse(atob(token.split(".")[1])); } catch { return null; }
 };
 
-// Universalus patvirtinimo modal
 function ConfirmModal({ isOpen, title, message, confirmLabel = "Patvirtinti", danger = false, onConfirm, onCancel }) {
   if (!isOpen) return null;
   return (

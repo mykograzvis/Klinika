@@ -3,7 +3,7 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import "./DoctorsCarousel.css"; // Sukursime šį failą stiliui
+import "./DoctorsCarousel.css";
 
 const doctors = [
   { name: "Gelmina Mykolaitienė", specialization: "Odontologė", image: "/images/Agne.jpg" },
@@ -25,7 +25,7 @@ function DoctorsCarousel() {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
-    centerMode: true, // Prideda fokuso efektą centrinei kortelei
+    centerMode: true,
     centerPadding: "0px",
     responsive: [
       { breakpoint: 992, settings: { slidesToShow: 2, centerMode: false } },

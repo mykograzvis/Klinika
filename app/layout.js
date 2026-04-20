@@ -1,6 +1,5 @@
-// app/layout.js
-import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap CSS
-import "../styles/globals.css"; // Global styles
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../styles/globals.css";
 import { Poppins } from "next/font/google";
 import { ToastProvider } from "@/context/ToastContext";
 

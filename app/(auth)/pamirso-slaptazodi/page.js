@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import Link from 'next/link';
-import styles from '../login/login.module.css';
+import styles from '../prisijungti/login.module.css';
 import API_URL from '@/services/api';
 
 export default function ForgotPasswordPage() {
@@ -92,7 +92,7 @@ export default function ForgotPasswordPage() {
 
         <div className={styles.authFooter}>
           <p>
-            <Link href="/login" className={styles.authLink}>
+            <Link href="/prisijungti" className={styles.authLink}>
               ← Grįžti į prisijungimą
             </Link>
           </p>

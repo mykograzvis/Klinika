@@ -1,4 +1,3 @@
-/* Kortelės stilius */
 .doctor-card {
   background: #fff;
   border-radius: 20px;
@@ -8,7 +7,6 @@
   margin-bottom: 20px;
 }
 
-/* Nuotraukos apvalus rėmelis */
 .doctor-image-wrapper {
   padding-top: 30px;
   display: flex;
@@ -20,13 +18,12 @@
   height: 180px;
   object-fit: cover;
   border-radius: 50%;
-  border: 6px solid #f0f4f8; /* Šviesus vidinis rėmelis */
-  outline: 4px solid #5d7bb3; /* Tavo pagrindinė mėlyna */
+  border: 6px solid #f0f4f8;
+  outline: 4px solid #5d7bb3;
   padding: 0;
   transition: transform 0.5s ease;
 }
 
-/* Teksto stilius */
 .doc-name {
   font-weight: 700;
   margin-bottom: 5px;
@@ -38,7 +35,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Hover efektai */
 .doctor-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 15px 30px rgba(93, 123, 179, 0.15) !important;
@@ -48,7 +44,6 @@
   transform: scale(1.05);
 }
 
-/* Karuselės taškų (dots) stilius */
 .slick-dots li button:before {
   color: #5d7bb3 !important;
   font-size: 12px;

@@ -111,14 +111,11 @@ export default function Rezervacija() {
       .catch((err) => console.error(err));
 
     if (role === "Adminas" || role === "Gydytojas") {
-      fetch(`${API_URL}/api/Vartotojai`, {
+      fetch(`${API_URL}/api/Pacientai`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
-        .then((data) => {
-          const tikPacientai = data.filter((u) => u.role === "Pacientas");
-          setVartotojai(tikPacientai);
-        })
+        .then((data) => setVartotojai(data))
         .catch((err) => console.error(err));
     }
   }, []);
@@ -250,7 +247,6 @@ export default function Rezervacija() {
           Registracija vizitui
         </h4>
 
-        {/* 0. PACIENTO PASIRINKIMAS (Tik Admin/Gydytojas) */}
         {(userRole === "Adminas" || userRole === "Gydytojas") && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 bg-white">
             <div className="card-body p-4">
@@ -354,7 +350,6 @@ export default function Rezervacija() {
           </div>
         )}
 
-        {/* 1. PASLAUGA – rodom tik jei galima */}
         {galiRodytiPaslaugas && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 overflow-hidden">
             <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
@@ -417,7 +412,6 @@ export default function Rezervacija() {
           </div>
         )}
 
-        {/* 2. GYDYTOJAS */}
         {formData.paslaugaIndex !== "" && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 animate-fade-in">
             <div className="card-body p-4">
@@ -446,7 +440,6 @@ export default function Rezervacija() {
           </div>
         )}
 
-        {/* 3. DATA ir LAIKAS */}
         {formData.gydytojasId && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 animate-fade-in">
             <div className="card-body p-4">

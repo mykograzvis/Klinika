@@ -146,7 +146,6 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
     } catch { error("Klaida", "Nepavyko sugeneruoti PDF."); }
   };
 
-  // Modal turinys pagal tipą
   const modalConfig = {
     trinti:   { title: "Pašalinti procedūrą?",    message: "Ši procedūra bus ištrinta iš vizito.",                                      confirmLabel: "Pašalinti",  danger: true  },
     uzbaigti: { title: "Užbaigti vizitą?",         message: "Pacientui bus išsiųsta sąskaita el. paštu. Veiksmo atšaukti negalėsite.",   confirmLabel: "Užbaigti",   danger: false },

@@ -27,7 +27,6 @@ export default function GrafikoIsimtys({ isimtys, naujaIsimtis, setNaujaIsimtis,
       </div>
 
       <div className={styles.exceptionsLayout}>
-        {/* Forma */}
         <div className={styles.addForm}>
           <p className={styles.formLabel}>Data</p>
           <input
@@ -51,7 +50,6 @@ export default function GrafikoIsimtys({ isimtys, naujaIsimtis, setNaujaIsimtis,
           </button>
         </div>
 
-        {/* Sąrašas */}
         <div className={styles.exceptionsList}>
           <div className={styles.monthNav}>
             <button className={styles.monthBtn} onClick={() => keistiMnesi(-1)}>←</button>

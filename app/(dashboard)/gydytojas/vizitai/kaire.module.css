@@ -9,7 +9,6 @@
   overflow: hidden;
 }
 
-/* Calendar */
 .calendarBlock {
   border-bottom: 1px solid #dee2e6;
   padding: 1rem 1.25rem 0.75rem;
@@ -48,7 +47,6 @@
   background: #cfe2ff;
 }
 
-/* react-calendar overrides */
 :global(.vizitai-calendar) {
   border: none !important;
   width: 100% !important;
@@ -100,7 +98,6 @@
   border-radius: 50% !important;
 }
 
-/* Day list */
 .dayBlock {
   flex: 1;
   display: flex;
@@ -127,7 +124,6 @@
   color: #6c757d;
 }
 
-/* Toggle */
 .toggleLabel {
   display: flex;
   align-items: center;
@@ -189,7 +185,6 @@
   margin: 0;
 }
 
-/* Vizitas card */
 .vizitasCard {
   background: #fff;
   border: 1px solid #dee2e6;

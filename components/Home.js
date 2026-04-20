@@ -1,10 +1,9 @@
-// pages/index.js
 import React from "react";
 import { motion } from "framer-motion";
 import DoctorsCarousel from "../components/DoctorsCarousel";
 import ScrollToTopButton from "../components/ScrollToTopButton";
 import Hero from "../components/Hero";
-import "../styles/Home.css"; // adjust if your CSS is elsewhere
+import "../styles/Home.css";
 
 export default function HomePage() {
   const containerVariants = {
@@ -41,7 +40,7 @@ export default function HomePage() {
           <span className="line"></span>
         </h2>
 
-        {/* First row */}
+        {}
         <div className="row g-4 mb-4">
           <motion.div className="col-md-4 text-center" variants={cardVariants}>
             <div className="card shadow-sm p-4 h-100 service-card">
@@ -86,7 +85,7 @@ export default function HomePage() {
           </motion.div>
         </div>
 
-        {/* Second row */}
+        {}
         <div className="row g-4">
           <motion.div className="col-md-4 text-center" variants={cardVariants}>
             <div className="card shadow-sm p-4 h-100 service-card">
