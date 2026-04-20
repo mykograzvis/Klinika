@@ -113,16 +113,6 @@ export default function Sidebar() {
           Atsijungti
         </button>
 
-        {}
-        <style jsx>{`
-          @media (min-width: 768px) {
-            .sidebar-nav {
-              left: 0 !important;
-              position: sticky !important;
-              height: 100vh;
-            }
-          }
-        `}</style>
       </nav>
     </>
   );
