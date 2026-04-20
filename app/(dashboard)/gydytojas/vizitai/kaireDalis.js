@@ -27,7 +27,6 @@ export default function Sidebar({ vizitai, selectedVizitas, setSelectedVizitas, 
 
   return (
     <div className={sideStyles.sidebar}>
-      {/* Calendar block */}
       <div className={sideStyles.calendarBlock}>
         <div className={sideStyles.calHeader}>
           <span className={sideStyles.calTitle}>Kalendorius</span>
@@ -44,7 +43,6 @@ export default function Sidebar({ vizitai, selectedVizitas, setSelectedVizitas, 
         />
       </div>
 
-      {/* Day list */}
       <div className={sideStyles.dayBlock}>
         <div className={sideStyles.dayHeader}>
           <span className={sideStyles.dayTitle}>Dienos vizitai</span>

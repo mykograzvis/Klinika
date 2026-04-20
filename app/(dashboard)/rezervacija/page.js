@@ -2,10 +2,12 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 export default function Rezervacija() {
   const router = useRouter();
   const scrollRef = useRef(null);
+  const { success, error, warning } = useToast();
 
   const paslaugos = [
     { id: 1, pavadinimas: "Burnos higiena", kaina: 50, specializacija: "Burnos higienistas", trukmeMin: 60 },
@@ -109,14 +111,11 @@ export default function Rezervacija() {
       .catch((err) => console.error(err));
 
     if (role === "Adminas" || role === "Gydytojas") {
-      fetch(`${API_URL}/api/Vartotojai`, {
+      fetch(`${API_URL}/api/Pacientai`, {
         headers: { Authorization: `Bearer ${token}` },
       })
         .then((res) => res.json())
-        .then((data) => {
-          const tikPacientai = data.filter((u) => u.role === "Pacientas");
-          setVartotojai(tikPacientai);
-        })
+        .then((data) => setVartotojai(data))
         .catch((err) => console.error(err));
     }
   }, []);
@@ -182,7 +181,7 @@ export default function Rezervacija() {
         : parseInt(storedUserId);
 
     if (!galutinisPacientasId) {
-      alert("Klaida: Nepasirinktas pacientas.");
+      warning("Nepasirinktas pacientas", "Pasirinkite pacientą prieš tęsiant.");
       setLoading(false);
       return;
     }
@@ -216,14 +215,14 @@ export default function Rezervacija() {
       );
 
       if (res.ok) {
-        alert("Rezervacija sėkmingai sukurta!");
+        success("Rezervacija sukurta!", "Vizitas sėkmingai užregistruotas.");
         router.push("/istorija");
       } else {
         const errorMsg = await res.text();
-        alert("Klaida: " + errorMsg);
+        error("Klaida", errorMsg);
       }
     } catch (err) {
-      alert("Sistemos klaida.");
+      error("Sistemos klaida", "Nepavyko sukurti rezervacijos. Bandykite dar kartą.");
     } finally {
       setLoading(false);
     }
@@ -248,7 +247,6 @@ export default function Rezervacija() {
           Registracija vizitui
         </h4>
 
-        {/* 0. PACIENTO PASIRINKIMAS (Tik Admin/Gydytojas) */}
         {(userRole === "Adminas" || userRole === "Gydytojas") && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 bg-white">
             <div className="card-body p-4">
@@ -352,7 +350,6 @@ export default function Rezervacija() {
           </div>
         )}
 
-        {/* 1. PASLAUGA – rodom tik jei galima */}
         {galiRodytiPaslaugas && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 overflow-hidden">
             <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
@@ -415,7 +412,6 @@ export default function Rezervacija() {
           </div>
         )}
 
-        {/* 2. GYDYTOJAS */}
         {formData.paslaugaIndex !== "" && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 animate-fade-in">
             <div className="card-body p-4">
@@ -444,7 +440,6 @@ export default function Rezervacija() {
           </div>
         )}
 
-        {/* 3. DATA ir LAIKAS */}
         {formData.gydytojasId && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 animate-fade-in">
             <div className="card-body p-4">

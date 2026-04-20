@@ -3,56 +3,66 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
+
+function ConfirmModal({ isOpen, title, message, confirmLabel = "Patvirtinti", danger = false, onConfirm, onCancel }) {
+  if (!isOpen) return null;
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9998 }}
+      onClick={onCancel}
+    >
+      <div
+        style={{ background: "#fff", borderRadius: 16, padding: "2rem", maxWidth: 360, width: "90%", boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h5 style={{ marginBottom: "0.5rem", fontWeight: 700, fontSize: "1.1rem" }}>{title}</h5>
+        <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.5rem", lineHeight: 1.5 }}>{message}</p>
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <button onClick={onCancel} style={{ flex: 1, padding: "0.625rem 1rem", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9fafb", cursor: "pointer", fontWeight: 600, fontSize: "0.875rem" }}>
+            Atšaukti
+          </button>
+          <button onClick={onConfirm} style={{ flex: 1, padding: "0.625rem 1rem", borderRadius: 8, border: "none", background: danger ? "#ef4444" : "#2563eb", color: "#fff", cursor: "pointer", fontWeight: 600, fontSize: "0.875rem" }}>
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ProfilisPage() {
   const router = useRouter();
+  const { success, error: toastError, info } = useToast();
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showEmailForm, setShowEmailForm] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [show2FAConfirm, setShow2FAConfirm] = useState(false);
 
   const [userData, setUserData] = useState({
-    id: "",
-    userId: "",
-    vardas: "",
-    pavarde: "",
-    elPastas: "",
-    telefonas: "",
-    amzius: 0,
-    kraujoGrupe: "",
-    specializacija: "",
-    darboPatirtisMetais: 0,
-    role: "",
-    isTwoFactorEnabled: false
+    id: "", userId: "", vardas: "", pavarde: "", elPastas: "",
+    telefonas: "", amzius: 0, kraujoGrupe: "", specializacija: "",
+    darboPatirtisMetais: 0, role: "", isTwoFactorEnabled: false
   });
 
   const [passwordData, setPasswordData] = useState({
-    senasSlaptazodis: "",
-    naujasSlaptazodis: "",
-    repeatSlaptazodis: ""
+    senasSlaptazodis: "", naujasSlaptazodis: "", repeatSlaptazodis: ""
   });
 
   const [newEmail, setNewEmail] = useState("");
 
-  useEffect(() => {
-    fetchProfilis();
-  }, []);
+  useEffect(() => { fetchProfilis(); }, []);
 
   const fetchProfilis = async () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+    if (!token) { router.push("/login"); return; }
     try {
       const res = await fetch(`${API_URL}/api/Vartotojai/profilis`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
-      if (res.ok) {
-        const data = await res.json();
-        setUserData(data);
-      }
+      if (res.ok) setUserData(await res.json());
     } catch (err) {
       console.error("Klaida kraunant profilį", err);
     } finally {
@@ -71,21 +81,12 @@ export default function ProfilisPage() {
     try {
       const res = await fetch(`${API_URL}/api/Vartotojai/atnaujinti`, {
         method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` 
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify(userData)
       });
-      if (res.ok) {
-        showMsg("Profilio duomenys sėkmingai atnaujinti!", "success");
-        setIsEditing(false);
-      } else {
-        showMsg("Nepavyko atnaujinti duomenų.", "danger");
-      }
-    } catch (err) {
-      showMsg("Serverio klaida.", "danger");
-    }
+      if (res.ok) { showMsg("Profilio duomenys sėkmingai atnaujinti!", "success"); setIsEditing(false); }
+      else showMsg("Nepavyko atnaujinti duomenų.", "danger");
+    } catch { showMsg("Serverio klaida.", "danger"); }
   };
 
   const handleUpdateEmail = async (e) => {
@@ -94,23 +95,18 @@ export default function ProfilisPage() {
     try {
       const res = await fetch(`${API_URL}/api/Vartotojai/keisti-el-pasta`, {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` 
-        },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ naujasEmail: newEmail })
       });
       if (res.ok) {
-        alert("El. paštas pakeistas. Prašome prisijungti iš naujo.");
+        info("El. paštas pakeistas", "Prašome prisijungti iš naujo.");
         localStorage.clear();
         router.push("/login");
       } else {
         const txt = await res.text();
         showMsg(txt || "Klaida keičiant el. paštą.", "danger");
       }
-    } catch (err) {
-      showMsg("Serverio klaida.", "danger");
-    }
+    } catch { showMsg("Serverio klaida.", "danger"); }
   };
 
   const handleUpdatePassword = async (e) => {
@@ -123,14 +119,8 @@ export default function ProfilisPage() {
     try {
       const res = await fetch(`${API_URL}/api/Vartotojai/keisti-slaptazodi`, {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` 
-        },
-        body: JSON.stringify({
-          senasSlaptazodis: passwordData.senasSlaptazodis,
-          naujasSlaptazodis: passwordData.naujasSlaptazodis
-        })
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ senasSlaptazodis: passwordData.senasSlaptazodis, naujasSlaptazodis: passwordData.naujasSlaptazodis })
       });
       if (res.ok) {
         showMsg("Slaptažodis pakeistas!", "success");
@@ -140,13 +130,11 @@ export default function ProfilisPage() {
         const errTxt = await res.text();
         showMsg(errTxt || "Klaida keičiant slaptažodį.", "danger");
       }
-    } catch (err) {
-      showMsg("Serverio klaida.", "danger");
-    }
+    } catch { showMsg("Serverio klaida.", "danger"); }
   };
 
-  const handleDisable2FA = async () => {
-    if (!window.confirm("Ar tikrai norite išjungti 2FA? Tai sumažins jūsų paskyros saugumą.")) return;
+  const handleConfirmDisable2FA = async () => {
+    setShow2FAConfirm(false);
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${API_URL}/api/Auth/disable-self-2fa`, {
@@ -159,20 +147,12 @@ export default function ProfilisPage() {
       } else {
         showMsg("Nepavyko išjungti 2FA.", "danger");
       }
-    } catch (err) {
-      showMsg("Serverio klaida.", "danger");
-    }
+    } catch { showMsg("Serverio klaida.", "danger"); }
   };
 
   const handleEnable2FA = () => {
-    // Paimame ID iš userData (id arba userId) arba iš localStorage, jei API jo negrąžino
     const id = userData.userId || userData.id || localStorage.getItem("userId");
-    
-    if (!id) {
-      showMsg("Klaida: nepavyko nustatyti vartotojo ID.", "danger");
-      return;
-    }
-    
+    if (!id) { showMsg("Klaida: nepavyko nustatyti vartotojo ID.", "danger"); return; }
     router.push(`/setup-2fa?userId=${id}`);
   };
 
@@ -188,10 +168,8 @@ export default function ProfilisPage() {
       </div>
 
       {message.text && (
-        <div style={{ 
-          padding: '15px', 
-          marginBottom: '20px', 
-          borderRadius: '8px', 
+        <div style={{
+          padding: '15px', marginBottom: '20px', borderRadius: '8px',
           backgroundColor: message.type === 'success' ? '#dcfce7' : '#fef2f2',
           color: message.type === 'success' ? '#166534' : '#991b1b',
           border: `1px solid ${message.type === 'success' ? '#bbf7d0' : '#fecaca'}`
@@ -200,7 +178,6 @@ export default function ProfilisPage() {
         </div>
       )}
 
-      {/* SEKCIJA: Bendra informacija */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
           <h3 style={{ margin: 0 }}>Asmeniniai duomenys</h3>
@@ -208,21 +185,17 @@ export default function ProfilisPage() {
             {isEditing ? "Atšaukti" : "Redaguoti"}
           </button>
         </div>
-
         <form onSubmit={handleUpdateInfo}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <DataField label="Vardas" value={userData.vardas} isEditing={isEditing} onChange={v => setUserData({...userData, vardas: v})} />
             <DataField label="Pavardė" value={userData.pavarde} isEditing={isEditing} onChange={v => setUserData({...userData, pavarde: v})} />
-            
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <label style={labelStyle}>El. paštas</label>
               <div style={readonlyFieldStyle}>{userData.elPastas}</div>
             </div>
-
             <DataField label="Telefonas" value={userData.telefonas} isEditing={isEditing} onChange={v => setUserData({...userData, telefonas: v})} />
             <DataField label="Amžius" value={userData.amzius} isEditing={isEditing} type="number" onChange={v => setUserData({...userData, amzius: parseInt(v) || 0})} />
             <DataField label="Kraujo grupė" value={userData.kraujoGrupe} isEditing={isEditing} onChange={v => setUserData({...userData, kraujoGrupe: v})} />
-
             {userData.role === "Gydytojas" && (
               <>
                 <div style={{ gridColumn: '1 / -1', borderTop: '1px solid #eee', paddingTop: '10px', marginTop: '10px' }}>
@@ -239,11 +212,9 @@ export default function ProfilisPage() {
         </form>
       </div>
 
-      {/* SEKCIJA: Saugumas */}
       <div style={cardStyle}>
         <h3 style={{ marginBottom: '20px' }}>Paskyros saugumas</h3>
-        
-        {/* El. pašto keitimas */}
+
         <div style={{ paddingBottom: '20px', borderBottom: '1px solid #eee', marginBottom: '20px' }}>
           {!showEmailForm ? (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -265,7 +236,6 @@ export default function ProfilisPage() {
           )}
         </div>
 
-        {/* Slaptažodžio keitimas */}
         <div style={{ paddingBottom: '20px', borderBottom: userData.role === "Pacientas" ? '1px solid #eee' : 'none', marginBottom: userData.role === "Pacientas" ? '20px' : '0' }}>
           {!showPasswordForm ? (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -290,16 +260,13 @@ export default function ProfilisPage() {
           )}
         </div>
 
-        {/* 2FA Valdymas (Tik pacientams) */}
         {userData.role === "Pacientas" && (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
             <div>
               <div style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 Dviejų veiksnių autentifikavimas (2FA)
-                <span style={{ 
-                  fontSize: '10px', 
-                  padding: '2px 8px', 
-                  borderRadius: '10px', 
+                <span style={{
+                  fontSize: '10px', padding: '2px 8px', borderRadius: '10px',
                   backgroundColor: userData.isTwoFactorEnabled ? '#dcfce7' : '#f1f5f9',
                   color: userData.isTwoFactorEnabled ? '#166534' : '#64748b'
                 }}>
@@ -309,13 +276,23 @@ export default function ProfilisPage() {
               <div style={{ fontSize: '13px', color: '#64748b' }}>Papildoma apsauga naudojant programėlę telefone</div>
             </div>
             {userData.isTwoFactorEnabled ? (
-              <button onClick={handleDisable2FA} style={btnDangerStyle}>Išjungti 2FA</button>
+              <button onClick={() => setShow2FAConfirm(true)} style={btnDangerStyle}>Išjungti 2FA</button>
             ) : (
               <button onClick={handleEnable2FA} style={btnPrimaryStyle}>Įjungti 2FA</button>
             )}
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={show2FAConfirm}
+        title="Išjungti 2FA?"
+        message="Tai sumažins jūsų paskyros saugumą. Dviejų veiksnių autentifikacija bus išjungta."
+        confirmLabel="Išjungti"
+        danger
+        onConfirm={handleConfirmDisable2FA}
+        onCancel={() => setShow2FAConfirm(false)}
+      />
     </div>
   );
 }
@@ -325,12 +302,7 @@ function DataField({ label, value, isEditing, onChange, type = "text" }) {
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <label style={labelStyle}>{label}</label>
       {isEditing ? (
-        <input 
-          type={type} 
-          style={{ ...inputStyle, borderColor: '#0070f3' }} 
-          value={value || ""} 
-          onChange={e => onChange(e.target.value)} 
-        />
+        <input type={type} style={{ ...inputStyle, borderColor: '#0070f3' }} value={value || ""} onChange={e => onChange(e.target.value)} />
       ) : (
         <div style={readonlyFieldStyle}>{value || <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Nenurodyta</span>}</div>
       )}

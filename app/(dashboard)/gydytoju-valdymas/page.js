@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 export default function AdminGydytojai() {
-  const router = useRouter(); // Navigacijai
+  const router = useRouter();
+  const { success, error } = useToast();
   
   const [formData, setFormData] = useState({
     vardas: '',
@@ -38,21 +40,20 @@ export default function AdminGydytojai() {
       });
 
       if (res.ok) {
-        alert("Gydytojas sėkmingai pridėtas!");
-        router.push("/vartotojai"); // Po sėkmingo kūrimo grįžtame į sąrašą
+        success("Gydytojas pridėtas!", "Paskyra sėkmingai sukurta.");
+        router.push("/vartotojai");
       } else {
         const errorData = await res.json();
-        alert("Klaida: " + (errorData.message || "Patikrinkite duomenis"));
+        error("Klaida", errorData.message || "Patikrinkite įvestus duomenis.");
       }
     } catch (err) {
-      alert("Nepavyko susisiekti su serveriu.");
+      error("Ryšio klaida", "Nepavyko susisiekti su serveriu.");
     }
   };
 
   return (
     <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px', fontFamily: 'sans-serif' }}>
       
-      {/* Navigacijos viršus */}
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', gap: '15px' }}>
         <button 
           onClick={() => router.back()} 
@@ -132,7 +133,6 @@ export default function AdminGydytojai() {
   );
 }
 
-// Patobulinti stiliai
 const formStyle = { background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', border: '1px solid #f1f5f9' };
 const inputGrid = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' };
 const inputGroup = { display: 'flex', flexDirection: 'column' };

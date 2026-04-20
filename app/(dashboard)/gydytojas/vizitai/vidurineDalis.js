@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styles from "./vizitai.module.css";
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 const PASLAUGOS = [
   { pavadinimas: "Dantų balinimas", kaina: 60 },
@@ -13,15 +14,48 @@ const PASLAUGOS = [
   { pavadinimas: "Rovimas", kaina: 80 },
 ];
 
+function ConfirmModal({ isOpen, title, message, confirmLabel = "Patvirtinti", danger = false, onConfirm, onCancel }) {
+  if (!isOpen) return null;
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9998 }}
+      onClick={onCancel}
+    >
+      <div
+        style={{ background: "#fff", borderRadius: 16, padding: "2rem", maxWidth: 360, width: "90%", boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h5 style={{ marginBottom: "0.5rem", fontWeight: 700, fontSize: "1.1rem" }}>{title}</h5>
+        <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.5rem", lineHeight: 1.5 }}>{message}</p>
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <button onClick={onCancel} style={{ flex: 1, padding: "0.625rem 1rem", borderRadius: 8, border: "1px solid #e5e7eb", background: "#f9fafb", cursor: "pointer", fontWeight: 600, fontSize: "0.875rem" }}>
+            Atšaukti
+          </button>
+          <button onClick={onConfirm} style={{ flex: 1, padding: "0.625rem 1rem", borderRadius: 8, border: "none", background: danger ? "#ef4444" : "#2563eb", color: "#fff", cursor: "pointer", fontWeight: 600, fontSize: "0.875rem" }}>
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }) {
+  const { success, error } = useToast();
   const [isFinishing, setIsFinishing]   = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [isPaying, setIsPaying]         = useState(false);
   const [procedura, setProcedura]       = useState({ pavadinimas: "", kaina: "", aprasymas: "" });
 
-  const isEditable    = !["Atliktas", "Atšauktas", "Apmokėta"].includes(selectedVizitas?.busena);
-  const needsPayment  = selectedVizitas?.busena === "Atliktas";
-  const canDownload   = ["Atliktas", "Apmokėta"].includes(selectedVizitas?.busena);
+  // Modal state
+  const [confirmModal, setConfirmModal] = useState({ open: false, type: null, proceduraId: null });
+
+  const openConfirm = (type, proceduraId = null) => setConfirmModal({ open: true, type, proceduraId });
+  const closeConfirm = () => setConfirmModal({ open: false, type: null, proceduraId: null });
+
+  const isEditable   = !["Atliktas", "Atšauktas", "Apmokėta"].includes(selectedVizitas?.busena);
+  const needsPayment = selectedVizitas?.busena === "Atliktas";
+  const canDownload  = ["Atliktas", "Apmokėta"].includes(selectedVizitas?.busena);
 
   const proceduros = selectedVizitas?.atliktosProceduros || selectedVizitas?.AtliktosProceduros || [];
   const suma = selectedVizitas?.bendraSuma ?? proceduros.reduce((s, p) => s + (p.kaina || p.Kaina || 0), 0);
@@ -45,49 +79,55 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
     if (res.ok) { setProcedura({ pavadinimas: "", kaina: "", aprasymas: "" }); fetchManoVizitai(); }
   };
 
-  const handleTrinti = async id => {
-    if (!confirm("Pašalinti šią procedūrą?")) return;
-    const res = await fetch(`${API_URL}/api/Proceduros/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-    if (res.ok) fetchManoVizitai();
-  };
+  const handleTrinti = (id) => openConfirm("trinti", id);
+  const handleUzbaigti = () => openConfirm("uzbaigti");
+  const handleAtsaukti = () => openConfirm("atsaukti");
+  const handleApmoketi = () => openConfirm("apmoketi");
 
-  const handleUzbaigti = async () => {
-    if (!confirm("Užbaigti vizitą? Bus išsiųsta sąskaita el. paštu.")) return;
-    setIsFinishing(true);
-    try {
-      const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/uzbaigti`, {
-        method: "PATCH",
+  const handleConfirm = async () => {
+    const { type, proceduraId } = confirmModal;
+    closeConfirm();
+
+    if (type === "trinti") {
+      const res = await fetch(`${API_URL}/api/Proceduros/${proceduraId}`, {
+        method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      if (res.ok) { alert("Vizitas užbaigtas."); fetchManoVizitai(); }
-    } finally { setIsFinishing(false); }
-  };
+      if (res.ok) fetchManoVizitai();
+    }
 
-  const handleAtsaukti = async () => {
-    if (!confirm("Atšaukti vizitą? Pacientas bus informuotas el. paštu.")) return;
-    setIsCancelling(true);
-    try {
-      const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/atsaukti-gydytojas`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (res.ok) { alert("Vizitas atšauktas."); fetchManoVizitai(); }
-    } finally { setIsCancelling(false); }
-  };
+    if (type === "uzbaigti") {
+      setIsFinishing(true);
+      try {
+        const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/uzbaigti`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        if (res.ok) { success("Vizitas užbaigtas", "Sąskaita išsiųsta el. paštu."); fetchManoVizitai(); }
+      } finally { setIsFinishing(false); }
+    }
 
-  const handleApmoketi = async () => {
-    if (!confirm("Patvirtinti, kad pacientas atsiskaitė vietoje?")) return;
-    setIsPaying(true);
-    try {
-      const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/apmoketi`, {
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (res.ok) { alert("Mokėjimas užfiksuotas."); fetchManoVizitai(); }
-    } finally { setIsPaying(false); }
+    if (type === "atsaukti") {
+      setIsCancelling(true);
+      try {
+        const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/atsaukti-gydytojas`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        if (res.ok) { success("Vizitas atšauktas", "Pacientas informuotas el. paštu."); fetchManoVizitai(); }
+      } finally { setIsCancelling(false); }
+    }
+
+    if (type === "apmoketi") {
+      setIsPaying(true);
+      try {
+        const res = await fetch(`${API_URL}/api/Vizitai/${selectedVizitas.id}/apmoketi`, {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        if (res.ok) { success("Mokėjimas užfiksuotas", "Vizitas pažymėtas kaip apmokėtas."); fetchManoVizitai(); }
+      } finally { setIsPaying(false); }
+    }
   };
 
   const handleDownloadPdf = async () => {
@@ -103,7 +143,14 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
         document.body.appendChild(a); a.click();
         URL.revokeObjectURL(url); a.remove();
       }
-    } catch { alert("Klaida generuojant PDF."); }
+    } catch { error("Klaida", "Nepavyko sugeneruoti PDF."); }
+  };
+
+  const modalConfig = {
+    trinti:   { title: "Pašalinti procedūrą?",    message: "Ši procedūra bus ištrinta iš vizito.",                                      confirmLabel: "Pašalinti",  danger: true  },
+    uzbaigti: { title: "Užbaigti vizitą?",         message: "Pacientui bus išsiųsta sąskaita el. paštu. Veiksmo atšaukti negalėsite.",   confirmLabel: "Užbaigti",   danger: false },
+    atsaukti: { title: "Atšaukti vizitą?",         message: "Pacientas bus informuotas el. paštu. Veiksmo atšaukti negalėsite.",         confirmLabel: "Atšaukti",   danger: true  },
+    apmoketi: { title: "Patvirtinti apmokėjimą?",  message: "Patvirtinkite, kad pacientas atsiskaitė vietoje.",                          confirmLabel: "Patvirtinti", danger: false },
   };
 
   if (!selectedVizitas) return (
@@ -118,9 +165,10 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
     selectedVizitas.busena === "Atšauktas" ? styles.badgeRed   :
     styles.badgeBlue;
 
+  const cfg = modalConfig[confirmModal.type] || {};
+
   return (
     <div className={`${styles.panel} ${styles.panelCenter}`}>
-      {/* Header */}
       <div className={styles.detailHeader}>
         <div>
           <h2 className={styles.patientName}>{selectedVizitas.pacientoVardas}</h2>
@@ -141,7 +189,6 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
         </div>
       </div>
 
-      {/* Procedūros */}
       <div className={styles.block}>
         <p className={styles.blockLabel}>Procedūros</p>
         {proceduros.length === 0 ? (
@@ -176,7 +223,6 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
         </div>
       </div>
 
-      {/* Veiksmai */}
       {isEditable && (
         <div className={styles.block}>
           <p className={styles.blockLabel}>Pridėti procedūrą</p>
@@ -230,6 +276,16 @@ export default function AppointmentDetails({ selectedVizitas, fetchManoVizitai }
           {selectedVizitas.busena === "Atšauktas" ? "Vizitas atšauktas." : "Vizitas sėkmingai apmokėtas."}
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmModal.open}
+        title={cfg.title}
+        message={cfg.message}
+        confirmLabel={cfg.confirmLabel}
+        danger={cfg.danger}
+        onConfirm={handleConfirm}
+        onCancel={closeConfirm}
+      />
     </div>
   );
 }

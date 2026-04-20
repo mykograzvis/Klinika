@@ -67,7 +67,6 @@ export default function AdminAnalize() {
       (sum, g) => sum + g.vizitai,
       0
     );
-    // bendraSuma backend'e turi skaičiuoti TIK "Apmokėta" vizitus
     const avgPerVisit =
       totalVisits > 0 ? data.bendraSuma / totalVisits : 0;
 
@@ -88,7 +87,6 @@ export default function AdminAnalize() {
   return (
     <div className="w-100 min-vh-100 bg-light py-4 d-flex flex-column align-items-center">
       <div className="container" style={{ maxWidth: "1150px" }}>
-        {/* HEADER */}
         <header className="mb-4 pb-3 border-bottom">
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div>
@@ -169,13 +167,11 @@ export default function AdminAnalize() {
 
         {data && (
           <>
-            {/* 1. APŽVALGA */}
             <section className="mb-4">
               <h6 className="text-uppercase text-muted small mb-2">
                 Apžvalga
               </h6>
               <div className="row g-3">
-                {/* Bendra apyvarta — tik Apmokėta vizitai */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
@@ -192,7 +188,6 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
-                {/* Vizitų skaičius */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
@@ -206,7 +201,6 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
-                {/* Unikalūs pacientai */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
@@ -220,7 +214,6 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
-                {/* Vidutinė suma vizitui */}
                 <div className="col-md-3">
                   <div className="card border-0 shadow-sm h-100 ">
                     <div className="card-body">
@@ -241,7 +234,6 @@ export default function AdminAnalize() {
 
             <hr className="my-4" />
 
-            {/* 2. NEAPMOKĖTI VIZITAI */}
             <section className="mb-4">
               <h6 className="text-uppercase text-muted small mb-2">
                 Neapmokėti vizitai
@@ -279,7 +271,6 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
-                {/* Procentas nuo visos potencialios apyvartos */}
                 {(data.neapmoketi?.suma ?? 0) > 0 && (
                   <div className="col-md-4">
                     <div className="card border-0 shadow-sm h-100">
@@ -314,10 +305,8 @@ export default function AdminAnalize() {
 
             <hr className="my-4" />
 
-            {/* 3. GYDYTOJŲ NAŠUMAS + TOP PASLAUGOS */}
             <section className="mb-3">
               <div className="row g-4">
-                {/* Gydytojų lentelė */}
                 <div className="col-lg-8">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-body">
@@ -389,7 +378,6 @@ export default function AdminAnalize() {
                   </div>
                 </div>
 
-                {/* Top paslaugos */}
                 <div className="col-lg-4">
                   <div className="card border-0 shadow-sm h-100">
                     <div className="card-body d-flex flex-column">

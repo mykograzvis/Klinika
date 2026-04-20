@@ -31,7 +31,6 @@ export default function ServicesSection() {
     <motion.div
       className="container mb-5 services-section"
       initial="hidden"
-      // PAKEITIMAS: Naudojame animate vietoj whileInView, kad išvengtume tuščio ekrano telefone
       animate="visible"
       variants={containerVariants}
     >

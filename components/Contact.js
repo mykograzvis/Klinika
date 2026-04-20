@@ -13,24 +13,20 @@ export default function ContactSection() {
   const validateForm = (formData) => {
     const errors = {};
     
-    // Vardas validacija
     if (!formData.name || formData.name.trim().length < 2) {
       errors.name = "Įveskite vardą ir pavardę";
     }
 
-    // Telefono validacija
     const phoneRegex = /^[\d\s+()-]{6,}$/;
     if (!formData.phone || !phoneRegex.test(formData.phone)) {
       errors.phone = "Įveskite galiojantį telefono numerį";
     }
 
-    // El. pašto validacija
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email || !emailRegex.test(formData.email)) {
       errors.email = "Įveskite galiojantį el. pašto adresą";
     }
 
-    // Paslaugos validacija
     if (!formData.service) {
       errors.service = "Pasirinkite paslaugą";
     }
@@ -52,7 +48,6 @@ export default function ContactSection() {
       message: e.target.message.value,
     };
 
-    // Validuoti formą
     const errors = validateForm(formData);
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -73,7 +68,6 @@ export default function ContactSection() {
 
       if (data.success) {
         setSubmitted(true);
-        // Išvalyti formą
         e.target.reset();
       } else {
         setError('Nepavyko išsiųsti užklausos. Bandykite dar kartą arba susisiekite telefonu.');
@@ -91,7 +85,7 @@ export default function ContactSection() {
       <div className="container">
         <div className="row g-5">
           
-          {/* Kairė pusė: Kontaktai ir Darbo laikas */}
+          {}
           <motion.div 
             className="col-lg-5"
             initial={{ opacity: 0, x: -30 }}
@@ -145,7 +139,7 @@ export default function ContactSection() {
             </div>
           </motion.div>
 
-          {/* Dešinė pusė: Registracijos forma */}
+          {}
           <motion.div className="col-lg-7">
             <div className="registration-form-card p-4 p-md-5 shadow-sm bg-white rounded-4 border-0">
               {submitted ? (
@@ -287,7 +281,7 @@ export default function ContactSection() {
                             Siunčiama...
                           </>
                         ) : (
-                          'Registruotis vizitui'
+                          'Siųsti užklausą'
                         )}
                       </button>
                       <p className="text-center text-muted small mt-3">* Privalomi laukai</p>

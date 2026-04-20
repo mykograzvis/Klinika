@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { FaChevronRight } from "react-icons/fa"; // Naudosime ikoną
+import { FaChevronRight } from "react-icons/fa";
 import "./Hero.css";
 
 const slides = [
@@ -20,14 +20,12 @@ function Hero() {
   const totalSlides = slides.length;
   const nextImageIndex = (currentImageIndex + 1) % totalSlides;
 
-  // Perkeliame perjungimo logiką į funkciją
   const triggerNextSlide = useCallback(() => {
     if (!isFading) {
       setIsFading(true);
     }
   }, [isFading]);
 
-  // Automatinis perjungimas
   useEffect(() => {
     const timeoutId = setTimeout(triggerNextSlide, 7000);
     return () => clearTimeout(timeoutId);
@@ -63,7 +61,7 @@ function Hero() {
 
       <div className="hero-overlay"></div>
 
-      {/* Rodyklė dešinėje */}
+      {}
       <button 
         className="hero-nav-button right" 
         onClick={triggerNextSlide}

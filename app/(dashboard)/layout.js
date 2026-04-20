@@ -1,21 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Sidebar from "@/components/Sidebar"; // Importuojame naują komponentą
+import Sidebar from "@/components/Sidebar";
 import styles from "./style.module.css";
 
 export default function DashboardLayout({ children }) {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    } else {
-      setIsAuthorized(true);
-    }
-  }, [router]);
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    router.replace("/login");
+  } else {
+    setIsAuthorized(true);
+  }
+}, []);
 
   if (!isAuthorized) {
     return (
@@ -28,7 +28,6 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Naudojame iškeltą komponentą */}
       <Sidebar />
 
       <main style={{ flex: 1, padding: '40px', background: '#f8fafc' }}>

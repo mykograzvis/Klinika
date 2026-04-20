@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import API_URL from '@/services/api';
+import { useToast } from "@/context/ToastContext";
 
 export default function PacientoIstorija() {
   const [vizitai, setVizitai] = useState([]);
@@ -9,10 +10,12 @@ export default function PacientoIstorija() {
   const [expandedId, setExpandedId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(5);
+  const [confirmId, setConfirmId] = useState(null);
   
   const searchParams = useSearchParams();
   const router = useRouter();
   const hasConfirmed = useRef(false);
+  const { success, error } = useToast();
 
   const fetchVizitai = useCallback(async () => {
     setLoading(true);
@@ -32,10 +35,10 @@ export default function PacientoIstorija() {
   }, []);
 
   useEffect(() => {
-    const success = searchParams.get("success");
+    const successParam = searchParams.get("success");
     const vizitasId = searchParams.get("vizitasId");
 
-    if (success === "true" && vizitasId && !hasConfirmed.current) {
+    if (successParam === "true" && vizitasId && !hasConfirmed.current) {
       hasConfirmed.current = true;
       fetch(`${API_URL}/api/Vizitai/patvirtinti-apmokejima/${vizitasId}`, {
         method: "GET",
@@ -43,7 +46,7 @@ export default function PacientoIstorija() {
       })
       .then((res) => {
         if (res.ok) {
-          alert("Mokėjimas sėkmingas!");
+          success("Mokėjimas sėkmingas!", "Vizitas sėkmingai apmokėtas.");
           router.replace("/istorija");
           fetchVizitai();
         }
@@ -64,22 +67,27 @@ export default function PacientoIstorija() {
         const data = await res.json();
         if (data.url) window.location.href = data.url;
       }
-    } catch (err) { alert("Sistemos klaida."); }
+    } catch (err) { error("Sistemos klaida", "Nepavyko inicijuoti mokėjimo."); }
   };
 
-  const handleCancel = async (e, id) => {
+  const handleCancel = (e, id) => {
     e.stopPropagation();
-    if (!confirm("Ar tikrai norite atšaukti šį vizitą?")) return;
+    setConfirmId(id);
+  };
+
+  const handleConfirmCancel = async () => {
+    const id = confirmId;
+    setConfirmId(null);
     try {
-      const res = await fetch(`${API_URL}/api/Vizitai/${id}/atshaukti`, {
+      const res = await fetch(`${API_URL}/api/Vizitai/${id}/atsaukti`, {
         method: "PUT",
         headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
       });
       if (res.ok) {
-        alert("Vizitas atšauktas.");
+        success("Vizitas atšauktas", "Jūsų vizitas sėkmingai atšauktas.");
         fetchVizitai();
       }
-    } catch (err) { alert("Klaida atšaukiant."); }
+    } catch (err) { error("Klaida", "Nepavyko atšaukti vizito."); }
   };
 
   const getGoogleCalendarUrl = (v) => {
@@ -90,8 +98,7 @@ export default function PacientoIstorija() {
     return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&sf=true&output=xml`;
   };
 
-  const dabar = new Date();
-const filteredVizitai = vizitai
+  const filteredVizitai = vizitai
     .filter(v => {
       const busena = (v.busena || v.Busena);
       const isPaid = busena === "Apmokėta";
@@ -203,7 +210,58 @@ const filteredVizitai = vizitai
           </div>
         )}
       </div>
-      <style jsx>{`.clickable-card { transition: all 0.2s ease; border: 1px solid transparent !important; } .clickable-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important; border-color: #dee2e6 !important; } .card-active { border-color: #0d6efd !important; background-color: #f8fbff; } .animate-fade-in { animation: fadeIn 0.3s ease-out; } @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+      {confirmId && (
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9998
+          }}
+          onClick={() => setConfirmId(null)}
+        >
+          <div
+            style={{
+              background: "#fff", borderRadius: 16, padding: "2rem",
+              maxWidth: 360, width: "90%", boxShadow: "0 20px 60px rgba(0,0,0,0.18)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h5 style={{ marginBottom: "0.5rem", fontWeight: 700, fontSize: "1.1rem" }}>Atšaukti vizitą?</h5>
+            <p style={{ color: "#6b7280", fontSize: "0.875rem", marginBottom: "1.5rem", lineHeight: 1.5 }}>
+              Šio veiksmo negalėsite atšaukti. Jūsų vizitas bus panaikintas.
+            </p>
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+              <button
+                onClick={() => setConfirmId(null)}
+                style={{
+                  flex: 1, padding: "0.625rem 1rem", borderRadius: 8,
+                  border: "1px solid #e5e7eb", background: "#f9fafb",
+                  cursor: "pointer", fontWeight: 600, fontSize: "0.875rem"
+                }}
+              >
+                Palikti
+              </button>
+              <button
+                onClick={handleConfirmCancel}
+                style={{
+                  flex: 1, padding: "0.625rem 1rem", borderRadius: 8,
+                  border: "none", background: "#ef4444", color: "#fff",
+                  cursor: "pointer", fontWeight: 600, fontSize: "0.875rem"
+                }}
+              >
+                Atšaukti vizitą
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .clickable-card { transition: all 0.2s ease; border: 1px solid transparent !important; }
+        .clickable-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important; border-color: #dee2e6 !important; }
+        .card-active { border-color: #0d6efd !important; background-color: #f8fbff; }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
     </div>
   );
 }
