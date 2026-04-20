@@ -26,6 +26,7 @@ export default function Sidebar() {
   };
 
   const commonItems = [
+    { href: "/asistentas", label: "Asistentas" },
     { href: "/rezervacija", label: "Rezervacija" },
     { href: "/istorija", label: "Istorija" },
     { href: "/profilis", label: "Profilis" },
