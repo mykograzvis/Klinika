@@ -125,6 +125,8 @@
   z-index: 30;
 }
 
+
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
