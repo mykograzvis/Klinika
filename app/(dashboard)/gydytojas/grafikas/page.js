@@ -112,7 +112,7 @@ export default function GrafikoValdymas() {
 
     const gydytojoId = userRole === "Adminas"
       ? String(pasirinktasGydytojasId)
-      : String(manoId || "");
+      : String(localStorage.getItem("userId") || "");
 
     if (!gydytojoId) return error("Klaida", "Nepavyko nustatyti gydytojo ID.");
 
