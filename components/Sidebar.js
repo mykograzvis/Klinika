@@ -40,6 +40,7 @@ export default function Sidebar() {
   const adminOnlyItems = [
     { href: "/vartotojai", label: "Vartotojų valdymas" },
     { href: "/statistika", label: "Statistika" },
+    { href: "/paslaugu-valdymas", label: "Paslaugų valdymas" },
   ];
 
   const renderLink = (item) => {

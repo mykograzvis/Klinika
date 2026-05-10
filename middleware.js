@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const ADMIN_ONLY = ['/vartotojai', '/gydytoju-valdymas', '/statistika'];
+const ADMIN_ONLY = ['/vartotojai', '/gydytoju-valdymas', '/statistika', '/paslaugu-valdymas'];
 const GYDYTOJAS_ONLY = ['/gydytojas'];
 
 const PUBLIC_PATHS = ['/prisijungti', '/registracija', '/setup-2fa', '/prisijungti2FA', '/pamirso-slaptazodi', '/keisti-slaptazodi'];
@@ -43,5 +43,6 @@ export const config = {
     '/gydytoju-valdymas/:path*',
     '/statistika/:path*',
     '/gydytojas/:path*',
+    '/paslaugu-valdymas/:path*',
   ],
 };
