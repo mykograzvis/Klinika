@@ -9,34 +9,13 @@ export default function Rezervacija() {
   const scrollRef = useRef(null);
   const { success, error, warning } = useToast();
 
-  const paslaugos = [
-    { id: 1, pavadinimas: "Burnos higiena", kaina: 50, specializacija: "Burnos higienistas", trukmeMin: 60 },
-    { id: 2, pavadinimas: "Danties plombavimas", kaina: 80, specializacija: "Gydytojas odontologas", trukmeMin: 60 },
-    { id: 3, pavadinimas: "Danties šalinimas", kaina: 120, specializacija: "Burnos chirurgas", trukmeMin: 90 },
-    { id: 4, pavadinimas: "Konsultacija", kaina: 30, specializacija: "Gydytojas odontologas", trukmeMin: 30 },
-    { id: 5, pavadinimas: "Danties implantacija", kaina: 800, specializacija: "Burnos chirurgas", trukmeMin: 120 },
-    { id: 6, pavadinimas: "Kanalų gydymas", kaina: 150, specializacija: "Endodontas", trukmeMin: 90 },
-    { id: 7, pavadinimas: "Plokštelės", kaina: 120, specializacija: "Gydytojas odontologas", trukmeMin: 60 },
-  ];
+  const [paslaugos, setPaslaugos] = useState([]);
+  const [paslaugosLoading, setPaslaugosLoading] = useState(true);
 
   const visiGalimiLaikai = [
-    "08:00",
-    "08:30",
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
+    "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
+    "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
+    "14:00", "14:30", "15:00", "15:30", "16:00",
   ];
 
   const artimiausiosDarboDienos = useMemo(() => {
@@ -68,40 +47,37 @@ export default function Rezervacija() {
   const [userRole, setUserRole] = useState("");
 
   const [formData, setFormData] = useState({
-    paslaugaIndex: "",
+    paslaugaId: "",
     gydytojasId: "",
     pacientasId: "",
-    data: artimiausiosDarboDienos[0].pilna,
+    data: artimiausiosDarboDienos[0]?.pilna || "",
     laikas: "",
   });
 
   const [pacientoPaieska, setPacientoPaieska] = useState("");
 
-  const filtruotiPacientai = useMemo(() => {
-    if (!pacientoPaieska.trim()) return visiVartotojai;
-
-    const q = pacientoPaieska.toLowerCase();
-
-    return visiVartotojai.filter((u) => {
-      const fullName = `${u.vardas} ${u.pavarde}`.toLowerCase();
-      const email = (u.elPastas || u.email || "").toLowerCase();
-      return fullName.includes(q) || email.includes(q);
-    });
-  }, [pacientoPaieska, visiVartotojai]);
-
-  const pasirinktasPacientas = useMemo(() => {
-    if (!formData.pacientasId) return null;
-    return (
-      visiVartotojai.find(
-        (u) => String(u.id) === String(formData.pacientasId)
-      ) || null
-    );
-  }, [formData.pacientasId, visiVartotojai]);
-
+  // Užkrauna paslaugas iš API
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     setUserRole(role);
+
+    setPaslaugosLoading(true);
+    fetch(`${API_URL}/api/Paslaugos`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Nepavyko gauti paslaugų");
+        return res.json();
+      })
+      .then((data) => {
+        setPaslaugos(data);
+      })
+      .catch((err) => {
+        console.error(err);
+        error("Klaida", "Nepavyko užkrauti paslaugų sąrašo.");
+      })
+      .finally(() => setPaslaugosLoading(false));
 
     fetch(`${API_URL}/api/Gydytojai`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -120,14 +96,38 @@ export default function Rezervacija() {
     }
   }, []);
 
+  const filtruotiPacientai = useMemo(() => {
+    if (!pacientoPaieska.trim()) return visiVartotojai;
+    const q = pacientoPaieska.toLowerCase();
+    return visiVartotojai.filter((u) => {
+      const fullName = `${u.vardas} ${u.pavarde}`.toLowerCase();
+      const email = (u.elPastas || u.email || "").toLowerCase();
+      return fullName.includes(q) || email.includes(q);
+    });
+  }, [pacientoPaieska, visiVartotojai]);
+
+  const pasirinktasPacientas = useMemo(() => {
+    if (!formData.pacientasId) return null;
+    return (
+      visiVartotojai.find(
+        (u) => String(u.id) === String(formData.pacientasId)
+      ) || null
+    );
+  }, [formData.pacientasId, visiVartotojai]);
+
+  // Filtruoja gydytojus pagal pasirinktos paslaugos specializaciją
   useEffect(() => {
-    if (formData.paslaugaIndex !== "") {
-      const p = paslaugos[parseInt(formData.paslaugaIndex)];
-      setFiltruotiGydytojai(
-        visiGydytojai.filter((g) => g.specializacija === p.specializacija)
-      );
+    if (formData.paslaugaId !== "") {
+      const p = paslaugos.find((pasl) => String(pasl.id) === String(formData.paslaugaId));
+      if (p) {
+        setFiltruotiGydytojai(
+          visiGydytojai.filter((g) => g.specializacija === p.specializacija)
+        );
+      }
+    } else {
+      setFiltruotiGydytojai([]);
     }
-  }, [formData.paslaugaIndex, visiGydytojai]);
+  }, [formData.paslaugaId, visiGydytojai, paslaugos]);
 
   useEffect(() => {
     if (formData.gydytojasId && formData.data) {
@@ -156,10 +156,14 @@ export default function Rezervacija() {
     }
   }, [formData.gydytojasId, formData.data]);
 
+  const pasirinktaPaslauga = useMemo(() => {
+    if (formData.paslaugaId === "") return null;
+    return paslaugos.find((p) => String(p.id) === String(formData.paslaugaId)) || null;
+  }, [formData.paslaugaId, paslaugos]);
+
   const patikrintiArLaisva = (laikas) => {
-    if (formData.paslaugaIndex === "" || isFullDayBusy) return false;
-    const p = paslaugos[parseInt(formData.paslaugaIndex)];
-    const blokuSkaicius = p.trukmeMin / 30;
+    if (formData.paslaugaId === "" || isFullDayBusy || !pasirinktaPaslauga) return false;
+    const blokuSkaicius = pasirinktaPaslauga.trukmeMin / 30;
     const pradziosIndex = visiGalimiLaikai.indexOf(laikas);
     if (pradziosIndex + blokuSkaicius > visiGalimiLaikai.length) return false;
     for (let i = 0; i < blokuSkaicius; i++) {
@@ -175,8 +179,7 @@ export default function Rezervacija() {
     const storedUserId = localStorage.getItem("userId");
 
     const galutinisPacientasId =
-      (userRole === "Adminas" || userRole === "Gydytojas") &&
-      formData.pacientasId
+      (userRole === "Adminas" || userRole === "Gydytojas") && formData.pacientasId
         ? parseInt(formData.pacientasId)
         : parseInt(storedUserId);
 
@@ -186,15 +189,19 @@ export default function Rezervacija() {
       return;
     }
 
-    const parinktaPaslauga = paslaugos[parseInt(formData.paslaugaIndex)];
+    if (!pasirinktaPaslauga) {
+      warning("Nepasirinkta paslauga", "Pasirinkite paslaugą prieš tęsiant.");
+      setLoading(false);
+      return;
+    }
 
     const dto = {
       pacientasId: galutinisPacientasId,
       gydytojasId: parseInt(formData.gydytojasId),
       pradziosLaikas: `${formData.data}T${formData.laikas}:00`,
-      trukmeMin: parinktaPaslauga.trukmeMin,
-      procedurosPavadinimas: parinktaPaslauga.pavadinimas,
-      procedurosKaina: parinktaPaslauga.kaina,
+      trukmeMin: pasirinktaPaslauga.trukmeMin,
+      procedurosPavadinimas: pasirinktaPaslauga.pavadinimas,
+      procedurosKaina: pasirinktaPaslauga.kaina,
       pastabos:
         userRole === "Adminas" || userRole === "Gydytojas"
           ? "Registruota per darbuotojo sąsają"
@@ -237,8 +244,7 @@ export default function Rezervacija() {
 
   const galiRodytiPaslaugas =
     userRole === "Pacientas" ||
-    ((userRole === "Adminas" || userRole === "Gydytojas") &&
-      !!formData.pacientasId);
+    ((userRole === "Adminas" || userRole === "Gydytojas") && !!formData.pacientasId);
 
   return (
     <div className="w-100 min-vh-100 bg-light py-4 d-flex flex-column align-items-center">
@@ -277,8 +283,7 @@ export default function Rezervacija() {
                       {pasirinktasPacientas.pavarde}
                     </div>
                     <div className="small text-muted">
-                      {pasirinktasPacientas.elPastas ||
-                        pasirinktasPacientas.email}
+                      {pasirinktasPacientas.elPastas || pasirinktasPacientas.email}
                     </div>
                   </div>
                   <span className="badge bg-primary text-white rounded-pill">
@@ -356,13 +361,13 @@ export default function Rezervacija() {
               <label className="text-uppercase fw-bold text-muted small">
                 1. Pasirinkite paslaugą
               </label>
-              {formData.paslaugaIndex !== "" && (
+              {formData.paslaugaId !== "" && (
                 <button
                   className="btn btn-sm btn-link text-decoration-none"
                   onClick={() =>
                     setFormData({
                       ...formData,
-                      paslaugaIndex: "",
+                      paslaugaId: "",
                       gydytojasId: "",
                       laikas: "",
                     })
@@ -373,23 +378,32 @@ export default function Rezervacija() {
               )}
             </div>
             <div className="card-body p-4">
-              {formData.paslaugaIndex === "" ? (
+              {paslaugosLoading ? (
+                <div className="text-center py-4">
+                  <span className="spinner-border text-primary"></span>
+                  <p className="text-muted small mt-2">Kraunamos paslaugos...</p>
+                </div>
+              ) : paslaugos.length === 0 ? (
+                <div className="alert alert-warning text-center rounded-4 py-3">
+                  Paslaugų sąrašas tuščias. Kreipkitės į administratorių.
+                </div>
+              ) : formData.paslaugaId === "" ? (
                 <div className="animate-fade-in">
-                  {paslaugos.map((p, idx) => (
+                  {paslaugos.map((p) => (
                     <div
                       key={p.id}
                       className="d-flex justify-content-between align-items-center p-3 mb-2 border rounded-4 hover-select transition-all cursor-pointer"
                       onClick={() =>
                         setFormData({
                           ...formData,
-                          paslaugaIndex: idx.toString(),
+                          paslaugaId: p.id.toString(),
                         })
                       }
                     >
                       <div>
                         <div className="fw-bold">{p.pavadinimas}</div>
                         <small className="text-muted">
-                          ⏱ {p.trukmeMin} min.
+                          {p.specializacija} · ⏱ {p.trukmeMin} min.
                         </small>
                       </div>
                       <div className="fw-bold text-primary fs-5">
@@ -401,10 +415,10 @@ export default function Rezervacija() {
               ) : (
                 <div className="p-3 border-2 border-primary bg-primary bg-opacity-10 rounded-4 d-flex justify-content-between">
                   <span className="fw-bold">
-                    {paslaugos[parseInt(formData.paslaugaIndex)].pavadinimas}
+                    {pasirinktaPaslauga?.pavadinimas}
                   </span>
                   <span className="badge bg-primary rounded-pill d-flex align-items-center">
-                    {paslaugos[parseInt(formData.paslaugaIndex)].kaina} €
+                    {pasirinktaPaslauga?.kaina} €
                   </span>
                 </div>
               )}
@@ -412,7 +426,7 @@ export default function Rezervacija() {
           </div>
         )}
 
-        {formData.paslaugaIndex !== "" && (
+        {formData.paslaugaId !== "" && pasirinktaPaslauga && (
           <div className="card shadow-sm border-0 rounded-4 mb-3 animate-fade-in">
             <div className="card-body p-4">
               <label className="text-uppercase fw-bold text-muted small mb-3 d-block">
